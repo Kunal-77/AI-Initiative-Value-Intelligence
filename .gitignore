@@ -61,3 +61,19 @@ Thumbs.db
 *.jpeg
 *.gif
 !apps/web/public/
+
+# Local Project Documentation (Ignored on GitHub, preserved locally)
+docs/
+ADMIN_GUIDE.md
+API_GUIDE.md
+ARCHITECTURE.md
+CONTRIBUTING.md
+DEPLOYMENT.md
+DESIGN_SYSTEM.md
+DEVELOPER_GUIDE.md
+MOCK_DATA_GUIDE.md
+QA_MANUAL_TEST_SUITE.md
+QA_MANUAL_TEST_SUITE_V2.md
+RELEASE_CHECKLIST.md
+UI_POLISH_BACKLOG.md
+USER_GUIDE.md
