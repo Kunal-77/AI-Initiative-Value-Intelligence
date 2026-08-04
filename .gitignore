@@ -26,6 +26,7 @@ env/
 htmlcov/
 .ipynb_checkpoints/
 *.sqlite3
+apps/api/storage/
 
 # Environment Variables & Secrets (CRITICAL)
 .env
