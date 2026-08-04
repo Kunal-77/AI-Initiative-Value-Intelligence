@@ -1,0 +1,77 @@
+import React, { useEffect } from "react";
+import { cn } from "./cn";
+
+export interface DialogProps extends React.HTMLAttributes<HTMLDivElement> {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
+  ({ className, isOpen, onClose, children, ...props }, ref) => {
+    // Escape key handling
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape" && isOpen) {
+          onClose();
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [isOpen, onClose]);
+
+    if (!isOpen) return null;
+
+    return (
+      <div
+        ref={ref}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            onClose();
+          }
+        }}
+        {...props}
+      >
+        <div className={cn("bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 max-w-md w-full flex flex-col gap-4 shadow-xl", className)}>
+          {children}
+        </div>
+      </div>
+    );
+  }
+);
+Dialog.displayName = "Dialog";
+
+export const DialogHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn("flex flex-col gap-1.5 text-left", className)} {...props} />
+  )
+);
+DialogHeader.displayName = "DialogHeader";
+
+export const DialogTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
+  ({ className, ...props }, ref) => (
+    <h3 ref={ref} className={cn("text-lg font-bold text-zinc-900 dark:text-white", className)} {...props} />
+  )
+);
+DialogTitle.displayName = "DialogTitle";
+
+export const DialogDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
+  ({ className, ...props }, ref) => (
+    <p ref={ref} className={cn("text-sm text-zinc-500 dark:text-zinc-400", className)} {...props} />
+  )
+);
+DialogDescription.displayName = "DialogDescription";
+
+export const DialogContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn("flex flex-col gap-3", className)} {...props} />
+  )
+);
+DialogContent.displayName = "DialogContent";
+
+export const DialogFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn("flex justify-end gap-3 mt-2", className)} {...props} />
+  )
+);
+DialogFooter.displayName = "DialogFooter";

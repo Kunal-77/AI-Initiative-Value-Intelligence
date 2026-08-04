@@ -1,0 +1,14 @@
+{
+  "name": "ai-initiative-value-intelligence",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build:web": "npm run build --workspace=apps/web",
+    "type-check:web": "npm run type-check --workspace=apps/web",
+    "type-check": "npm run type-check --workspace=apps/web"
+  }
+}

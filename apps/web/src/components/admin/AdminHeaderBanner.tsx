@@ -1,0 +1,44 @@
+"use client";
+
+import React from "react";
+import { ShieldCheck, Users, HardDrive, Cpu, DollarSign, Lock } from "lucide-react";
+import { SecurityStatus, SubscriptionBilling } from "../../types/admin";
+
+export interface AdminHeaderBannerProps {
+  userCount: number;
+  security: SecurityStatus;
+  billing: SubscriptionBilling;
+}
+
+export function AdminHeaderBanner({ userCount, security, billing }: AdminHeaderBannerProps) {
+  const cards = [
+    { label: "Active Enterprise Users", value: `${userCount} Active`, icon: Users, color: "text-foreground" },
+    { label: "Organization Security", value: `${security.securityScore}/100`, icon: ShieldCheck, color: "text-emerald-500" },
+    { label: "Seat License Usage", value: `${billing.seatsUsed} / ${billing.seatsAllocated}`, icon: Lock, color: "text-accent" },
+    { label: "Storage Utilization", value: `${billing.storageUsedGb} GB / ${billing.storageMaxGb} GB`, icon: HardDrive, color: "text-foreground" },
+    { label: "AI Tokens Consumption", value: `${(billing.aiCreditsUsed / 1000).toFixed(0)}k / ${(billing.aiCreditsMax / 1000).toFixed(0)}k`, icon: Cpu, color: "text-accent" },
+    { label: "Subscription Plan", value: billing.planName, icon: DollarSign, color: "text-emerald-500" },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      {cards.map((c, idx) => {
+        const Icon = c.icon;
+        return (
+          <div key={idx} className="p-3.5 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground truncate">
+                {c.label}
+              </span>
+              <Icon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            </div>
+
+            <span className={`text-base font-extrabold font-mono tracking-tight block ${c.color}`}>
+              {c.value}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
