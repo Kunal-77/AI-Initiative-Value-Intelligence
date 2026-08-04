@@ -1,12 +1,15 @@
+import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.identity.routes import router as identity_router
 from src.initiatives.routes import router as initiatives_router, reviews_evidence_router
 from src.measurements.routes import router as measurements_router
 
+start_time = time.time()
+
 app = FastAPI(
     title="AI Initiative Value Intelligence API",
-    version="0.1.0",
+    version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
@@ -25,6 +28,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+def get_root():
+    return {
+        "service": "AI Initiative Value Intelligence API",
+        "status": "running",
+        "version": "1.0.0"
+    }
+
+@app.get("/health")
+def get_health():
+    uptime_seconds = int(time.time() - start_time)
+    return {
+        "status": "healthy",
+        "uptime": f"{uptime_seconds}s",
+        "version": "1.0.0"
+    }
 
 # Mount domain routing modules
 app.include_router(identity_router, prefix="/api/v1", tags=["Identity"])

@@ -13,6 +13,28 @@ def test_health_check_public(client):
     assert "environment" in data
     assert "version" in data
 
+def test_root_endpoint(client):
+    """
+    Verify absolute root endpoint returns service info.
+    """
+    response = client.get("/")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["service"] == "AI Initiative Value Intelligence API"
+    assert data["status"] == "running"
+    assert data["version"] == "1.0.0"
+
+def test_absolute_health_check(client):
+    """
+    Verify absolute /health endpoint returns correctly with uptime.
+    """
+    response = client.get("/health")
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert "uptime" in data
+    assert data["version"] == "1.0.0"
+
 def test_me_protected_requires_auth(client):
     """
     Verify /me requires bearer token and returns 401.
