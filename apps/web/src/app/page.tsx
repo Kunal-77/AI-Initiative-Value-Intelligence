@@ -23,7 +23,7 @@ import {
   Zap,
   HelpCircle,
 } from "lucide-react";
-import { Button } from "../components/ui";
+import { Button, ThemeToggle } from "../components/ui";
 
 export default function LandingPage() {
   const { isSignedIn } = useAuth();
@@ -142,27 +142,27 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-purple-600/30 overflow-hidden relative">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-purple-600/30 overflow-hidden relative transition-colors duration-300">
       {/* Glow Effects */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/10 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute top-[40%] right-[-10%] w-[50%] h-[50%] bg-indigo-900/10 rounded-full blur-[150px] pointer-events-none" />
 
       {/* Header / Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-zinc-950/70 backdrop-blur-md border-b border-zinc-800/40">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-md border-b border-border/40">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
               <span className="font-extrabold text-sm text-white">V</span>
             </div>
-            <span className="font-bold tracking-tight text-sm text-zinc-200">Value Intelligence</span>
+            <span className="font-bold tracking-tight text-sm text-foreground">Value Intelligence</span>
           </div>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs text-zinc-400 font-medium">
-            <a href="#problems" className="hover:text-zinc-200 transition-colors">Solutions</a>
-            <a href="#overview" className="hover:text-zinc-200 transition-colors">Platform</a>
-            <a href="#features" className="hover:text-zinc-200 transition-colors">Workspace</a>
-            <a href="#pricing" className="hover:text-zinc-200 transition-colors">Pricing</a>
-            <a href="#faq" className="hover:text-zinc-200 transition-colors">FAQ</a>
+          <nav className="hidden md:flex items-center gap-6 text-xs text-muted-foreground font-medium">
+            <a href="#problems" className="hover:text-foreground transition-colors">Solutions</a>
+            <a href="#overview" className="hover:text-foreground transition-colors">Platform</a>
+            <a href="#features" className="hover:text-foreground transition-colors">Workspace</a>
+            <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
+            <a href="#faq" className="hover:text-foreground transition-colors">FAQ</a>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -175,7 +175,7 @@ export default function LandingPage() {
             ) : (
               <>
                 <Link href="/sign-in">
-                  <span className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors font-medium mr-2 cursor-pointer">
+                  <span className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors font-medium mr-2 cursor-pointer font-bold">
                     Sign In
                   </span>
                 </Link>
@@ -186,6 +186,7 @@ export default function LandingPage() {
                 </Link>
               </>
             )}
+            <ThemeToggle />
           </div>
         </div>
       </header>
