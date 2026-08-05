@@ -150,12 +150,19 @@ export default function LandingPage() {
       {/* Header / Navigation */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-md border-b border-border/40">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="flex items-center gap-2.5 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg"
+            aria-label="Scroll back to top"
+          >
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-105 transition-transform duration-300">
               <span className="font-extrabold text-sm text-white">V</span>
             </div>
-            <span className="font-bold tracking-tight text-sm text-foreground">Value Intelligence</span>
-          </div>
+            <span className="font-bold tracking-tight text-sm text-foreground group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+              Value Intelligence
+            </span>
+          </button>
 
           <nav className="hidden md:flex items-center gap-6 text-xs text-muted-foreground font-medium">
             <a href="#problems" className="hover:text-foreground transition-colors">Solutions</a>
@@ -168,9 +175,12 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             {isSignedIn ? (
               <Link href="/workspace-select">
-                <Button variant="primary" className="text-xs h-9 py-0 shadow-md shadow-purple-500/10">
-                  Go to Console <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                </Button>
+                <button
+                  type="button"
+                  className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-purple-500/15 hover:shadow-purple-500/30 transition-all duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-purple-500/50 flex items-center gap-1.5 cursor-pointer"
+                >
+                  Go to Console <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </Link>
             ) : (
               <>
@@ -207,11 +217,22 @@ export default function LandingPage() {
         </div>
 
         <div className="flex items-center justify-center gap-3.5">
-          <Link href={isSignedIn ? "/workspace-select" : "/sign-up"}>
-            <Button variant="primary" className="text-xs h-10 px-5 shadow-lg shadow-purple-500/20">
-              Start Free
-            </Button>
-          </Link>
+          {isSignedIn ? (
+            <Link href="/workspace-select">
+              <button
+                type="button"
+                className="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold shadow-lg shadow-purple-500/15 hover:shadow-purple-500/30 transition-all duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-purple-500/50 flex items-center gap-1.5 cursor-pointer"
+              >
+                Go to Console <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </Link>
+          ) : (
+            <Link href="/sign-up">
+              <Button variant="primary" className="text-xs h-10 px-5 shadow-lg shadow-purple-500/20">
+                Start Free
+              </Button>
+            </Link>
+          )}
           <a href="#tour">
             <Button variant="secondary" className="text-xs h-10 px-5 border-border hover:bg-secondary/50">
               Explore Guided Tour

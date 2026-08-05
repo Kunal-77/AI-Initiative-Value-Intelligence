@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { PanelLeft } from "lucide-react";
 import { cn } from "./cn";
 import { Breadcrumbs } from "./Breadcrumbs";
@@ -36,6 +37,14 @@ export const AppHeader = React.forwardRef<HTMLElement, AppHeaderProps>(
     },
     ref
   ) => {
+    const pathname = usePathname() || "";
+    let homeHref = "/";
+    if (pathname.startsWith("/business")) {
+      homeHref = "/business/initiatives";
+    } else if (pathname.startsWith("/personal")) {
+      homeHref = "/personal";
+    }
+
     return (
       <header
         ref={ref}
@@ -63,7 +72,7 @@ export const AppHeader = React.forwardRef<HTMLElement, AppHeaderProps>(
             <div className="flex items-center gap-2.5 min-w-0">
               {showLink ? (
                 <Link
-                  href="/"
+                  href={homeHref}
                   className="font-bold tracking-tight text-foreground text-sm hover:opacity-85 shrink-0 hidden sm:inline-block"
                 >
                   VALUE INTELLIGENCE
