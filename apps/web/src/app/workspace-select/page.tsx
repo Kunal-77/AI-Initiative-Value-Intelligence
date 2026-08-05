@@ -26,6 +26,23 @@ function WorkspaceSelectContent() {
     }
   }, [authLoaded, isSignedIn, router]);
 
+  useEffect(() => {
+    if (!authLoaded || !isSignedIn || !orgListLoaded) return;
+    const orgs = userMemberships?.data || [];
+    if (isBusinessOnly && orgs.length === 1 && setActive && !loadingWorkspace) {
+      const singleOrgId = orgs[0].organization.id;
+      setLoadingWorkspace(singleOrgId);
+      setActive({ organization: singleOrgId })
+        .then(() => {
+          router.replace("/business/initiatives");
+        })
+        .catch((err) => {
+          console.error("Auto-select organization failed:", err);
+          setLoadingWorkspace(null);
+        });
+    }
+  }, [authLoaded, isSignedIn, orgListLoaded, isBusinessOnly, userMemberships?.data, setActive, router, loadingWorkspace]);
+
   const handleSelectWorkspace = async (workspaceId: string | null) => {
     const trackingId = workspaceId || "personal";
     setLoadingWorkspace(trackingId);
@@ -49,7 +66,9 @@ function WorkspaceSelectContent() {
     }
   };
 
-  if (!authLoaded || !userLoaded || !isSignedIn || !orgListLoaded) {
+  const organizations = userMemberships?.data || [];
+
+  if (!authLoaded || !userLoaded || !isSignedIn || !orgListLoaded || (isBusinessOnly && organizations.length === 1)) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 transition-colors duration-300">
         <div className="w-full max-w-md space-y-6">
@@ -58,8 +77,6 @@ function WorkspaceSelectContent() {
       </div>
     );
   }
-
-  const organizations = userMemberships.data || [];
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between font-sans relative overflow-hidden transition-colors duration-300">

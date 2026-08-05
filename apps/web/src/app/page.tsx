@@ -63,7 +63,7 @@ export default function LandingPage() {
     }
     setLoadingBusiness(true);
     try {
-      const orgs = userMemberships.data || [];
+      const orgs = userMemberships?.data || [];
       if (orgs.length === 1 && setActive) {
         const orgId = orgs[0].organization.id;
         await setActive({ organization: orgId });
@@ -76,6 +76,22 @@ export default function LandingPage() {
       router.push("/workspace-select?flow=business");
     } finally {
       setLoadingBusiness(false);
+    }
+  };
+
+  const handlePersonalWorkspaceClick = async () => {
+    if (!authLoaded || !isSignedIn) {
+      router.push("/sign-up?redirect_url=/personal");
+      return;
+    }
+    try {
+      if (setActive) {
+        await setActive({ organization: null });
+      }
+      router.push("/personal");
+    } catch (err) {
+      console.error("Error clearing organization for personal workspace:", err);
+      router.push("/personal");
     }
   };
 
@@ -248,7 +264,7 @@ export default function LandingPage() {
                       type="button"
                       onClick={() => {
                         setIsConsoleOpen(false);
-                        router.push("/personal");
+                        handlePersonalWorkspaceClick();
                       }}
                       className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-xs font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer"
                     >
@@ -344,7 +360,7 @@ export default function LandingPage() {
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => router.push("/personal")}
+                onClick={handlePersonalWorkspaceClick}
                 className="px-5 py-2.5 text-xs font-bold"
               >
                 Personal Workspace <ArrowRight className="w-3.5 h-3.5" />
@@ -902,7 +918,7 @@ export default function LandingPage() {
                 </Button>
                 <Button
                   variant="secondary"
-                  onClick={() => router.push("/personal")}
+                  onClick={handlePersonalWorkspaceClick}
                   className="px-6 py-2.5 text-xs font-bold"
                 >
                   Personal Workspace <ArrowRight className="w-3.5 h-3.5" />
