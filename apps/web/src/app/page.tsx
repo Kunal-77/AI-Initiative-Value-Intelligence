@@ -56,6 +56,24 @@ export default function LandingPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  if (!authLoaded) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 relative overflow-hidden transition-colors duration-300">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/10 rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute top-[40%] right-[-10%] w-[50%] h-[50%] bg-indigo-900/10 rounded-full blur-[150px] pointer-events-none" />
+        <div className="flex flex-col items-center space-y-4 relative z-10 animate-in fade-in duration-200">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/25 animate-pulse">
+            <span className="font-extrabold text-xl text-white">V</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground font-mono">
+            <div className="w-2 h-2 rounded-full bg-purple-500 animate-ping" />
+            <span>Verifying session context...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const handleBusinessWorkspaceClick = async () => {
     if (!authLoaded || !isSignedIn) {
       router.push("/sign-up?redirect_url=/workspace-select%3Fflow%3Dbusiness");
