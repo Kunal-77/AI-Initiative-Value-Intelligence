@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 import { User, Settings, LogOut, Moon, Sun, ShieldCheck, Laptop } from "lucide-react";
 import { cn } from "./cn";
 
@@ -11,6 +12,7 @@ export interface UserMenuProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function UserMenu({ className, ...props }: UserMenuProps) {
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
+  const router = useRouter();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -96,7 +98,7 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
               type="button"
               onClick={() => {
                 setOpen(false);
-                window.location.href = "/personal";
+                router.push("/personal");
               }}
               className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-foreground hover:bg-secondary transition-colors"
             >
@@ -107,7 +109,7 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
               type="button"
               onClick={() => {
                 setOpen(false);
-                window.location.href = "/personal";
+                router.push("/personal");
               }}
               className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-foreground hover:bg-secondary transition-colors"
             >
@@ -139,7 +141,7 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
               type="button"
               onClick={async () => {
                 await signOut();
-                window.location.href = "/";
+                router.push("/");
               }}
               className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors font-medium text-xs"
             >

@@ -277,7 +277,7 @@ export default function LandingPage() {
                       className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-xs font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer"
                     >
                       <Settings className="w-3.5 h-3.5 text-muted-foreground" />
-                      <span>Account Settings</span>
+                      <span>Manage Account</span>
                     </button>
                     <div className="h-px bg-border my-1" />
                     <button
@@ -824,7 +824,7 @@ export default function LandingPage() {
                 <div className="mt-8">
                   <Link href={isSignedIn ? "/workspace-select" : "/sign-up"}>
                     <Button variant={plan.popular ? "primary" : "secondary"} className="w-full text-xs font-bold py-2.5">
-                      {plan.name === "Free Trial" ? "Start Free" : "Get Started"}
+                      {isSignedIn ? "Launch Console" : (plan.name === "Free Trial" ? "Start Free" : "Get Started")}
                     </Button>
                   </Link>
                 </div>
