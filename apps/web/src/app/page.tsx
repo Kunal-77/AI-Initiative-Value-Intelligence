@@ -193,15 +193,15 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto text-center space-y-8 relative z-10">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-950/40 border border-purple-500/25 text-[10px] font-semibold text-purple-400 tracking-wide uppercase">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-600/10 dark:bg-purple-950/40 border border-purple-500/20 dark:border-purple-500/25 text-[10px] font-semibold text-purple-600 dark:text-purple-400 tracking-wide uppercase">
           <Sparkles className="w-3 h-3" /> Enterprise Release Candidate v1.0.0
         </div>
 
         <div className="space-y-4 max-w-4xl mx-auto">
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.1] text-transparent bg-clip-text bg-gradient-to-b from-zinc-50 to-zinc-400">
+          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.1] text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground dark:from-zinc-50 dark:to-zinc-400">
             Transform AI Investments Into Measurable Business Value
           </h1>
-          <p className="text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             The world's first unified public decision intelligence system. Model ROIs, review governance gates, monitor multi-provider models, and manage personal productivity.
           </p>
         </div>
@@ -213,7 +213,7 @@ export default function LandingPage() {
             </Button>
           </Link>
           <a href="#tour">
-            <Button variant="secondary" className="text-xs h-10 px-5 border-zinc-800 hover:bg-zinc-900/50">
+            <Button variant="secondary" className="text-xs h-10 px-5 border-border hover:bg-secondary/50">
               Explore Guided Tour
             </Button>
           </a>
@@ -222,47 +222,47 @@ export default function LandingPage() {
         {/* Dashboard Preview Frame */}
         <div className="pt-12 max-w-5xl mx-auto relative group">
           <div className="absolute inset-0 bg-gradient-to-t from-purple-500/10 to-indigo-500/10 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity" />
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/30 p-4 shadow-2xl relative overflow-hidden backdrop-blur-xs">
-            <div className="flex items-center gap-1.5 pb-3 border-b border-zinc-800/50 text-zinc-500">
-              <span className="w-2.5 h-2.5 rounded-full bg-zinc-800" />
-              <span className="w-2.5 h-2.5 rounded-full bg-zinc-800" />
-              <span className="w-2.5 h-2.5 rounded-full bg-zinc-800" />
-              <span className="text-[9px] font-mono ml-2 tracking-wider text-zinc-500">HTTPS://APP.VALUEINTEL.AI/PORTFOLIO</span>
+          <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-xl relative overflow-hidden backdrop-blur-xs transition-colors duration-300">
+            <div className="flex items-center gap-1.5 pb-3 border-b border-border/60 text-muted-foreground">
+              <span className="w-2.5 h-2.5 rounded-full bg-border" />
+              <span className="w-2.5 h-2.5 rounded-full bg-border" />
+              <span className="w-2.5 h-2.5 rounded-full bg-border" />
+              <span className="text-[9px] font-mono ml-2 tracking-wider text-muted-foreground uppercase">HTTPS://APP.VALUEINTEL.AI/PORTFOLIO</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 text-left">
-              <div className="md:col-span-3 p-5 rounded-xl border border-zinc-800 bg-zinc-950/80 space-y-4">
+              <div className="md:col-span-3 p-5 rounded-xl border border-border bg-background/90 space-y-4 shadow-2xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-zinc-200">Active Strategic Initiatives</span>
-                  <span className="text-[10px] text-zinc-500">Q3 Enterprise Forecast</span>
+                  <span className="text-xs font-bold text-foreground">Active Strategic Initiatives</span>
+                  <span className="text-[10px] text-muted-foreground">Q3 Enterprise Forecast</span>
                 </div>
                 <div className="space-y-2">
                   {[
-                    { name: "Customer Support Automation Bot", roi: "+215%", stage: "APPROVED", color: "text-purple-400" },
-                    { name: "GPU Infrastructure Scheduler", roi: "+148%", stage: "EXECUTIVE_REVIEW", color: "text-indigo-400" },
-                    { name: "Automated Financial Reconciliation", roi: "+95%", stage: "DEPLOYED", color: "text-emerald-400" }
+                    { name: "Customer Support Automation Bot", roi: "+215%", stage: "APPROVED", color: "text-purple-600 dark:text-purple-400" },
+                    { name: "GPU Infrastructure Scheduler", roi: "+148%", stage: "EXECUTIVE_REVIEW", color: "text-indigo-600 dark:text-indigo-400" },
+                    { name: "Automated Financial Reconciliation", roi: "+95%", stage: "DEPLOYED", color: "text-emerald-600 dark:text-emerald-400" }
                   ].map((item, idx) => (
-                    <div key={idx} className="p-3 rounded-lg border border-zinc-900 bg-zinc-900/30 flex items-center justify-between text-xs">
+                    <div key={idx} className="p-3 rounded-lg border border-border/60 bg-secondary/20 flex items-center justify-between text-xs">
                       <div className="space-y-0.5">
-                        <span className="font-semibold text-zinc-300 block">{item.name}</span>
-                        <span className="text-[9px] text-zinc-500 font-mono">Stage: {item.stage}</span>
+                        <span className="font-semibold text-foreground block">{item.name}</span>
+                        <span className="text-[9px] text-muted-foreground font-mono">Stage: {item.stage}</span>
                       </div>
                       <span className={`font-bold font-mono ${item.color}`}>{item.roi} ROI</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-950/80 space-y-4 flex flex-col justify-between">
+              <div className="p-5 rounded-xl border border-border bg-background/90 space-y-4 flex flex-col justify-between shadow-2xs">
                 <div className="space-y-2 text-xs">
-                  <span className="text-[10px] font-mono text-purple-400 tracking-wider uppercase block">AI Insights</span>
-                  <p className="text-zinc-400 leading-relaxed text-[11px]">
+                  <span className="text-[10px] font-mono text-accent dark:text-purple-400 tracking-wider uppercase block">AI Insights</span>
+                  <p className="text-muted-foreground leading-relaxed text-[11px]">
                     "Automating Customer Support presents a 9.2 month payback period with a 94% confidence indicator."
                   </p>
                 </div>
-                <div className="pt-3 border-t border-zinc-900 flex items-center gap-2">
+                <div className="pt-3 border-t border-border flex items-center gap-2">
                   <div className="w-5 h-5 rounded bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 text-purple-400" />
+                    <Sparkles className="w-3 h-3 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <span className="text-[9px] font-bold text-zinc-400">94% Confidence</span>
+                  <span className="text-[9px] font-bold text-foreground">94% Confidence</span>
                 </div>
               </div>
             </div>
@@ -271,14 +271,14 @@ export default function LandingPage() {
       </section>
 
       {/* Business Problems Section */}
-      <section id="problems" className="py-24 border-t border-zinc-800/40 bg-zinc-950/50 relative z-10">
+      <section id="problems" className="py-24 border-t border-border bg-secondary/30 dark:bg-zinc-950/50 relative z-10 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 space-y-12">
           <div className="text-center space-y-3">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold">The Problem</span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-zinc-100">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-accent dark:text-purple-400 font-bold">The Problem</span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
               Why Enterprise AI Projects Fail
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto">
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-lg mx-auto">
               Without unified tracking, organization-wide AI projects lose alignment, blow past budgets, or leak data.
             </p>
           </div>
@@ -306,12 +306,12 @@ export default function LandingPage() {
                 fix: "Secured enterprise secrets and RBAC scopes."
               }
             ].map((p, idx) => (
-              <div key={idx} className="p-5 rounded-xl border border-zinc-800/80 bg-zinc-900/30 space-y-3 flex flex-col justify-between hover:border-zinc-700 transition-colors">
+              <div key={idx} className="p-5 rounded-xl border border-border/85 bg-card space-y-3 flex flex-col justify-between hover:shadow-md hover:border-accent/40 dark:hover:border-purple-500/40 transition-all duration-300">
                 <div className="space-y-1">
-                  <h3 className="font-bold text-zinc-200 text-sm">{p.title}</h3>
-                  <p className="text-zinc-400 text-[11px] leading-relaxed">{p.desc}</p>
+                  <h3 className="font-bold text-foreground text-sm">{p.title}</h3>
+                  <p className="text-muted-foreground text-[11px] leading-relaxed">{p.desc}</p>
                 </div>
-                <div className="pt-3 border-t border-zinc-850 text-purple-400 font-semibold flex items-center gap-1.5">
+                <div className="pt-3 border-t border-border/65 text-accent dark:text-purple-400 font-semibold flex items-center gap-1.5">
                   <Zap className="w-3.5 h-3.5 shrink-0" /> {p.fix}
                 </div>
               </div>
@@ -321,14 +321,14 @@ export default function LandingPage() {
       </section>
 
       {/* Platform Overview Workflow */}
-      <section id="overview" className="py-24 border-t border-zinc-800/40 relative z-10">
+      <section id="overview" className="py-24 border-t border-border relative z-10">
         <div className="max-w-7xl mx-auto px-6 space-y-12">
           <div className="text-center space-y-3">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold">The Pipeline</span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-zinc-100">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-accent dark:text-purple-400 font-bold">The Pipeline</span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
               The Unified Lifecycle Pipeline
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto">
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-lg mx-auto">
               Follow the journey of a single strategic initiative from concept selection to real-world value realization.
             </p>
           </div>
@@ -344,13 +344,13 @@ export default function LandingPage() {
             ].map((p, idx) => {
               const Icon = p.icon;
               return (
-                <div key={idx} className="flex-1 min-w-[150px] p-4 rounded-xl border border-zinc-800 bg-zinc-900/20 text-center space-y-2 relative">
-                  <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto text-purple-400">
+                <div key={idx} className="flex-1 min-w-[150px] p-4 rounded-xl border border-border bg-card shadow-xs text-center space-y-2 relative transition-all hover:shadow-md hover:border-accent/30 duration-300">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto text-accent">
                     <Icon className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="font-bold text-zinc-200 block text-xs">{p.step}</span>
-                    <span className="text-[10px] text-zinc-500 leading-normal">{p.desc}</span>
+                    <span className="font-bold text-foreground block text-xs">{p.step}</span>
+                    <span className="text-[10px] text-muted-foreground leading-normal">{p.desc}</span>
                   </div>
                 </div>
               );
@@ -360,15 +360,15 @@ export default function LandingPage() {
       </section>
 
       {/* Guided Scroll Tour */}
-      <section id="tour" className="py-24 border-t border-zinc-800/40 bg-zinc-900/10 relative z-10">
+      <section id="tour" className="py-24 border-t border-border bg-secondary/20 dark:bg-zinc-900/10 relative z-10 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <div className="space-y-3">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold">Interactive Demo</span>
-              <h2 className="text-3xl font-extrabold tracking-tight text-zinc-100">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-accent dark:text-purple-400 font-bold">Interactive Demo</span>
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
                 Explore the Platform in Action
               </h2>
-              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                 Click through the tabs below to preview how our C-suite decision components orchestrate data dynamically.
               </p>
             </div>
@@ -381,25 +381,25 @@ export default function LandingPage() {
                   onClick={() => setActiveTourStep(idx)}
                   className={`w-full p-4 rounded-xl border text-left transition-all flex flex-col gap-1 ${
                     activeTourStep === idx
-                      ? "bg-purple-950/15 border-purple-500/30 text-zinc-100"
-                      : "bg-zinc-950/40 border-zinc-850 text-zinc-400 hover:bg-zinc-900/30"
+                      ? "bg-purple-600/10 dark:bg-purple-950/15 border-purple-500/30 text-foreground shadow-sm"
+                      : "bg-card border-border/80 text-muted-foreground hover:bg-secondary/40"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-zinc-200">{step.title}</span>
+                    <span className="font-bold text-foreground">{step.title}</span>
                     <span className={`text-[9px] font-mono uppercase px-2 py-0.2 rounded-full ${
-                      activeTourStep === idx ? "bg-purple-500/20 text-purple-300" : "bg-zinc-900 text-zinc-500"
+                      activeTourStep === idx ? "bg-purple-600/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300" : "bg-secondary text-muted-foreground"
                     }`}>
                       {step.badge}
                     </span>
                   </div>
-                  <p className="text-[11px] leading-relaxed text-zinc-400">{step.description}</p>
+                  <p className="text-[11px] leading-relaxed text-muted-foreground">{step.description}</p>
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="relative p-6 rounded-2xl border border-zinc-800 bg-zinc-950/40 shadow-2xl flex items-center justify-center min-h-[300px]">
+          <div className="relative p-6 rounded-2xl border border-border bg-card shadow-xl flex items-center justify-center min-h-[300px] transition-colors duration-300">
             <div className="absolute inset-0 bg-purple-500/5 blur-3xl rounded-full pointer-events-none" />
             <div className="w-full transition-all duration-300 transform scale-100">
               {tourSteps[activeTourStep].mockup}
@@ -409,19 +409,19 @@ export default function LandingPage() {
       </section>
 
       {/* Dual Workspace Sections */}
-      <section id="features" className="py-24 border-t border-zinc-800/40 bg-zinc-950/50 relative z-10">
+      <section id="features" className="py-24 border-t border-border bg-background relative z-10 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 space-y-20">
           {/* Workspace 1: Business Workspace */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="space-y-3">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] text-purple-400 font-bold uppercase tracking-wider">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-600/10 dark:bg-purple-500/10 border border-purple-500/20 text-[10px] text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider">
                   Business Workspace
                 </div>
-                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-100">
+                <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
                   Enterprise AI Initiative Governance Platform
                 </h2>
-                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                   Provide executives with a centralized command center to approve investments, audit timelines, manage CAPEX/OPEX budgets, and trace realized savings against targets.
                 </p>
               </div>
@@ -435,8 +435,8 @@ export default function LandingPage() {
                   "Governance Timeline",
                   "Multi-provider AI"
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-zinc-300">
-                    <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" />
+                  <div key={idx} className="flex items-center gap-2 text-foreground">
+                    <CheckCircle2 className="w-4 h-4 text-accent dark:text-purple-400 shrink-0" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -451,8 +451,8 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5 space-y-4">
-              <span className="text-[10px] font-mono text-purple-400 uppercase tracking-wider block">Target Stakeholders</span>
+            <div className="rounded-2xl border border-border bg-card p-5 space-y-4 shadow-sm transition-colors duration-300">
+              <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400 uppercase tracking-wider block">Target Stakeholders</span>
               <div className="grid grid-cols-2 gap-3 text-xs">
                 {[
                   { title: "CIO / CTO", desc: "Oversee technical execution" },
@@ -460,9 +460,9 @@ export default function LandingPage() {
                   { title: "PMO Manager", desc: "Manage milestone schedules" },
                   { title: "AI Engineers", desc: "Monitor prompt outputs" }
                 ].map((st, idx) => (
-                  <div key={idx} className="p-3 rounded-lg border border-zinc-900 bg-zinc-950/70">
-                    <span className="font-bold text-zinc-200 block">{st.title}</span>
-                    <span className="text-[10px] text-zinc-500">{st.desc}</span>
+                  <div key={idx} className="p-3 rounded-lg border border-border/60 bg-secondary/35">
+                    <span className="font-bold text-foreground block">{st.title}</span>
+                    <span className="text-[10px] text-muted-foreground">{st.desc}</span>
                   </div>
                 ))}
               </div>
@@ -470,18 +470,18 @@ export default function LandingPage() {
           </div>
 
           {/* Workspace 2: Personal Workspace */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center pt-12 border-t border-zinc-900">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5 space-y-4 lg:order-last">
-              <span className="text-[10px] font-mono text-indigo-400 uppercase tracking-wider block">Key Capabilities</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center pt-12 border-t border-border">
+            <div className="rounded-2xl border border-border bg-card p-5 space-y-4 lg:order-last shadow-sm transition-colors duration-300">
+              <span className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">Key Capabilities</span>
               <div className="space-y-2 text-xs">
                 {[
                   { label: "Personal AI Productivity Sandbox", desc: "Test custom system prompts and test API keys dynamically." },
                   { label: "Individual Task Planning", desc: "Structure personal projects with milestones." },
                   { label: "Developer Connectivity Logs", desc: "Validate backend health and context routes directly." }
                 ].map((cap, idx) => (
-                  <div key={idx} className="p-3 rounded-lg border border-zinc-900 bg-zinc-950/70 space-y-1">
-                    <span className="font-bold text-zinc-200 block">{cap.label}</span>
-                    <p className="text-[11px] text-zinc-400">{cap.desc}</p>
+                  <div key={idx} className="p-3 rounded-lg border border-border/60 bg-secondary/35 space-y-1">
+                    <span className="font-bold text-foreground block">{cap.label}</span>
+                    <p className="text-[11px] text-muted-foreground">{cap.desc}</p>
                   </div>
                 ))}
               </div>
@@ -489,13 +489,13 @@ export default function LandingPage() {
 
             <div className="space-y-6">
               <div className="space-y-3">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] text-indigo-400 font-bold uppercase tracking-wider">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-600/10 dark:bg-indigo-500/10 border border-indigo-500/20 text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider">
                   Personal Workspace
                 </div>
-                <h2 className="text-3xl font-extrabold tracking-tight text-zinc-100">
+                <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
                   Individual AI Productivity Workspace
                 </h2>
-                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                   A personalized sandbox built for individual founders, developers, students, and freelancers to structure everyday productivity tasks, verify API endpoints, and leverage sandbox resources.
                 </p>
               </div>
@@ -509,8 +509,8 @@ export default function LandingPage() {
                   "Custom System Prompts",
                   "API Status Checks"
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-zinc-300">
-                    <CheckCircle2 className="w-4 h-4 text-indigo-400 shrink-0" />
+                  <div key={idx} className="flex items-center gap-2 text-foreground">
+                    <CheckCircle2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -529,15 +529,15 @@ export default function LandingPage() {
       </section>
 
       {/* Security & Enterprise Trust */}
-      <section className="py-24 border-t border-zinc-800/40 relative z-10">
+      <section className="py-24 border-t border-border bg-secondary/15 dark:bg-zinc-900/10 relative z-10 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <div className="space-y-3">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold">Compliance & Security</span>
-              <h2 className="text-3xl font-extrabold tracking-tight text-zinc-100">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-accent dark:text-purple-400 font-bold">Compliance & Security</span>
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
                 Enterprise Trust & Security Architecture
               </h2>
-              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                 Security is built directly into our code. We implement state-of-the-art encryption, access policies, and data isolation boundaries to keep your proprietary business strategies safe.
               </p>
             </div>
@@ -548,38 +548,38 @@ export default function LandingPage() {
                 { title: "Role-Based Access Control (RBAC)", desc: "10 default roles mapping across 12 permission scopes." },
                 { title: "Encrypted Secrets Vault", desc: "LLM API keys and webhook tokens are encrypted at rest." }
               ].map((sc, idx) => (
-                <div key={idx} className="p-3.5 rounded-xl border border-zinc-800 bg-zinc-900/20 flex gap-3">
-                  <Lock className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                <div key={idx} className="p-3.5 rounded-xl border border-border bg-card flex gap-3 shadow-2xs">
+                  <Lock className="w-4 h-4 text-accent dark:text-purple-400 shrink-0 mt-0.5" />
                   <div className="space-y-0.5">
-                    <span className="font-bold text-zinc-200 block">{sc.title}</span>
-                    <p className="text-[11px] text-zinc-400 leading-relaxed">{sc.desc}</p>
+                    <span className="font-bold text-foreground block">{sc.title}</span>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">{sc.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950/80 shadow-xl space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-zinc-900 text-xs font-mono text-zinc-400">
-              <Terminal className="w-4 h-4 text-purple-400" />
+          <div className="p-6 rounded-2xl border border-border bg-card shadow-xl space-y-4 transition-colors duration-300">
+            <div className="flex items-center gap-2 pb-3 border-b border-border text-xs font-mono text-muted-foreground">
+              <Terminal className="w-4 h-4 text-accent" />
               <span>System Security Telemetry</span>
             </div>
-            <div className="space-y-2 font-mono text-[10px] text-zinc-400">
+            <div className="space-y-2 font-mono text-[10px] text-muted-foreground">
               <div className="flex justify-between">
                 <span>Database Connection</span>
-                <span className="text-emerald-500 font-bold">SSL Secure</span>
+                <span className="text-emerald-600 dark:text-emerald-500 font-bold">SSL Secure</span>
               </div>
               <div className="flex justify-between">
                 <span>Row Level Security Status</span>
-                <span className="text-emerald-500 font-bold">ENFORCED</span>
+                <span className="text-emerald-600 dark:text-emerald-500 font-bold">ENFORCED</span>
               </div>
               <div className="flex justify-between">
                 <span>Audit Logs Stream</span>
-                <span className="text-emerald-500 font-bold">ACTIVE</span>
+                <span className="text-emerald-600 dark:text-emerald-500 font-bold">ACTIVE</span>
               </div>
               <div className="flex justify-between">
                 <span>SSO / Clerk Authentication</span>
-                <span className="text-emerald-500 font-bold">OPERATIONAL</span>
+                <span className="text-emerald-600 dark:text-emerald-500 font-bold">OPERATIONAL</span>
               </div>
             </div>
           </div>
@@ -587,23 +587,23 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 border-t border-zinc-800/40 bg-zinc-950/50 relative z-10">
+      <section id="pricing" className="py-24 border-t border-border bg-secondary/30 dark:bg-zinc-950/50 relative z-10 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 space-y-12">
           <div className="text-center space-y-4">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold">Simple Pricing</span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-zinc-100">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-accent dark:text-purple-400 font-bold">Simple Pricing</span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
               Transparent, Enterprise Pricing Plans
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto">
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto">
               Select the plan configured for your team. Switch plans or billing frequencies at any time.
             </p>
 
-            <div className="inline-flex items-center gap-1.5 p-1 rounded-lg bg-zinc-900 border border-zinc-800">
+            <div className="inline-flex items-center gap-1.5 p-1 rounded-lg bg-card border border-border shadow-2xs">
               <button
                 type="button"
                 onClick={() => setIsYearlyPricing(false)}
-                className={`px-3 py-1 rounded text-[10px] font-semibold transition-colors ${
-                  !isYearlyPricing ? "bg-purple-600 text-white" : "text-zinc-400 hover:text-zinc-200"
+                className={`px-3 py-1 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
+                  !isYearlyPricing ? "bg-purple-600 text-white" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Monthly
@@ -611,8 +611,8 @@ export default function LandingPage() {
               <button
                 type="button"
                 onClick={() => setIsYearlyPricing(true)}
-                className={`px-3 py-1 rounded text-[10px] font-semibold transition-colors ${
-                  isYearlyPricing ? "bg-purple-600 text-white" : "text-zinc-400 hover:text-zinc-200"
+                className={`px-3 py-1 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
+                  isYearlyPricing ? "bg-purple-600 text-white" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Yearly (Save 20%)
@@ -644,8 +644,10 @@ export default function LandingPage() {
             ].map((plan, idx) => (
               <div
                 key={idx}
-                className={`p-6 rounded-2xl border bg-zinc-900/40 relative flex flex-col justify-between ${
-                  plan.popular ? "border-purple-500 shadow-xl shadow-purple-500/5 scale-100" : "border-zinc-800/80"
+                className={`p-6 rounded-2xl border bg-card relative flex flex-col justify-between transition-all duration-300 hover:shadow-lg ${
+                  plan.popular
+                    ? "border-purple-500 shadow-xl shadow-purple-500/10 dark:shadow-purple-500/5 ring-2 ring-purple-500/10 dark:ring-purple-500/20 scale-100"
+                    : "border-border/80"
                 }`}
               >
                 {plan.popular && (
@@ -655,19 +657,19 @@ export default function LandingPage() {
                 )}
                 <div className="space-y-6">
                   <div className="space-y-2 text-xs">
-                    <h3 className="font-bold text-zinc-100 text-base">{plan.name}</h3>
-                    <p className="text-zinc-400">{plan.desc}</p>
+                    <h3 className="font-bold text-foreground text-base">{plan.name}</h3>
+                    <p className="text-muted-foreground">{plan.desc}</p>
                   </div>
 
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold text-zinc-100 font-mono">${plan.price}</span>
-                    <span className="text-[10px] text-zinc-500">/month</span>
+                    <span className="text-3xl font-extrabold text-foreground font-mono">${plan.price}</span>
+                    <span className="text-[10px] text-muted-foreground">/month</span>
                   </div>
 
-                  <div className="pt-4 border-t border-zinc-850 space-y-2">
+                  <div className="pt-4 border-t border-border/60 space-y-2">
                     {plan.features.map((ft, i) => (
-                      <div key={i} className="flex items-start gap-2 text-[11px] text-zinc-300">
-                        <Check className="w-3.5 h-3.5 text-purple-400 shrink-0 mt-0.5" />
+                      <div key={i} className="flex items-start gap-2 text-[11px] text-foreground">
+                        <Check className="w-3.5 h-3.5 text-accent dark:text-purple-400 shrink-0 mt-0.5" />
                         <span>{ft}</span>
                       </div>
                     ))}
@@ -688,28 +690,28 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-24 border-t border-zinc-800/40 relative z-10">
+      <section id="faq" className="py-24 border-t border-border bg-background relative z-10 transition-colors duration-300">
         <div className="max-w-3xl mx-auto px-6 space-y-12">
           <div className="text-center space-y-3">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold">Got Questions?</span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-zinc-100">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-accent dark:text-purple-400 font-bold">Got Questions?</span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
               Frequently Asked Questions
             </h2>
           </div>
 
           <div className="space-y-4 text-xs">
             {faqs.map((faq, idx) => (
-              <div key={idx} className="rounded-xl border border-zinc-800/80 bg-zinc-900/20 overflow-hidden">
+              <div key={idx} className="rounded-xl border border-border bg-card shadow-sm hover:border-accent/30 transition-colors overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
-                  className="w-full p-4 text-left font-bold text-zinc-200 hover:bg-zinc-900/40 transition-colors flex items-center justify-between"
+                  className="w-full p-4 text-left font-bold text-foreground hover:bg-secondary/40 transition-colors flex items-center justify-between"
                 >
                   <span>{faq.q}</span>
-                  <ChevronDown className={`w-4 h-4 text-zinc-500 transition-transform ${openFaqIndex === idx ? "rotate-180" : ""}`} />
+                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${openFaqIndex === idx ? "rotate-180" : ""}`} />
                 </button>
                 {openFaqIndex === idx && (
-                  <div className="p-4 border-t border-zinc-850 bg-zinc-950/20 text-zinc-400 leading-relaxed text-[11px]">
+                  <div className="p-4 border-t border-border bg-secondary/20 text-muted-foreground leading-relaxed text-[11px]">
                     {faq.a}
                   </div>
                 )}
@@ -720,13 +722,13 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-32 border-t border-zinc-800/40 relative overflow-hidden z-10">
+      <section className="py-32 border-t border-border bg-background relative overflow-hidden z-10 transition-colors duration-300">
         <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/10 via-indigo-900/10 to-transparent blur-[120px] pointer-events-none" />
         <div className="max-w-5xl mx-auto px-6 text-center space-y-8 relative">
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-zinc-50 to-zinc-400">
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground dark:from-zinc-50 dark:to-zinc-400">
             Transform Your AI Initiative Portfolios Today
           </h2>
-          <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
             Gain immediate clarity on ROI projections, track realized savings ledgers, and establish governance approval workflows.
           </p>
           <div className="flex items-center justify-center gap-3.5">
@@ -736,7 +738,7 @@ export default function LandingPage() {
               </Button>
             </Link>
             <Link href={isSignedIn ? "/workspace-select" : "/sign-in"}>
-              <Button variant="secondary" className="text-xs h-10 px-6 border-zinc-800 hover:bg-zinc-900/50">
+              <Button variant="secondary" className="text-xs h-10 px-6 border-border hover:bg-secondary/50">
                 Sign In
               </Button>
             </Link>
