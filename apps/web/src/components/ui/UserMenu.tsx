@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
-import { User, Settings, LogOut, Moon, Sun, ShieldCheck } from "lucide-react";
+import { useTheme } from "next-themes";
+import { User, Settings, LogOut, Moon, Sun, ShieldCheck, Laptop } from "lucide-react";
 import { cn } from "./cn";
 
 export interface UserMenuProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -10,8 +11,8 @@ export interface UserMenuProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function UserMenu({ className, ...props }: UserMenuProps) {
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,16 +25,14 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark");
-    setTheme(isDark ? "dark" : "light");
-  }, [open]);
-
   const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    if (theme === "light") {
+      setTheme("dark");
+    } else if (theme === "dark") {
+      setTheme("system");
+    } else {
+      setTheme("light");
+    }
   };
 
   if (!isLoaded || !user) {
@@ -121,8 +120,10 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
               className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-foreground hover:bg-secondary transition-colors"
             >
               <div className="flex items-center gap-2.5">
-                {theme === "dark" ? (
-                  <Moon className="w-3.5 h-3.5 text-accent" />
+                {theme === "system" ? (
+                  <Laptop className="w-3.5 h-3.5 text-accent" />
+                ) : resolvedTheme === "dark" ? (
+                  <Moon className="w-3.5 h-3.5 text-purple-400" />
                 ) : (
                   <Sun className="w-3.5 h-3.5 text-amber-500" />
                 )}
