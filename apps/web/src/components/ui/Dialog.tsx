@@ -32,7 +32,7 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
         }}
         {...props}
       >
-        <div className={cn("bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 max-w-md w-full flex flex-col gap-4 shadow-xl", className)}>
+        <div className={cn("bg-card text-card-foreground border border-border rounded-xl p-6 max-w-md w-full flex flex-col gap-4 shadow-xl", className)}>
           {children}
         </div>
       </div>
@@ -50,14 +50,14 @@ DialogHeader.displayName = "DialogHeader";
 
 export const DialogTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("text-lg font-bold text-zinc-900 dark:text-white", className)} {...props} />
+    <h3 ref={ref} className={cn("text-lg font-bold text-foreground", className)} {...props} />
   )
 );
 DialogTitle.displayName = "DialogTitle";
 
 export const DialogDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
   ({ className, ...props }, ref) => (
-    <p ref={ref} className={cn("text-sm text-zinc-500 dark:text-zinc-400", className)} {...props} />
+    <p ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
   )
 );
 DialogDescription.displayName = "DialogDescription";

@@ -21,13 +21,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         baseStyles = "px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-semibold hover:bg-rose-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
         break;
       case "dark":
-        baseStyles = "px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-900 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+        baseStyles = "px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
         break;
       case "warning":
         baseStyles = "px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
         break;
       case "simple":
-        baseStyles = "px-4 py-2 border border-zinc-200 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed";
+        baseStyles = "px-4 py-2 border border-border bg-card text-foreground rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed";
         break;
     }
 

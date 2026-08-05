@@ -300,7 +300,7 @@ export default function LandingPage() {
             ) : (
               <>
                 <Link href="/sign-in">
-                  <span className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors font-medium mr-2 cursor-pointer font-bold">
+                  <span className="text-xs text-muted-foreground hover:text-foreground transition-colors font-medium mr-2 cursor-pointer font-bold">
                     Sign In
                   </span>
                 </Link>
@@ -323,7 +323,7 @@ export default function LandingPage() {
         </div>
 
         <div className="space-y-4 max-w-4xl mx-auto">
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.1] text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground dark:from-zinc-50 dark:to-zinc-400">
+          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.1] text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground">
             Transform AI Investments Into Measurable Business Value
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -935,39 +935,39 @@ export default function LandingPage() {
       </section>
 
       {/* Global Footer */}
-      <footer className="border-t border-zinc-800/40 bg-zinc-950 py-12 relative z-10">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-8 text-xs text-zinc-500">
+      <footer className="border-t border-border bg-card text-card-foreground py-12 relative z-10">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-8 text-xs text-muted-foreground">
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
               <div className="w-6 h-6 rounded bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center">
                 <span className="font-extrabold text-[10px] text-white">V</span>
               </div>
-              <span className="font-bold text-zinc-300">Value Intelligence</span>
+              <span className="font-bold text-foreground">Value Intelligence</span>
             </div>
             <p className="text-[10px] leading-relaxed">
               Premium C-Suite decision intelligence for enterprise AI alignment.
             </p>
           </div>
           <div className="space-y-2">
-            <span className="font-bold text-zinc-300 uppercase tracking-wider text-[10px] block">Product</span>
-            <a href="#problems" className="hover:text-zinc-300 transition-colors block text-[11px]">Solutions</a>
-            <a href="#tour" className="hover:text-zinc-300 transition-colors block text-[11px]">Guided Tour</a>
-            <a href="#pricing" className="hover:text-zinc-300 transition-colors block text-[11px]">Pricing Plans</a>
+            <span className="font-bold text-foreground uppercase tracking-wider text-[10px] block">Product</span>
+            <a href="#problems" className="hover:text-foreground transition-colors block text-[11px]">Solutions</a>
+            <a href="#tour" className="hover:text-foreground transition-colors block text-[11px]">Guided Tour</a>
+            <a href="#pricing" className="hover:text-foreground transition-colors block text-[11px]">Pricing Plans</a>
           </div>
           <div className="space-y-2">
-            <span className="font-bold text-zinc-300 uppercase tracking-wider text-[10px] block">Security</span>
+            <span className="font-bold text-foreground uppercase tracking-wider text-[10px] block">Security</span>
             <span className="block text-[11px]">Row Level Security</span>
             <span className="block text-[11px]">RBAC Permissions</span>
             <span className="block text-[11px]">Encrypted Keys</span>
           </div>
           <div className="space-y-2">
-            <span className="font-bold text-zinc-300 uppercase tracking-wider text-[10px] block">Company</span>
+            <span className="font-bold text-foreground uppercase tracking-wider text-[10px] block">Company</span>
             <span className="block text-[11px]">About Us</span>
             <span className="block text-[11px]">Privacy Policy</span>
             <span className="block text-[11px]">Terms of Service</span>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-6 pt-8 mt-8 border-t border-zinc-900 text-center text-[10px] text-zinc-650">
+        <div className="max-w-7xl mx-auto px-6 pt-8 mt-8 border-t border-border text-center text-[10px] text-muted-foreground">
           © 2026 AI Initiative Value Intelligence. All rights reserved. Built for production-ready executive scale.
         </div>
       </footer>
