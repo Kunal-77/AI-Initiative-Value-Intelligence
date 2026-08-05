@@ -4,14 +4,14 @@ import React, { useState, useRef, useEffect } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import { User, Settings, LogOut, Moon, Sun, ShieldCheck, Laptop } from "lucide-react";
+import { User, Settings, LogOut, Moon, Sun, ShieldCheck, Laptop, Layers } from "lucide-react";
 import { cn } from "./cn";
 
 export interface UserMenuProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserMenu({ className, ...props }: UserMenuProps) {
   const { user, isLoaded } = useUser();
-  const { signOut } = useClerk();
+  const { signOut, openUserProfile } = useClerk();
   const router = useRouter();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
@@ -98,23 +98,27 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
               type="button"
               onClick={() => {
                 setOpen(false);
-                router.push("/personal");
+                router.push("/workspace-select");
               }}
-              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-foreground hover:bg-secondary transition-colors"
+              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-foreground hover:bg-secondary transition-colors cursor-pointer"
             >
-              <User className="w-3.5 h-3.5 text-muted-foreground" />
-              <span>Profile & Workspace</span>
+              <Layers className="w-3.5 h-3.5 text-muted-foreground" />
+              <span>Switch Workspace</span>
             </button>
             <button
               type="button"
               onClick={() => {
                 setOpen(false);
-                router.push("/personal");
+                if (openUserProfile) {
+                  openUserProfile();
+                } else {
+                  router.push("/personal");
+                }
               }}
-              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-foreground hover:bg-secondary transition-colors"
+              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-foreground hover:bg-secondary transition-colors cursor-pointer"
             >
               <Settings className="w-3.5 h-3.5 text-muted-foreground" />
-              <span>Settings</span>
+              <span>Manage Account</span>
             </button>
             <button
               type="button"

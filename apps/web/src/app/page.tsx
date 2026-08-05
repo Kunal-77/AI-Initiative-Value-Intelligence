@@ -262,7 +262,7 @@ export default function LandingPage() {
                       className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-xs font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer"
                     >
                       <Layers className="w-3.5 h-3.5 text-muted-foreground" />
-                      <span>Workspace Selector</span>
+                      <span>Switch Workspace</span>
                     </button>
                     <button
                       type="button"
@@ -588,11 +588,22 @@ export default function LandingPage() {
               </div>
 
               <div className="pt-2">
-                <Link href={isSignedIn ? "/workspace-select" : "/sign-up"}>
-                  <Button variant="primary" className="px-4 py-2 text-xs font-bold">
-                    Launch Business Workspace <ArrowRight className="w-3.5 h-3.5" />
+                {isSignedIn ? (
+                  <Button
+                    variant="primary"
+                    onClick={handleBusinessWorkspaceClick}
+                    disabled={loadingBusiness}
+                    className="px-4 py-2 text-xs font-bold"
+                  >
+                    {loadingBusiness ? "Loading..." : "Launch Business Workspace"} <ArrowRight className="w-3.5 h-3.5" />
                   </Button>
-                </Link>
+                ) : (
+                  <Link href="/sign-up">
+                    <Button variant="primary" className="px-4 py-2 text-xs font-bold">
+                      Launch Business Workspace <ArrowRight className="w-3.5 h-3.5" />
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
 

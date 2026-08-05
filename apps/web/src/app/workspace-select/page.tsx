@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useUser, useOrganizationList } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Briefcase, User, ArrowRight, Plus } from "lucide-react";
-import { Button, Card, SkeletonMetricsRow, ThemeToggle } from "../../components/ui";
+import { Button, SkeletonMetricsRow, ThemeToggle } from "../../components/ui";
 
-export default function WorkspaceSelectPage() {
+function WorkspaceSelectContent() {
   const { user, isLoaded: userLoaded } = useUser();
   const { isLoaded: orgListLoaded, setActive, userMemberships } = useOrganizationList({
     userMemberships: {
@@ -15,6 +15,10 @@ export default function WorkspaceSelectPage() {
     },
   });
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Detect flow parameter
+  const isBusinessOnly = searchParams.get("flow") === "business";
   const [loadingWorkspace, setLoadingWorkspace] = useState<string | null>(null);
 
   const handleSelectWorkspace = async (workspaceId: string | null) => {
@@ -86,15 +90,17 @@ export default function WorkspaceSelectPage() {
           {/* Welcome Text */}
           <div className="text-center space-y-3">
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-              Select Your Workspace
+              {isBusinessOnly ? "Select Organization" : "Select Your Workspace"}
             </h1>
             <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-              Choose the environment configured for your workflow style. You can switch workspaces at any time.
+              {isBusinessOnly
+                ? "Choose the organization workspace you'd like to configure or continue with."
+                : "Choose the environment configured for your workflow style. You can switch workspaces at any time."}
             </p>
           </div>
 
           {/* Dual Cards Container */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+          <div className={isBusinessOnly ? "max-w-lg mx-auto w-full" : "grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch"}>
             {/* Card 1: Business Workspace */}
             <div className="group relative rounded-2xl border border-border bg-card p-6 shadow-md transition-all duration-300 hover:border-purple-500/40 hover:shadow-lg flex flex-col justify-between">
               <div className="space-y-6">
@@ -167,7 +173,7 @@ export default function WorkspaceSelectPage() {
                     onClick={() => handleSelectWorkspace("new-org")}
                     disabled={loadingWorkspace !== null}
                     variant="primary"
-                    className="w-full text-xs font-bold py-2.5 flex items-center justify-center gap-1.5 shadow-lg shadow-purple-500/10"
+                    className="w-full text-xs h-10 py-0 flex items-center justify-center gap-1.5 shadow-lg shadow-purple-500/10"
                   >
                     <Plus className="w-4 h-4" /> Create or Join Organization
                   </Button>
@@ -175,53 +181,55 @@ export default function WorkspaceSelectPage() {
               </div>
             </div>
 
-            {/* Card 2: Personal Workspace */}
-            <div className="group relative rounded-2xl border border-border bg-card p-6 shadow-md transition-all duration-300 hover:border-indigo-500/40 hover:shadow-lg flex flex-col justify-between">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                    <User className="w-6 h-6" />
+            {/* Card 2: Personal Workspace - Rendered conditionally */}
+            {!isBusinessOnly && (
+              <div className="group relative rounded-2xl border border-border bg-card p-6 shadow-md transition-all duration-300 hover:border-indigo-500/40 hover:shadow-lg flex flex-col justify-between">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                      <User className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-600 dark:text-indigo-400 font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 dark:bg-indigo-950/40 border border-indigo-500/15">
+                      Individual
+                    </span>
                   </div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-600 dark:text-indigo-400 font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 dark:bg-indigo-950/40 border border-indigo-500/15">
-                    Individual
-                  </span>
+
+                  <div className="space-y-2">
+                    <h2 className="text-xl font-bold text-foreground group-hover:text-indigo-400 transition-colors">
+                      Personal Workspace
+                    </h2>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Improve individual productivity, structure everyday workflows, manage individual initiatives, and test backend API configurations inside your private sandbox.
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-border/40 space-y-3">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                      Ideal For
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {["Founders", "Professionals", "Freelancers", "Developers"].map((role, idx) => (
+                        <span key={idx} className="px-2 py-0.5 rounded bg-secondary border border-border/60 text-[10px] text-foreground font-medium">
+                          {role}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <h2 className="text-xl font-bold text-foreground group-hover:text-indigo-400 transition-colors">
-                    Personal Workspace
-                  </h2>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Improve individual productivity, structure everyday workflows, manage individual initiatives, and test backend API configurations inside your private sandbox.
-                  </p>
-                </div>
-
-                <div className="pt-2 border-t border-border/40 space-y-3">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
-                    Ideal For
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {["Founders", "Professionals", "Freelancers", "Developers"].map((role, idx) => (
-                      <span key={idx} className="px-2 py-0.5 rounded bg-secondary border border-border/60 text-[10px] text-foreground font-medium">
-                        {role}
-                      </span>
-                    ))}
-                  </div>
+                <div className="mt-8">
+                  <Button
+                    onClick={() => handleSelectWorkspace(null)}
+                    loading={loadingWorkspace === "personal"}
+                    disabled={loadingWorkspace !== null}
+                    variant="secondary"
+                    className="w-full text-xs font-bold py-2.5 flex items-center justify-center gap-1.5"
+                  >
+                    Enter Personal Workspace <ArrowRight className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
-
-              <div className="mt-8">
-                <Button
-                  onClick={() => handleSelectWorkspace(null)}
-                  loading={loadingWorkspace === "personal"}
-                  disabled={loadingWorkspace !== null}
-                  variant="secondary"
-                  className="w-full text-xs font-bold py-2.5 flex items-center justify-center gap-1.5"
-                >
-                  Enter Personal Workspace <ArrowRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </main>
@@ -231,5 +239,19 @@ export default function WorkspaceSelectPage() {
         © 2026 AI Initiative Value Intelligence. All rights reserved. Premium C-Suite Decision Intelligence.
       </footer>
     </div>
+  );
+}
+
+export default function WorkspaceSelectPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6">
+        <div className="w-full max-w-md space-y-6">
+          <SkeletonMetricsRow />
+        </div>
+      </div>
+    }>
+      <WorkspaceSelectContent />
+    </Suspense>
   );
 }
