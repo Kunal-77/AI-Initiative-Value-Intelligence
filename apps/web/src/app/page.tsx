@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useAuth, useOrganizationList, useClerk } from "@clerk/nextjs";
 import {
   Sparkles,
   ArrowRight,
@@ -22,14 +23,59 @@ import {
   Check,
   Zap,
   HelpCircle,
+  Briefcase,
+  User,
+  Settings,
+  LogOut,
 } from "lucide-react";
 import { Button, ThemeToggle } from "../components/ui";
 
 export default function LandingPage() {
   const { isSignedIn } = useAuth();
+  const router = useRouter();
+  const { openUserProfile, signOut } = useClerk();
+  const { isLoaded: orgListLoaded, setActive, userMemberships } = useOrganizationList({
+    userMemberships: {
+      keepPreviousData: true,
+    },
+  });
+
   const [activeTourStep, setActiveTourStep] = useState(0);
   const [isYearlyPricing, setIsYearlyPricing] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const [isConsoleOpen, setIsConsoleOpen] = useState(false);
+  const [loadingBusiness, setLoadingBusiness] = useState(false);
+  const consoleDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (consoleDropdownRef.current && !consoleDropdownRef.current.contains(event.target as Node)) {
+        setIsConsoleOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleBusinessWorkspaceClick = async () => {
+    setLoadingBusiness(true);
+    try {
+      const orgs = userMemberships.data || [];
+      if (orgs.length === 1 && setActive) {
+        const orgId = orgs[0].organization.id;
+        await setActive({ organization: orgId });
+        router.push("/business/initiatives");
+      } else {
+        router.push("/workspace-select");
+      }
+    } catch (err) {
+      console.error("Error setting active organization:", err);
+      router.push("/workspace-select");
+    } finally {
+      setLoadingBusiness(false);
+    }
+  };
 
   // guided tour mockup content
   const tourSteps = [
@@ -174,11 +220,81 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-3">
             {isSignedIn ? (
-              <Link href="/workspace-select">
-                <Button variant="primary" className="px-4 py-1.5 text-xs font-semibold">
-                  Go to Console <ArrowRight className="w-3.5 h-3.5" />
+              <div className="relative" ref={consoleDropdownRef}>
+                <Button
+                  variant="primary"
+                  onClick={() => setIsConsoleOpen(!isConsoleOpen)}
+                  className="px-4 py-1.5 text-xs font-semibold flex items-center gap-1"
+                >
+                  Console <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isConsoleOpen ? "rotate-180" : ""}`} />
                 </Button>
-              </Link>
+                {isConsoleOpen && (
+                  <div className="absolute right-0 mt-2 w-48 rounded-lg border border-border bg-card p-1 shadow-lg z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <button
+                      type="button"
+                      disabled={loadingBusiness}
+                      onClick={() => {
+                        setIsConsoleOpen(false);
+                        handleBusinessWorkspaceClick();
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-xs font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      <Briefcase className="w-3.5 h-3.5 text-purple-500" />
+                      <span>Business Workspace</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsConsoleOpen(false);
+                        router.push("/personal");
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-xs font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer"
+                    >
+                      <User className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>Personal Workspace</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsConsoleOpen(false);
+                        router.push("/workspace-select");
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-xs font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer"
+                    >
+                      <Layers className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span>Workspace Selector</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsConsoleOpen(false);
+                        if (openUserProfile) {
+                          openUserProfile();
+                        } else {
+                          router.push("/personal");
+                        }
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-xs font-semibold text-foreground hover:bg-secondary transition-colors cursor-pointer"
+                    >
+                      <Settings className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span>Account Settings</span>
+                    </button>
+                    <div className="h-px bg-border my-1" />
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setIsConsoleOpen(false);
+                        await signOut();
+                        router.push("/");
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <Link href="/sign-in">
@@ -215,23 +331,37 @@ export default function LandingPage() {
 
         <div className="flex items-center justify-center gap-3.5">
           {isSignedIn ? (
-            <Link href="/workspace-select">
-              <Button variant="primary" className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-purple-500/20">
-                Go to Console <ArrowRight className="w-3.5 h-3.5" />
+            <>
+              <Button
+                variant="primary"
+                onClick={handleBusinessWorkspaceClick}
+                disabled={loadingBusiness}
+                className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-purple-500/20"
+              >
+                {loadingBusiness ? "Loading..." : "Business Workspace"} <ArrowRight className="w-3.5 h-3.5" />
               </Button>
-            </Link>
+              <Button
+                variant="secondary"
+                onClick={() => router.push("/personal")}
+                className="px-5 py-2.5 text-xs font-bold"
+              >
+                Personal Workspace <ArrowRight className="w-3.5 h-3.5" />
+              </Button>
+            </>
           ) : (
-            <Link href="/sign-up">
-              <Button variant="primary" className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-purple-500/20">
-                Start Free
-              </Button>
-            </Link>
+            <>
+              <Link href="/sign-up">
+                <Button variant="primary" className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-purple-500/20">
+                  Start Free
+                </Button>
+              </Link>
+              <a href="#tour">
+                <Button variant="secondary" className="px-5 py-2.5 text-xs font-bold">
+                  Explore Guided Tour
+                </Button>
+              </a>
+            </>
           )}
-          <a href="#tour">
-            <Button variant="secondary" className="px-5 py-2.5 text-xs font-bold">
-              Explore Guided Tour
-            </Button>
-          </a>
         </div>
 
         {/* Dashboard Preview Frame */}
@@ -740,24 +870,54 @@ export default function LandingPage() {
       <section className="py-32 border-t border-border bg-background relative overflow-hidden z-10 transition-colors duration-300">
         <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/10 via-indigo-900/10 to-transparent blur-[120px] pointer-events-none" />
         <div className="max-w-5xl mx-auto px-6 text-center space-y-8 relative">
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground dark:from-zinc-50 dark:to-zinc-400">
-            Transform Your AI Initiative Portfolios Today
-          </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-            Gain immediate clarity on ROI projections, track realized savings ledgers, and establish governance approval workflows.
-          </p>
-          <div className="flex items-center justify-center gap-3.5">
-            <Link href={isSignedIn ? "/workspace-select" : "/sign-up"}>
-              <Button variant="primary" className="px-6 py-2.5 text-xs font-bold shadow-lg shadow-purple-500/20">
-                Start Free Trial
-              </Button>
-            </Link>
-            <Link href={isSignedIn ? "/workspace-select" : "/sign-in"}>
-              <Button variant="secondary" className="px-6 py-2.5 text-xs font-bold">
-                Sign In
-              </Button>
-            </Link>
-          </div>
+          {isSignedIn ? (
+            <>
+              <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground dark:from-zinc-50 dark:to-zinc-400 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                Continue Your Work
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                You're already signed in. Choose the workspace you'd like to continue with.
+              </p>
+              <div className="flex items-center justify-center gap-3.5 pt-4">
+                <Button
+                  variant="primary"
+                  onClick={handleBusinessWorkspaceClick}
+                  disabled={loadingBusiness}
+                  className="px-6 py-2.5 text-xs font-bold shadow-lg shadow-purple-500/20"
+                >
+                  {loadingBusiness ? "Loading..." : "Business Workspace"} <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => router.push("/personal")}
+                  className="px-6 py-2.5 text-xs font-bold"
+                >
+                  Personal Workspace <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground dark:from-zinc-50 dark:to-zinc-400">
+                Transform Your AI Initiative Portfolios Today
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+                Gain immediate clarity on ROI projections, track realized savings ledgers, and establish governance approval workflows.
+              </p>
+              <div className="flex items-center justify-center gap-3.5">
+                <Link href="/sign-up">
+                  <Button variant="primary" className="px-6 py-2.5 text-xs font-bold shadow-lg shadow-purple-500/20">
+                    Start Free Trial
+                  </Button>
+                </Link>
+                <Link href="/sign-in">
+                  <Button variant="secondary" className="px-6 py-2.5 text-xs font-bold">
+                    Sign In
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
