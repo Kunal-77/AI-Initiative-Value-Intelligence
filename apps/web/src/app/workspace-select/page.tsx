@@ -167,7 +167,7 @@ export default function WorkspaceSelectPage() {
                     onClick={() => handleSelectWorkspace("new-org")}
                     disabled={loadingWorkspace !== null}
                     variant="primary"
-                    className="w-full text-xs h-10 py-0 flex items-center justify-center gap-1.5 shadow-lg shadow-purple-500/10"
+                    className="w-full text-xs font-bold py-2.5 flex items-center justify-center gap-1.5 shadow-lg shadow-purple-500/10"
                   >
                     <Plus className="w-4 h-4" /> Create or Join Organization
                   </Button>
@@ -216,9 +216,9 @@ export default function WorkspaceSelectPage() {
                   loading={loadingWorkspace === "personal"}
                   disabled={loadingWorkspace !== null}
                   variant="secondary"
-                  className="w-full text-xs h-10 py-0 flex items-center justify-center gap-1.5 hover:border-indigo-500/30 font-semibold"
+                  className="w-full text-xs font-bold py-2.5 flex items-center justify-center gap-1.5"
                 >
-                  Enter Personal Workspace <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                  Enter Personal Workspace <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
             </div>

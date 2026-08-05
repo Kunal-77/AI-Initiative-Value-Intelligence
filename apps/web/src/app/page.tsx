@@ -175,12 +175,9 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             {isSignedIn ? (
               <Link href="/workspace-select">
-                <button
-                  type="button"
-                  className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-purple-500/15 hover:shadow-purple-500/30 transition-all duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-purple-500/50 flex items-center gap-1.5 cursor-pointer"
-                >
+                <Button variant="primary" className="px-4 py-1.5 text-xs font-semibold">
                   Go to Console <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                </Button>
               </Link>
             ) : (
               <>
@@ -190,7 +187,7 @@ export default function LandingPage() {
                   </span>
                 </Link>
                 <Link href="/sign-up">
-                  <Button variant="primary" className="text-xs h-9 py-0 shadow-md shadow-purple-500/10">
+                  <Button variant="primary" className="px-4 py-1.5 text-xs font-semibold">
                     Get Started
                   </Button>
                 </Link>
@@ -219,22 +216,19 @@ export default function LandingPage() {
         <div className="flex items-center justify-center gap-3.5">
           {isSignedIn ? (
             <Link href="/workspace-select">
-              <button
-                type="button"
-                className="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold shadow-lg shadow-purple-500/15 hover:shadow-purple-500/30 transition-all duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-purple-500/50 flex items-center gap-1.5 cursor-pointer"
-              >
+              <Button variant="primary" className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-purple-500/20">
                 Go to Console <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </Link>
           ) : (
             <Link href="/sign-up">
-              <Button variant="primary" className="text-xs h-10 px-5 shadow-lg shadow-purple-500/20">
+              <Button variant="primary" className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-purple-500/20">
                 Start Free
               </Button>
             </Link>
           )}
           <a href="#tour">
-            <Button variant="secondary" className="text-xs h-10 px-5 border-border hover:bg-secondary/50">
+            <Button variant="secondary" className="px-5 py-2.5 text-xs font-bold">
               Explore Guided Tour
             </Button>
           </a>
@@ -465,8 +459,8 @@ export default function LandingPage() {
 
               <div className="pt-2">
                 <Link href={isSignedIn ? "/workspace-select" : "/sign-up"}>
-                  <Button variant="primary" className="text-xs h-9 py-0">
-                    Launch Business Workspace <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  <Button variant="primary" className="px-4 py-2 text-xs font-bold">
+                    Launch Business Workspace <ArrowRight className="w-3.5 h-3.5" />
                   </Button>
                 </Link>
               </div>
@@ -538,9 +532,9 @@ export default function LandingPage() {
               </div>
 
               <div className="pt-2">
-                <Link href={isSignedIn ? "/workspace-select" : "/sign-up"}>
-                  <Button variant="primary" className="text-xs h-9 py-0 hover:border-indigo-500/30">
-                    Launch Personal Workspace <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                <Link href={isSignedIn ? "/personal" : "/sign-up"}>
+                  <Button variant="primary" className="px-4 py-2 text-xs font-bold">
+                    Launch Personal Workspace <ArrowRight className="w-3.5 h-3.5" />
                   </Button>
                 </Link>
               </div>
@@ -699,7 +693,7 @@ export default function LandingPage() {
 
                 <div className="mt-8">
                   <Link href={isSignedIn ? "/workspace-select" : "/sign-up"}>
-                    <Button variant={plan.popular ? "primary" : "secondary"} className="w-full text-xs h-10 py-0">
+                    <Button variant={plan.popular ? "primary" : "secondary"} className="w-full text-xs font-bold py-2.5">
                       {plan.name === "Free Trial" ? "Start Free" : "Get Started"}
                     </Button>
                   </Link>
@@ -754,12 +748,12 @@ export default function LandingPage() {
           </p>
           <div className="flex items-center justify-center gap-3.5">
             <Link href={isSignedIn ? "/workspace-select" : "/sign-up"}>
-              <Button variant="primary" className="text-xs h-10 px-6 shadow-lg shadow-purple-500/20">
+              <Button variant="primary" className="px-6 py-2.5 text-xs font-bold shadow-lg shadow-purple-500/20">
                 Start Free Trial
               </Button>
             </Link>
             <Link href={isSignedIn ? "/workspace-select" : "/sign-in"}>
-              <Button variant="secondary" className="text-xs h-10 px-6 border-border hover:bg-secondary/50">
+              <Button variant="secondary" className="px-6 py-2.5 text-xs font-bold">
                 Sign In
               </Button>
             </Link>

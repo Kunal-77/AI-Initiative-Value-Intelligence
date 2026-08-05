@@ -12,10 +12,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     
     switch (variant) {
       case "primary":
-        baseStyles = "px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+        baseStyles = "px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-purple-500/10 hover:shadow-purple-500/25 transition-all duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-purple-500/50 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
         break;
       case "secondary":
-        baseStyles = "px-4 py-2 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+        baseStyles = "px-4 py-2 border border-border bg-card text-foreground hover:bg-secondary rounded-lg text-xs font-semibold transition-all duration-300 hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-ring/25 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
         break;
       case "danger":
         baseStyles = "px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-semibold hover:bg-rose-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
