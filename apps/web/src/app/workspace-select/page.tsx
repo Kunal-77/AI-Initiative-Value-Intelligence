@@ -1,18 +1,17 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
-import { useUser, useOrganizationList } from "@clerk/nextjs";
+import React, { useState, useEffect, Suspense } from "react";
+import { useAuth, useUser, useOrganizationList } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Briefcase, User, ArrowRight, Plus } from "lucide-react";
 import { Button, SkeletonMetricsRow, ThemeToggle } from "../../components/ui";
 
 function WorkspaceSelectContent() {
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
   const { isLoaded: orgListLoaded, setActive, userMemberships } = useOrganizationList({
-    userMemberships: {
-      keepPreviousData: true,
-    },
+    userMemberships: authLoaded && isSignedIn ? { keepPreviousData: true } : undefined,
   });
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -20,6 +19,12 @@ function WorkspaceSelectContent() {
   // Detect flow parameter
   const isBusinessOnly = searchParams.get("flow") === "business";
   const [loadingWorkspace, setLoadingWorkspace] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (authLoaded && !isSignedIn) {
+      router.replace("/sign-in?redirect_url=/workspace-select");
+    }
+  }, [authLoaded, isSignedIn, router]);
 
   const handleSelectWorkspace = async (workspaceId: string | null) => {
     const trackingId = workspaceId || "personal";
@@ -44,7 +49,7 @@ function WorkspaceSelectContent() {
     }
   };
 
-  if (!userLoaded || !orgListLoaded) {
+  if (!authLoaded || !userLoaded || !isSignedIn || !orgListLoaded) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 transition-colors duration-300">
         <div className="w-full max-w-md space-y-6">

@@ -9,12 +9,10 @@ import { cn } from "./cn";
 export interface WorkspaceSelectorProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function WorkspaceSelector({ className, ...props }: WorkspaceSelectorProps) {
-  const { user } = useUser();
-  const { orgId } = useAuth();
-  const { isLoaded, setActive, userMemberships } = useOrganizationList({
-    userMemberships: {
-      keepPreviousData: true,
-    },
+  const { isLoaded: authLoaded, isSignedIn, orgId } = useAuth();
+  const { user, isLoaded: userLoaded } = useUser();
+  const { isLoaded: orgListLoaded, setActive, userMemberships } = useOrganizationList({
+    userMemberships: authLoaded && isSignedIn ? { keepPreviousData: true } : undefined,
   });
 
   const { startTransition, endTransition, setToastError } = useWorkspaceTransition();
@@ -127,7 +125,7 @@ export function WorkspaceSelector({ className, ...props }: WorkspaceSelectorProp
     }
   };
 
-  if (!isLoaded || !user) {
+  if (!authLoaded || !isSignedIn || !userLoaded || !orgListLoaded || !user) {
     return (
       <div className="h-9 w-full rounded-lg border border-border bg-secondary animate-pulse" />
     );

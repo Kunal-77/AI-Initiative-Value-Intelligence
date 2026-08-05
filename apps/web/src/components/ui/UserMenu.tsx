@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { useUser, useClerk } from "@clerk/nextjs";
+import { useAuth, useUser, useClerk } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { User, Settings, LogOut, Moon, Sun, ShieldCheck, Laptop, Layers } from "lucide-react";
@@ -10,6 +10,7 @@ import { cn } from "./cn";
 export interface UserMenuProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserMenu({ className, ...props }: UserMenuProps) {
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
   const { user, isLoaded } = useUser();
   const { signOut, openUserProfile } = useClerk();
   const router = useRouter();
@@ -37,7 +38,7 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
     }
   };
 
-  if (!isLoaded || !user) {
+  if (!authLoaded || !isSignedIn || !isLoaded || !user) {
     return (
       <div className="w-8 h-8 rounded-full bg-secondary animate-pulse border border-border" />
     );

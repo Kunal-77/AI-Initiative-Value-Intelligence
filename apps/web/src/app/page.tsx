@@ -31,13 +31,11 @@ import {
 import { Button, ThemeToggle } from "../components/ui";
 
 export default function LandingPage() {
-  const { isSignedIn } = useAuth();
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
   const router = useRouter();
   const { openUserProfile, signOut } = useClerk();
   const { isLoaded: orgListLoaded, setActive, userMemberships } = useOrganizationList({
-    userMemberships: {
-      keepPreviousData: true,
-    },
+    userMemberships: authLoaded && isSignedIn ? { keepPreviousData: true } : undefined,
   });
 
   const [activeTourStep, setActiveTourStep] = useState(0);
@@ -59,6 +57,10 @@ export default function LandingPage() {
   }, []);
 
   const handleBusinessWorkspaceClick = async () => {
+    if (!authLoaded || !isSignedIn) {
+      router.push("/sign-up?redirect_url=/workspace-select%3Fflow%3Dbusiness");
+      return;
+    }
     setLoadingBusiness(true);
     try {
       const orgs = userMemberships.data || [];
@@ -67,11 +69,11 @@ export default function LandingPage() {
         await setActive({ organization: orgId });
         router.push("/business/initiatives");
       } else {
-        router.push("/workspace-select");
+        router.push("/workspace-select?flow=business");
       }
     } catch (err) {
       console.error("Error setting active organization:", err);
-      router.push("/workspace-select");
+      router.push("/workspace-select?flow=business");
     } finally {
       setLoadingBusiness(false);
     }
@@ -673,7 +675,7 @@ export default function LandingPage() {
               </div>
 
               <div className="pt-2">
-                <Link href={isSignedIn ? "/personal" : "/sign-up"}>
+                <Link href={isSignedIn ? "/personal" : "/sign-up?redirect_url=/personal"}>
                   <Button variant="primary" className="px-4 py-2 text-xs font-bold">
                     Launch Personal Workspace <ArrowRight className="w-3.5 h-3.5" />
                   </Button>
