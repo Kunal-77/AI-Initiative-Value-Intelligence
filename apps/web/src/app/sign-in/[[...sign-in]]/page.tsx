@@ -15,7 +15,10 @@ function SignInContent() {
   const { signIn } = useSignIn();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect_url") || "/workspace-select";
+  const rawRedirectUrl = searchParams.get("redirect_url") || "/workspace-select";
+  const redirectUrl = (rawRedirectUrl.startsWith("/") && !rawRedirectUrl.startsWith("//"))
+    ? rawRedirectUrl
+    : "/workspace-select";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

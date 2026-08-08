@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { useAuth, useUser, useOrganizationList } from "@clerk/nextjs";
+import { useAuth, useUser, useOrganizationList, useClerk } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Briefcase, User, ArrowRight, Plus } from "lucide-react";
@@ -13,6 +13,7 @@ function WorkspaceSelectContent() {
   const { isLoaded: orgListLoaded, setActive, userMemberships } = useOrganizationList({
     userMemberships: authLoaded && isSignedIn ? { keepPreviousData: true } : undefined,
   });
+  const { openCreateOrganization } = useClerk();
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -44,6 +45,12 @@ function WorkspaceSelectContent() {
   }, [authLoaded, isSignedIn, orgListLoaded, isBusinessOnly, userMemberships?.data, setActive, router, loadingWorkspace]);
 
   const handleSelectWorkspace = async (workspaceId: string | null) => {
+    if (workspaceId === "new-org") {
+      if (openCreateOrganization) {
+        openCreateOrganization();
+      }
+      return;
+    }
     const trackingId = workspaceId || "personal";
     setLoadingWorkspace(trackingId);
     try {

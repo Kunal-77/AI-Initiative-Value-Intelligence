@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useId } from "react";
 import { useUser, useOrganizationList, useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { Building2, User, Check, ChevronsUpDown } from "lucide-react";
 import { useWorkspaceTransition } from "./WorkspaceTransitionContext";
 import { cn } from "./cn";
@@ -14,6 +15,7 @@ export function WorkspaceSelector({ className, ...props }: WorkspaceSelectorProp
   const { isLoaded: orgListLoaded, setActive, userMemberships } = useOrganizationList({
     userMemberships: authLoaded && isSignedIn ? { keepPreviousData: true } : undefined,
   });
+  const router = useRouter();
 
   const { startTransition, endTransition, setToastError } = useWorkspaceTransition();
 
@@ -80,8 +82,10 @@ export function WorkspaceSelector({ className, ...props }: WorkspaceSelectorProp
     try {
       if (val === "personal") {
         await setActive({ organization: null });
+        router.push("/personal");
       } else {
         await setActive({ organization: val });
+        router.push("/business/initiatives");
       }
     } catch (err: any) {
       console.error("[WorkspaceSelector] Error switching workspace:", err);
