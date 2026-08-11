@@ -13,7 +13,7 @@ type RecoveryStep = "REQUEST_CODE" | "RESET_PASSWORD" | "SUCCESS";
 
 export default function ForgotPasswordPage() {
   const { signIn } = useSignIn();
-  const { signOut } = useClerk();
+  const { signOut, setActive } = useClerk();
   const router = useRouter();
 
   const [step, setStep] = useState<RecoveryStep>("REQUEST_CODE");
@@ -51,8 +51,22 @@ export default function ForgotPasswordPage() {
       const createRes = await signIn.create({
         identifier: email,
       });
+
       if (createRes.error) {
         setError(createRes.error);
+        return;
+      }
+
+      // Verify strategy availability on the reactive signIn object
+      const hasResetStrategy = signIn.supportedFirstFactors?.some(
+        (factor: any) => factor.strategy === "reset_password_email_code"
+      );
+
+      if (!hasResetStrategy) {
+        setError(
+          "Password reset via email code is not available for this email address. " +
+          "Please verify that this account exists and supports password-based authentication."
+        );
         return;
       }
 
@@ -94,6 +108,7 @@ export default function ForgotPasswordPage() {
       const verifyRes = await signIn.resetPasswordEmailCode.verifyCode({
         code,
       });
+
       if (verifyRes.error) {
         setError(verifyRes.error);
         return;
@@ -101,19 +116,19 @@ export default function ForgotPasswordPage() {
 
       const submitRes = await signIn.resetPasswordEmailCode.submitPassword({
         password,
+        signOutOfOtherSessions: true,
       });
+
       if (submitRes.error) {
         setError(submitRes.error);
         return;
       }
 
       if (signIn.status === "complete") {
-        const finalizeRes = await signIn.finalize();
-        if (finalizeRes.error) {
-          setError(finalizeRes.error);
-        } else {
-          setStep("SUCCESS");
+        if (setActive) {
+          await setActive({ session: signIn.createdSessionId });
         }
+        setStep("SUCCESS");
       } else {
         console.error("Password reset completed but status is not complete:", signIn.status);
         setError("Unable to complete password reset. Please try again.");
