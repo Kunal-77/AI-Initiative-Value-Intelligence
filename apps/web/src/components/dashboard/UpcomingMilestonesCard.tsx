@@ -36,12 +36,14 @@ export function UpcomingMilestonesCard({
 
   return (
     <div className="p-5 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-accent" />
-          <h3 className="text-sm font-bold text-foreground">Upcoming Decision Gates & Milestones</h3>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <Calendar className="w-4 h-4 text-accent shrink-0" />
+          <h3 className="text-sm font-bold text-foreground truncate" title="Upcoming Decision Gates & Milestones">
+            Upcoming Decision Gates & Milestones
+          </h3>
         </div>
-        <span className="text-[10px] font-mono text-muted-foreground">{milestones.length} Pending</span>
+        <span className="text-[10px] font-mono text-muted-foreground shrink-0">{milestones.length} Pending</span>
       </div>
 
       <div className="space-y-3">

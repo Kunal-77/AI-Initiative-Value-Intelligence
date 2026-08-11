@@ -49,16 +49,16 @@ export function RoiSummaryCard({ loading = false, error = null }: RoiSummaryCard
       </div>
 
       {/* Metric Boxes */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {roiMetrics.map((item, idx) => (
-          <div key={idx} className="p-4 rounded-lg bg-secondary/40 border border-border space-y-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <div key={idx} className="p-4 rounded-lg bg-secondary/40 border border-border space-y-1 min-w-0">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground truncate block" title={item.label}>
               {item.label}
             </span>
             <div className="text-xl font-bold font-mono text-foreground">{item.value}</div>
             <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3" />
-              {item.target}
+              <ShieldCheck className="w-3 h-3 shrink-0" />
+              <span className="truncate">{item.target}</span>
             </div>
           </div>
         ))}

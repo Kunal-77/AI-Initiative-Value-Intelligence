@@ -65,14 +65,16 @@ export function PortfolioHealthCard({ loading = false, error = null }: Portfolio
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 2xl:grid-cols-3 gap-4">
         {healthItems.map((item, idx) => {
           const Icon = item.icon;
           return (
-            <div key={idx} className="p-4 rounded-lg bg-secondary/30 border border-border space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-foreground">{item.title}</span>
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${item.badgeClass}`}>
+            <div key={idx} className="p-4 rounded-lg bg-secondary/30 border border-border space-y-2 min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-semibold text-foreground truncate" title={item.title}>
+                  {item.title}
+                </span>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full border shrink-0 ${item.badgeClass}`}>
                   {item.count}
                 </span>
               </div>

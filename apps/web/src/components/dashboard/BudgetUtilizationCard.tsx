@@ -32,17 +32,17 @@ export function BudgetUtilizationCard({ loading = false, error = null }: BudgetU
 
   return (
     <div className="p-6 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-5">
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-            <PieChart className="w-4 h-4 text-accent" />
-            Budget Allocation & Expenditure
+      <div className="flex flex-col 2xl:flex-row 2xl:items-start justify-between gap-3">
+        <div className="space-y-0.5 min-w-0 flex-1">
+          <h3 className="text-base font-bold text-foreground flex items-center gap-2 min-w-0">
+            <PieChart className="w-4 h-4 text-accent shrink-0" />
+            <span className="truncate" title="Budget Allocation & Expenditure">Budget Allocation & Expenditure</span>
           </h3>
           <p className="text-xs text-muted-foreground">
             Current fiscal year expenditure across major investment categories.
           </p>
         </div>
-        <div className="text-right">
+        <div className="text-left 2xl:text-right shrink-0">
           <div className="text-sm font-bold font-mono text-foreground">$1.82M / $2.33M</div>
           <div className="text-[10px] text-muted-foreground">78.2% Utilized</div>
         </div>
@@ -51,10 +51,10 @@ export function BudgetUtilizationCard({ loading = false, error = null }: BudgetU
       {/* Category Progress Bars */}
       <div className="space-y-3.5 pt-1">
         {categoryBreakdown.map((cat, idx) => (
-          <div key={idx} className="space-y-1.5">
-            <div className="flex justify-between text-xs">
-              <span className="font-medium text-foreground">{cat.name}</span>
-              <span className="font-mono text-muted-foreground">
+          <div key={idx} className="space-y-1.5 min-w-0">
+            <div className="flex justify-between text-xs gap-2">
+              <span className="font-medium text-foreground truncate" title={cat.name}>{cat.name}</span>
+              <span className="font-mono text-muted-foreground shrink-0">
                 {cat.spent} <span className="text-muted-foreground/60">/ {cat.total}</span>
               </span>
             </div>
