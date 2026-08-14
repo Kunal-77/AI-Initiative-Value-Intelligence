@@ -24,6 +24,7 @@ function SignUpContent() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const [pendingVerification, setPendingVerification] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
@@ -241,7 +242,7 @@ function SignUpContent() {
         subtitle="Start free to manage strategic portfolios and track real-world ROIs."
       />
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
         <AuthError error={error} />
 
         <div className="space-y-1.5">
@@ -254,6 +255,7 @@ function SignUpContent() {
             onChange={(e) => setEmailAddress(e.target.value)}
             disabled={isFormDisabled}
             required
+            autoComplete="off"
             className="w-full h-10 px-3 bg-background border border-border"
           />
         </div>
@@ -269,6 +271,7 @@ function SignUpContent() {
               onChange={(e) => setPassword(e.target.value)}
               disabled={isFormDisabled}
               required
+              autoComplete="new-password"
               className="w-full h-10 pl-3 pr-10 bg-background border border-border"
             />
             <button
@@ -285,17 +288,30 @@ function SignUpContent() {
 
         <div className="space-y-1.5">
           <Label htmlFor="confirmPassword" required>Confirm Password</Label>
-          <Input
-            id="confirmPassword"
-            type="password"
-            placeholder="••••••••"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            disabled={isFormDisabled}
-            required
-            className="w-full h-10 px-3 bg-background border border-border"
-          />
+          <div className="relative">
+            <Input
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={isFormDisabled}
+              required
+              autoComplete="new-password"
+              className="w-full h-10 pl-3 pr-10 bg-background border border-border"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              disabled={isFormDisabled}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer disabled:opacity-50"
+              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+            >
+              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
+        <div id="clerk-captcha" />
 
         <Button
           type="submit"

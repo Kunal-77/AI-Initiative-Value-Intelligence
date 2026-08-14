@@ -21,6 +21,7 @@ import {
   getWorkflowAuditLogs,
   getGovernanceMetrics,
   executeApprovalAction,
+  addWorkflowComment,
 } from "../../../services/workflow/workflowService";
 import {
   ApprovalItem,
@@ -32,7 +33,7 @@ import {
 } from "../../../types/workflow";
 
 export default function BusinessApprovalsPage() {
-  const { orgId } = useAuth();
+  const { orgId, getToken } = useAuth();
 
   const [approvals, setApprovals] = useState<ApprovalItem[]>([]);
   const [tasks, setTasks] = useState<WorkflowTask[]>([]);
@@ -43,24 +44,42 @@ export default function BusinessApprovalsPage() {
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
+    const token = await getToken();
+    if (!token) return;
     setLoading(true);
     try {
-      const [appRes, taskRes, cmtRes, audRes, metRes] = await Promise.all([
-        getApprovalsQueue(),
-        getWorkflowTasks(),
-        getWorkflowComments("app_1"),
-        getWorkflowAuditLogs("app_1"),
-        getGovernanceMetrics(),
+      const [appRes, taskRes, metRes] = await Promise.all([
+        getApprovalsQueue(token),
+        getWorkflowTasks(token),
+        getGovernanceMetrics(token),
       ]);
       setApprovals(appRes);
       setTasks(taskRes);
-      setComments(cmtRes);
-      setAuditLogs(audRes);
       setMetrics(metRes);
+      
+      // If we have approvals and none is selected, default to the first one for comments/logs
+      if (appRes.length > 0 && !selectedApproval) {
+        setSelectedApproval(appRes[0]);
+      }
     } catch (err) {
       console.error("Workflow fetch failed:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCommentsAndLogs = async (approvalId: string) => {
+    const token = await getToken();
+    if (!token) return;
+    try {
+      const [cmtRes, audRes] = await Promise.all([
+        getWorkflowComments(token, approvalId),
+        getWorkflowAuditLogs(token, approvalId),
+      ]);
+      setComments(cmtRes);
+      setAuditLogs(audRes);
+    } catch (err) {
+      console.error("Failed to load comments/logs for approval:", approvalId, err);
     }
   };
 
@@ -70,36 +89,44 @@ export default function BusinessApprovalsPage() {
     }
   }, [orgId]);
 
-  const handleAction = async (item: ApprovalItem, action: ApprovalAction, reason?: string) => {
-    const updated = await executeApprovalAction(item, action, reason);
-    setApprovals((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
+  useEffect(() => {
+    if (selectedApproval?.id) {
+      loadCommentsAndLogs(selectedApproval.id);
+    }
+  }, [selectedApproval?.id]);
 
-    // Append audit log
-    setAuditLogs((prev) => [
-      {
-        id: `aud_${Date.now()}`,
-        approvalId: item.id,
-        actor: "Executive Approver (Active Session)",
-        action,
-        previousStage: item.currentStage,
-        newStage: updated.currentStage,
-        reason: reason || `Executed ${action} action`,
-        timestamp: new Date().toISOString(),
-      },
-      ...prev,
-    ]);
+  const handleAction = async (item: ApprovalItem, action: ApprovalAction, reason?: string) => {
+    const token = await getToken();
+    if (!token) return;
+    try {
+      const updated = await executeApprovalAction(token, item, action, reason);
+      setApprovals((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
+      setSelectedApproval(updated);
+      
+      const [metRes, audRes] = await Promise.all([
+        getGovernanceMetrics(token),
+        getWorkflowAuditLogs(token, item.id)
+      ]);
+      setMetrics(metRes);
+      setAuditLogs(audRes);
+    } catch (err) {
+      console.error("Failed to execute action:", err);
+    }
   };
 
-  const handleAddComment = (text: string) => {
-    const newCmt: WorkflowComment = {
-      id: `cmt_${Date.now()}`,
-      approvalId: selectedApproval?.id || "app_1",
-      author: "Executive Approver",
-      role: "Executive",
-      content: text,
-      timestamp: new Date().toISOString(),
-    };
-    setComments((prev) => [...prev, newCmt]);
+  const handleAddComment = async (text: string) => {
+    const approvalId = selectedApproval?.id || (approvals.length > 0 ? approvals[0].id : null);
+    if (!approvalId) return;
+    const token = await getToken();
+    if (!token) return;
+    try {
+      const newCmt = await addWorkflowComment(token, approvalId, text);
+      setComments((prev) => [...prev, newCmt]);
+      const audRes = await getWorkflowAuditLogs(token, approvalId);
+      setAuditLogs(audRes);
+    } catch (err) {
+      console.error("Failed to add comment:", err);
+    }
   };
 
   if (!orgId || loading || !metrics) {

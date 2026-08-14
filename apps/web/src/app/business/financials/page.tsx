@@ -29,7 +29,7 @@ import {
 } from "../../../types/financial";
 
 export default function BusinessFinancialsPage() {
-  const { orgId } = useAuth();
+  const { orgId, getToken } = useAuth();
 
   const [metrics, setMetrics] = useState<ExecutiveFinancialMetrics | undefined>(undefined);
   const [benefits, setBenefits] = useState<BenefitItem[]>([]);
@@ -39,17 +39,21 @@ export default function BusinessFinancialsPage() {
   useEffect(() => {
     if (orgId) {
       setLoading(true);
-      Promise.all([
-        getExecutiveFinancialMetrics(),
-        getBenefitsRegister(),
-        getCostsLedger(),
-      ])
-        .then(([m, b, c]) => {
-          setMetrics(m);
-          setBenefits(b);
-          setCosts(c);
-        })
-        .finally(() => setLoading(false));
+      getToken().then((token) => {
+        if (!token) return;
+        Promise.all([
+          getExecutiveFinancialMetrics(token),
+          getBenefitsRegister(token),
+          getCostsLedger(token),
+        ])
+          .then(([m, b, c]) => {
+            setMetrics(m);
+            setBenefits(b);
+            setCosts(c);
+          })
+          .catch((err) => console.error("Failed to fetch financials:", err))
+          .finally(() => setLoading(false));
+      });
     }
   }, [orgId]);
 
@@ -79,13 +83,19 @@ export default function BusinessFinancialsPage() {
         <ExecutiveFinancialSummary metrics={metrics} loading={loading} />
 
         {/* 2. 4-Scenario Financial Forecast Valuation */}
-        <FinancialForecastsCard />
+        <FinancialForecastsCard
+          actualSpend={metrics?.totalActualSpend}
+          realizedBenefit={metrics?.totalRealizedBenefit}
+        />
 
         {/* 3. Main Grid: Benefits & Costs (Left 8) | Cash Flow & Drivers (Right 4) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           <div className="lg:col-span-8 space-y-6">
             {/* Benefits Realization Trend */}
-            <BenefitsRealization />
+            <BenefitsRealization
+              expectedBenefit={metrics?.totalExpectedBenefit}
+              realizedBenefit={metrics?.totalRealizedBenefit}
+            />
 
             {/* CAPEX vs OPEX Cost Management */}
             <CostManagementCard />
@@ -102,7 +112,10 @@ export default function BusinessFinancialsPage() {
 
           <div className="lg:col-span-4 space-y-6">
             {/* Cumulative Cash Flow & Break-even Curve */}
-            <CashFlowCharts />
+            <CashFlowCharts
+              actualSpend={metrics?.totalActualSpend}
+              realizedBenefit={metrics?.totalRealizedBenefit}
+            />
 
             {/* Strategic Value Drivers */}
             <ValueDriversCard />

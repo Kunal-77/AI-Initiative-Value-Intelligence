@@ -4,11 +4,11 @@ import React, { useState } from "react";
 import { TrendingUp, DollarSign, Calendar, BarChart2 } from "lucide-react";
 import { calculateBenefitVariance } from "../../lib/financial/calculator";
 
-export function BenefitsRealization() {
+export function BenefitsRealization({ expectedBenefit = 4850000, realizedBenefit = 4940000 }: { expectedBenefit?: number; realizedBenefit?: number }) {
   const [timeframe, setTimeframe] = useState<"MONTHLY" | "QUARTERLY" | "ANNUAL">("QUARTERLY");
 
-  const expected = 4850000;
-  const actual = 4940000;
+  const expected = expectedBenefit;
+  const actual = realizedBenefit;
   const calc = calculateBenefitVariance(actual, expected);
 
   const quarterlyData = [

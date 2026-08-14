@@ -4,8 +4,8 @@ import React from "react";
 import { TrendingUp, DollarSign, Calendar, CheckCircle2 } from "lucide-react";
 import { generateCashFlowTimeline } from "../../lib/financial/calculator";
 
-export function CashFlowCharts() {
-  const timeline = generateCashFlowTimeline(2330000, 4940000, 12);
+export function CashFlowCharts({ actualSpend = 2330000, realizedBenefit = 4940000 }: { actualSpend?: number; realizedBenefit?: number }) {
+  const timeline = generateCashFlowTimeline(actualSpend, realizedBenefit, 12);
   const breakEvenIndex = timeline.findIndex((t) => t.cumulativeCashFlow >= 0);
 
   const maxVal = Math.max(...timeline.map((t) => Math.abs(t.cumulativeCashFlow)));

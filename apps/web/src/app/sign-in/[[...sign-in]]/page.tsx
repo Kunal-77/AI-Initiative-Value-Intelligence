@@ -20,11 +20,16 @@ function SignInContent() {
     ? rawRedirectUrl
     : "/workspace-select";
 
+  const [step, setStep] = useState<"SIGN_IN" | "VERIFY_TRUST">("SIGN_IN");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  
   const [loading, setLoading] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
   const [error, setError] = useState<any>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,6 +57,34 @@ function SignInContent() {
         } else {
           router.push(redirectUrl);
         }
+      } else if (signIn.status === "needs_client_trust") {
+        const factor = signIn.supportedSecondFactors?.find(
+          (f: any) => f.strategy === "email_code"
+        ) || signIn.supportedSecondFactors?.find(
+          (f: any) => f.strategy === "phone_code"
+        ) || signIn.supportedSecondFactors?.[0];
+
+        if (!factor) {
+          setError("Device verification required, but no supported verification strategies were found.");
+          return;
+        }
+
+        let prepRes;
+        if (factor.strategy === "email_code") {
+          prepRes = await signIn.mfa.sendEmailCode();
+        } else if (factor.strategy === "phone_code") {
+          prepRes = await signIn.mfa.sendPhoneCode();
+        } else {
+          setError(`Device verification strategy "${factor.strategy}" is not supported by this custom flow.`);
+          return;
+        }
+
+        if (prepRes?.error) {
+          setError(prepRes.error);
+          return;
+        }
+
+        setStep("VERIFY_TRUST");
       } else {
         console.error("Sign-in did not complete status:", signIn.status);
         setError("Sign-in failed. Please check your credentials or verify your account.");
@@ -61,6 +94,107 @@ function SignInContent() {
       setError(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerifyTrust = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!signIn) return;
+
+    if (!verificationCode) {
+      setError("Please enter the verification code.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const factor = signIn.supportedSecondFactors?.find(
+        (f: any) => f.strategy === "email_code"
+      ) || signIn.supportedSecondFactors?.find(
+        (f: any) => f.strategy === "phone_code"
+      ) || signIn.supportedSecondFactors?.[0];
+
+      if (!factor) {
+        setError("Device verification strategy missing.");
+        return;
+      }
+
+      let verifyRes;
+      if (factor.strategy === "email_code") {
+        verifyRes = await signIn.mfa.verifyEmailCode({ code: verificationCode });
+      } else if (factor.strategy === "phone_code") {
+        verifyRes = await signIn.mfa.verifyPhoneCode({ code: verificationCode });
+      } else {
+        setError(`Device verification strategy "${factor.strategy}" is not supported by this custom flow.`);
+        return;
+      }
+
+      if (verifyRes?.error) {
+        setError(verifyRes.error);
+        return;
+      }
+
+      if (signIn.status === "complete") {
+        const finalizeRes = await signIn.finalize();
+        if (finalizeRes.error) {
+          setError(finalizeRes.error);
+        } else {
+          router.push(redirectUrl);
+        }
+      } else {
+        console.error("Sign-in verification succeeded, but status is not complete:", signIn.status);
+        setError("Unable to complete sign-in. Current status: " + signIn.status);
+      }
+    } catch (err: any) {
+      console.error("Verification failed:", err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (!signIn) return;
+    setResendLoading(true);
+    setError(null);
+    setResendSuccess(false);
+
+    try {
+      const factor = signIn.supportedSecondFactors?.find(
+        (f: any) => f.strategy === "email_code"
+      ) || signIn.supportedSecondFactors?.find(
+        (f: any) => f.strategy === "phone_code"
+      ) || signIn.supportedSecondFactors?.[0];
+
+      if (!factor) {
+        setError("Device verification strategy missing.");
+        return;
+      }
+
+      let prepRes;
+      if (factor.strategy === "email_code") {
+        prepRes = await signIn.mfa.sendEmailCode();
+      } else if (factor.strategy === "phone_code") {
+        prepRes = await signIn.mfa.sendPhoneCode();
+      } else {
+        setError(`Device verification strategy "${factor.strategy}" is not supported by this custom flow.`);
+        return;
+      }
+
+      if (prepRes?.error) {
+        setError(prepRes.error);
+        return;
+      }
+
+      setResendSuccess(true);
+      setTimeout(() => setResendSuccess(false), 5000);
+    } catch (err: any) {
+      console.error("Resending verification code failed:", err);
+      setError(err);
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -97,6 +231,70 @@ function SignInContent() {
 
   const isFormDisabled = loading || loadingGoogle;
 
+  if (step === "VERIFY_TRUST") {
+    return (
+      <div className="space-y-6">
+        <AuthBrand
+          title="Verify your account"
+          subtitle="A verification code is required to trust this new browser or device."
+        />
+
+        <form onSubmit={handleVerifyTrust} className="space-y-4">
+          <AuthError error={error} />
+
+          <div className="space-y-1.5">
+            <Label htmlFor="verificationCode" required>Verification Code</Label>
+            <Input
+              id="verificationCode"
+              type="text"
+              placeholder="••••••"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              disabled={loading}
+              maxLength={6}
+              required
+              className="w-full h-10 px-3 bg-background border border-border text-center font-mono text-lg tracking-widest"
+            />
+          </div>
+
+          <Button
+            type="submit"
+            variant="primary"
+            loading={loading}
+            loadingText="Verifying..."
+            disabled={loading}
+            className="w-full h-10 shadow-lg shadow-purple-500/10"
+          >
+            Verify Code
+          </Button>
+
+          <div className="flex justify-between items-center text-xs pt-2">
+            <button
+              type="button"
+              onClick={handleResendCode}
+              disabled={loading || resendLoading}
+              className="text-purple-600 dark:text-purple-400 hover:text-purple-500 font-semibold focus:outline-none disabled:opacity-50"
+            >
+              {resendLoading ? "Sending..." : resendSuccess ? "Code sent!" : "Resend code"}
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => {
+                setStep("SIGN_IN");
+                setError(null);
+              }}
+              disabled={loading}
+              className="text-muted-foreground hover:text-foreground font-semibold focus:outline-none"
+            >
+              Back to Sign In
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <AuthBrand
@@ -104,7 +302,7 @@ function SignInContent() {
         subtitle="Sign in to continue to your AI decision intelligence workspace."
       />
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
         <AuthError error={error} />
 
         <div className="space-y-1.5">
@@ -117,6 +315,7 @@ function SignInContent() {
             onChange={(e) => setEmail(e.target.value)}
             disabled={isFormDisabled}
             required
+            autoComplete="off"
             className="w-full h-10 px-3 bg-background border border-border"
           />
         </div>
@@ -140,6 +339,7 @@ function SignInContent() {
               onChange={(e) => setPassword(e.target.value)}
               disabled={isFormDisabled}
               required
+              autoComplete="new-password"
               className="w-full h-10 pl-3 pr-10 bg-background border border-border"
             />
             <button

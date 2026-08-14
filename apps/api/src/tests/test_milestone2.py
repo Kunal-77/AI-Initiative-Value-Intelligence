@@ -456,3 +456,130 @@ def test_postgres_rejects_mismatched_cost_item_tenant(db):
     db.rollback()
 
 
+def test_initiative_metadata_persistence(client, mock_clerk_verifier):
+    mock_auth_payload(mock_clerk_verifier, "user_owner", "org_tenant_1", "org:admin")
+    headers = get_auth_headers("user_owner", "org_tenant_1", "org:admin")
+
+    create_payload = {
+        "name": "Metadata QA Test",
+        "business_area": "Operations & Care",
+        "problem_statement": "QA Problem",
+        "proposed_intervention": "QA Intervention",
+        "expected_business_outcome": "QA Outcome",
+        "planned_start_date": "2026-08-12",
+        "owner": "Sarah Jenkins",
+        "executive_sponsor": "Marcus Vance",
+        "project_lead": "David Miller",
+        "target_metric_name": "Response Time",
+        "target_metric_value": "45%"
+    }
+
+    # 1. Create
+    res = client.post("/api/v1/initiatives", json=create_payload, headers=headers)
+    assert res.status_code == status.HTTP_201_CREATED
+    data = res.json()
+    assert data["owner"] == "Sarah Jenkins"
+    assert data["executive_sponsor"] == "Marcus Vance"
+    assert data["project_lead"] == "David Miller"
+    assert data["target_metric_name"] == "Response Time"
+    assert data["target_metric_value"] == "45%"
+    init_id = data["id"]
+
+    # 2. Retrieve
+    res_get = client.get(f"/api/v1/initiatives/{init_id}", headers=headers)
+    assert res_get.status_code == status.HTTP_200_OK
+    data_get = res_get.json()
+    assert data_get["owner"] == "Sarah Jenkins"
+    assert data_get["executive_sponsor"] == "Marcus Vance"
+    assert data_get["project_lead"] == "David Miller"
+    assert data_get["target_metric_name"] == "Response Time"
+    assert data_get["target_metric_value"] == "45%"
+
+    # 3. Update
+    update_payload = {
+        "owner": "New Owner",
+        "executive_sponsor": "New Sponsor"
+    }
+    res_put = client.put(f"/api/v1/initiatives/{init_id}", json=update_payload, headers=headers)
+    assert res_put.status_code == status.HTTP_200_OK
+    data_put = res_put.json()
+    assert data_put["owner"] == "New Owner"
+    assert data_put["executive_sponsor"] == "New Sponsor"
+    assert data_put["project_lead"] == "David Miller" # should remain unchanged
+
+    # 4. List check
+    res_list = client.get("/api/v1/initiatives", headers=headers)
+    assert res_list.status_code == status.HTTP_200_OK
+    inits = res_list.json()
+    assert any(i["id"] == init_id and i["owner"] == "New Owner" for i in inits)
+
+
+def test_initiative_soft_delete(client, mock_clerk_verifier, db):
+    mock_auth_payload(mock_clerk_verifier, "user_owner", "org_tenant_1", "org:admin")
+    headers = get_auth_headers("user_owner", "org_tenant_1", "org:admin")
+
+    # Create an initiative
+    create_payload = {"name": "ToDelete QA Test", "business_area": "Operations"}
+    res = client.post("/api/v1/initiatives", json=create_payload, headers=headers)
+    init_id = res.json()["id"]
+
+    # Delete (first time)
+    res_del = client.delete(f"/api/v1/initiatives/{init_id}", headers=headers)
+    assert res_del.status_code == status.HTTP_204_NO_CONTENT
+
+    # Verify list excludes it
+    res_list = client.get("/api/v1/initiatives", headers=headers)
+    inits = res_list.json()
+    assert not any(i["id"] == init_id for i in inits)
+
+    # Verify direct GET returns 404
+    res_get = client.get(f"/api/v1/initiatives/{init_id}", headers=headers)
+    assert res_get.status_code == status.HTTP_404_NOT_FOUND
+
+    # Verify database row still exists and archived_at is set
+    from src.initiatives.models import Initiative
+    import uuid
+    db_init = db.query(Initiative).filter(Initiative.id == uuid.UUID(init_id)).first()
+    assert db_init is not None
+    assert db_init.archived_at is not None
+
+
+def test_initiative_soft_delete_tenancy_isolation(client, mock_clerk_verifier):
+    headers_a = get_auth_headers("user_a", "org_a", "org:admin")
+    headers_b = get_auth_headers("user_b", "org_b", "org:admin")
+
+    # Create under Tenant A
+    mock_auth_payload(mock_clerk_verifier, "user_a", "org_a", "org:admin")
+    create_payload = {"name": "Tenant A Initiative"}
+    res = client.post("/api/v1/initiatives", json=create_payload, headers=headers_a)
+    init_id = res.json()["id"]
+
+    # Try to delete from Tenant B
+    mock_auth_payload(mock_clerk_verifier, "user_b", "org_b", "org:admin")
+    res_del_cross = client.delete(f"/api/v1/initiatives/{init_id}", headers=headers_b)
+    assert res_del_cross.status_code == status.HTTP_404_NOT_FOUND
+
+    # Delete from Tenant A (owner)
+    mock_auth_payload(mock_clerk_verifier, "user_a", "org_a", "org:admin")
+    res_del_owner = client.delete(f"/api/v1/initiatives/{init_id}", headers=headers_a)
+    assert res_del_owner.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_initiative_soft_delete_idempotency(client, mock_clerk_verifier):
+    mock_auth_payload(mock_clerk_verifier, "user_owner", "org_tenant_1", "org:admin")
+    headers = get_auth_headers("user_owner", "org_tenant_1", "org:admin")
+
+    create_payload = {"name": "Idempotent QA Test"}
+    res = client.post("/api/v1/initiatives", json=create_payload, headers=headers)
+    init_id = res.json()["id"]
+
+    # Delete 1st time
+    res_del1 = client.delete(f"/api/v1/initiatives/{init_id}", headers=headers)
+    assert res_del1.status_code == status.HTTP_204_NO_CONTENT
+
+    # Delete 2nd time (should still return success/204 to be idempotent)
+    res_del2 = client.delete(f"/api/v1/initiatives/{init_id}", headers=headers)
+    assert res_del2.status_code == status.HTTP_204_NO_CONTENT
+
+
+

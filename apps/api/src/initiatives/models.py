@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, date, timezone
+from datetime import datetime, date as datetime_date, timezone
 from typing import Optional, List
 from sqlalchemy import String, DateTime, Date, ForeignKey, ForeignKeyConstraint, UniqueConstraint, CheckConstraint, Integer, Numeric
 from sqlalchemy.dialects.postgresql import JSONB
@@ -22,13 +22,19 @@ class Initiative(Base):
     problem_statement: Mapped[Optional[str]] = mapped_column(nullable=True)
     proposed_intervention: Mapped[Optional[str]] = mapped_column(nullable=True)
     expected_business_outcome: Mapped[Optional[str]] = mapped_column(nullable=True)
-    planned_start_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
-    actual_start_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    planned_start_date: Mapped[Optional[datetime_date]] = mapped_column(Date, nullable=True)
+    actual_start_date: Mapped[Optional[datetime_date]] = mapped_column(Date, nullable=True)
     next_review_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     created_by_user_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     archived_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    owner: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    executive_sponsor: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    project_lead: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    target_metric_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    target_metric_value: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     versions: Mapped[List["InitiativeVersion"]] = relationship(back_populates="initiative", cascade="all, delete-orphan")
     investments: Mapped[List["Investment"]] = relationship(back_populates="initiative", cascade="all, delete-orphan")
@@ -80,8 +86,8 @@ class Investment(Base):
     initiative_id: Mapped[uuid.UUID] = mapped_column(nullable=False, index=True)
     version_number: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     currency: Mapped[str] = mapped_column(String(3), default="USD", nullable=False)
-    period_start: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
-    period_end: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    period_start: Mapped[Optional[datetime_date]] = mapped_column(Date, nullable=True)
+    period_end: Mapped[Optional[datetime_date]] = mapped_column(Date, nullable=True)
     status: Mapped[str] = mapped_column(String(50), default="DRAFT", nullable=False)
     assumptions: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     created_by_user_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
@@ -115,6 +121,14 @@ class InvestmentCostItem(Base):
     recurrence: Mapped[str] = mapped_column(String(50), default="ONE_TIME", nullable=False)
     source_reference: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     assumption_note: Mapped[Optional[str]] = mapped_column(nullable=True)
+
+    # New Cost Ledger columns
+    expense_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    vendor: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    department: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    date: Mapped[Optional[datetime_date]] = mapped_column(Date, nullable=True)
+    status: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    approval_owner: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     investment: Mapped["Investment"] = relationship(back_populates="cost_items")
 
@@ -529,3 +543,138 @@ class Learning(Base):
     applicability: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     created_by_user_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+
+class GovernanceApproval(Base):
+    __tablename__ = "governance_approvals"
+    __table_args__ = (
+        UniqueConstraint("organization_id", "id", name="uq_governance_approvals_tenant"),
+        UniqueConstraint("organization_id", "id", "initiative_id", name="uq_governance_approvals_composite"),
+        ForeignKeyConstraint(
+            ["organization_id", "initiative_id"],
+            ["initiatives.organization_id", "initiatives.id"],
+            ondelete="CASCADE",
+            name="fk_governance_approvals_init_composite"
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    initiative_id: Mapped[uuid.UUID] = mapped_column(nullable=False, index=True)
+    requested_by: Mapped[str] = mapped_column(String(255), nullable=False)
+    owner: Mapped[str] = mapped_column(String(255), nullable=False)
+    current_stage: Mapped[str] = mapped_column(String(50), nullable=False)
+    requested_budget: Mapped[float] = mapped_column(Numeric(15, 2), nullable=False)
+    expected_outcome: Mapped[Optional[str]] = mapped_column(nullable=True)
+    ai_confidence_score: Mapped[Optional[float]] = mapped_column(Numeric(5, 2), nullable=True)
+    risk_level: Mapped[str] = mapped_column(String(50), nullable=False)
+    submitted_date: Mapped[datetime_date] = mapped_column(Date, nullable=False)
+    due_date: Mapped[datetime_date] = mapped_column(Date, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    initiative: Mapped["Initiative"] = relationship()
+    tasks: Mapped[List["WorkflowTask"]] = relationship(back_populates="approval", cascade="all, delete-orphan")
+    comments: Mapped[List["WorkflowComment"]] = relationship(back_populates="approval", cascade="all, delete-orphan")
+    audit_logs: Mapped[List["WorkflowAuditLog"]] = relationship(back_populates="approval", cascade="all, delete-orphan")
+
+
+class WorkflowTask(Base):
+    __tablename__ = "workflow_tasks"
+    __table_args__ = (
+        UniqueConstraint("organization_id", "id", name="uq_workflow_tasks_tenant"),
+        ForeignKeyConstraint(
+            ["organization_id", "approval_id"],
+            ["governance_approvals.organization_id", "governance_approvals.id"],
+            ondelete="CASCADE",
+            name="fk_workflow_tasks_approval_composite"
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    approval_id: Mapped[uuid.UUID] = mapped_column(nullable=False, index=True)
+    task_title: Mapped[str] = mapped_column(String(255), nullable=False)
+    assignee: Mapped[str] = mapped_column(String(255), nullable=False)
+    due_date: Mapped[datetime_date] = mapped_column(Date, nullable=False)
+    priority: Mapped[str] = mapped_column(String(50), nullable=False)
+    status: Mapped[str] = mapped_column(String(50), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    approval: Mapped["GovernanceApproval"] = relationship(back_populates="tasks")
+
+
+class WorkflowComment(Base):
+    __tablename__ = "workflow_comments"
+    __table_args__ = (
+        UniqueConstraint("organization_id", "id", name="uq_workflow_comments_tenant"),
+        ForeignKeyConstraint(
+            ["organization_id", "approval_id"],
+            ["governance_approvals.organization_id", "governance_approvals.id"],
+            ondelete="CASCADE",
+            name="fk_workflow_comments_approval_composite"
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    approval_id: Mapped[uuid.UUID] = mapped_column(nullable=False, index=True)
+    author: Mapped[str] = mapped_column(String(255), nullable=False)
+    role: Mapped[str] = mapped_column(String(50), nullable=False)
+    content: Mapped[str] = mapped_column(nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    approval: Mapped["GovernanceApproval"] = relationship(back_populates="comments")
+
+
+class WorkflowAuditLog(Base):
+    __tablename__ = "workflow_audit_logs"
+    __table_args__ = (
+        UniqueConstraint("organization_id", "id", name="uq_workflow_audit_logs_tenant"),
+        ForeignKeyConstraint(
+            ["organization_id", "approval_id"],
+            ["governance_approvals.organization_id", "governance_approvals.id"],
+            ondelete="CASCADE",
+            name="fk_workflow_audit_logs_approval_composite"
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    approval_id: Mapped[uuid.UUID] = mapped_column(nullable=False, index=True)
+    actor: Mapped[str] = mapped_column(String(255), nullable=False)
+    action: Mapped[str] = mapped_column(String(50), nullable=False)
+    previous_stage: Mapped[str] = mapped_column(String(50), nullable=False)
+    new_stage: Mapped[str] = mapped_column(String(50), nullable=False)
+    reason: Mapped[Optional[str]] = mapped_column(nullable=True)
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    approval: Mapped["GovernanceApproval"] = relationship(back_populates="audit_logs")
+
+
+class FinancialBenefit(Base):
+    __tablename__ = "financial_benefits"
+    __table_args__ = (
+        UniqueConstraint("organization_id", "id", name="uq_financial_benefits_tenant"),
+        ForeignKeyConstraint(
+            ["organization_id", "initiative_id"],
+            ["initiatives.organization_id", "initiatives.id"],
+            ondelete="CASCADE",
+            name="fk_financial_benefits_init_composite"
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    initiative_id: Mapped[uuid.UUID] = mapped_column(nullable=False, index=True)
+    benefit_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    owner: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    category: Mapped[str] = mapped_column(String(100), nullable=False)
+    target_amount: Mapped[float] = mapped_column(Numeric(15, 2), nullable=False)
+    actual_amount: Mapped[float] = mapped_column(Numeric(15, 2), nullable=False)
+    variance_amount: Mapped[float] = mapped_column(Numeric(15, 2), nullable=False)
+    status: Mapped[str] = mapped_column(String(50), nullable=False)
+    evidence_source: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)

@@ -25,7 +25,7 @@ import { AiAnalysisResult, AiRecommendation, RecommendationStatus } from "../../
 import { getStoredInitiatives } from "../../../lib/initiativeStore";
 
 export default function BusinessAiStudioPage() {
-  const { orgId } = useAuth();
+  const { getToken, orgId } = useAuth();
 
   const [analysis, setAnalysis] = useState<AiAnalysisResult | null>(null);
   const [recommendations, setRecommendations] = useState<AiRecommendation[]>([]);
@@ -36,7 +36,8 @@ export default function BusinessAiStudioPage() {
   const loadAiData = async () => {
     setLoading(true);
     try {
-      const storedInits = getStoredInitiatives();
+      const token = await getToken();
+      const storedInits = token ? await getStoredInitiatives(token) : [];
       const firstInit = storedInits[0] || { id: "init_cs_auto", name: "Customer Support Automation" };
 
       const result = await defaultAiEngine.analyzeInitiative(firstInit);
@@ -60,7 +61,8 @@ export default function BusinessAiStudioPage() {
   const handleRunAnalysis = async () => {
     setAnalyzing(true);
     try {
-      const storedInits = getStoredInitiatives();
+      const token = await getToken();
+      const storedInits = token ? await getStoredInitiatives(token) : [];
       const firstInit = storedInits[0] || { id: "init_cs_auto" };
       const result = await defaultAiEngine.analyzeInitiative(firstInit);
       setAnalysis(result);

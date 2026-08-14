@@ -11,156 +11,159 @@ import {
   GovernanceMetrics,
   ApprovalAction,
 } from "../../types/workflow";
-import { executeActionTransition, calculateGovernanceMetrics } from "../../lib/workflow/stateMachine";
 
-export const MOCK_APPROVAL_ITEMS: ApprovalItem[] = [
-  {
-    id: "app_1",
-    initiativeId: "init_cs_auto",
-    initiativeName: "Customer Support Automation",
-    businessArea: "Operations & Care",
-    requestedBy: "David Miller (PM)",
-    owner: "Sarah Jenkins (CFO)",
-    currentStage: "EXECUTIVE_REVIEW",
-    requestedBudget: 850000,
-    expectedOutcome: "35% ticket resolution velocity deflection",
-    aiConfidenceScore: 94,
-    riskLevel: "Low",
-    submittedDate: "2026-08-01",
-    dueDate: "2026-08-06",
-  },
-  {
-    id: "app_2",
-    initiativeId: "init_dev_pilot",
-    initiativeName: "AI Code Assistant Pilot",
-    businessArea: "Software Engineering",
-    requestedBy: "Alex Rivera (VP Eng)",
-    owner: "Marcus Vance (CTO)",
-    currentStage: "FINANCE_REVIEW",
-    requestedBudget: 500000,
-    expectedOutcome: "Developer code suggestion velocity uplift",
-    aiConfidenceScore: 91,
-    riskLevel: "Medium",
-    submittedDate: "2026-08-02",
-    dueDate: "2026-08-07",
-  },
-  {
-    id: "app_3",
-    initiativeId: "init_doc_proc",
-    initiativeName: "Automated Document Processing",
-    businessArea: "Legal & Compliance",
-    requestedBy: "Elena Rostova (General Counsel)",
-    owner: "Sarah Jenkins (CFO)",
-    currentStage: "ARCHITECTURE_REVIEW",
-    requestedBudget: 620000,
-    expectedOutcome: "Legal contract processing turnaround reduction",
-    aiConfidenceScore: 88,
-    riskLevel: "Medium",
-    submittedDate: "2026-08-03",
-    dueDate: "2026-08-08",
-  },
-];
+const API_BASE = "http://127.0.0.1:8000/api/v1";
 
-export const MOCK_TASKS: WorkflowTask[] = [
-  {
-    id: "task_1",
-    approvalId: "app_1",
-    taskTitle: "Executive Sign-off on $850k Capital Allocation",
-    assignee: "Sarah Jenkins (CFO)",
-    dueDate: "2026-08-06",
-    priority: "High",
-    status: "PENDING",
-  },
-  {
-    id: "task_2",
-    approvalId: "app_2",
-    taskTitle: "Financial ROI Baseline Verification",
-    assignee: "Finance Audit Team",
-    dueDate: "2026-08-07",
-    priority: "High",
-    status: "IN_PROGRESS",
-  },
-  {
-    id: "task_3",
-    approvalId: "app_3",
-    taskTitle: "SOC2 PII Data Masking Architecture Review",
-    assignee: "Enterprise Architecture Board",
-    dueDate: "2026-08-08",
-    priority: "Medium",
-    status: "PENDING",
-  },
-];
-
-export const MOCK_COMMENTS: WorkflowComment[] = [
-  {
-    id: "cmt_1",
-    approvalId: "app_1",
-    author: "Value Intel AI Engine",
-    role: "AI Engine",
-    content: "Algorithmic analysis confirms 94% confidence score for $140k annual GPU cost reduction.",
-    timestamp: "2026-08-04T10:30:00Z",
-  },
-  {
-    id: "cmt_2",
-    approvalId: "app_1",
-    author: "Sarah Jenkins (CFO)",
-    role: "Executive",
-    content: "Reviewed baseline projections. Recommending approval pending final InfoSec confirmation.",
-    timestamp: "2026-08-04T11:15:00Z",
-  },
-];
-
-export const MOCK_AUDIT_LOGS: WorkflowAuditLog[] = [
-  {
-    id: "aud_1",
-    approvalId: "app_1",
-    actor: "David Miller (PM)",
-    action: "STAGE_TRANSITION",
-    previousStage: "DRAFT",
-    newStage: "SUBMITTED",
-    reason: "Submitted initiative registration wizard with full business case.",
-    timestamp: "2026-08-01T09:00:00Z",
-  },
-  {
-    id: "aud_2",
-    approvalId: "app_1",
-    actor: "Alex Rivera (VP Eng)",
-    action: "APPROVE",
-    previousStage: "SUBMITTED",
-    newStage: "EXECUTIVE_REVIEW",
-    reason: "Engineering review complete; architecture approved.",
-    timestamp: "2026-08-03T14:30:00Z",
-  },
-];
-
-export async function getApprovalsQueue(): Promise<ApprovalItem[]> {
-  return MOCK_APPROVAL_ITEMS;
+export async function getApprovalsQueue(token: string): Promise<ApprovalItem[]> {
+  const res = await fetch(`${API_BASE}/approvals`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch approvals queue");
+  const data = await res.json();
+  return data.map((item: any) => ({
+    id: item.id,
+    initiativeId: item.initiative_id,
+    initiativeName: item.initiative_name || "Initiative",
+    businessArea: item.business_area || "N/A",
+    requestedBy: item.requested_by,
+    owner: item.owner,
+    currentStage: item.current_stage,
+    requestedBudget: item.requested_budget,
+    expectedOutcome: item.expected_outcome,
+    aiConfidenceScore: item.ai_confidence_score,
+    riskLevel: item.risk_level,
+    submittedDate: item.submitted_date,
+    dueDate: item.due_date,
+  }));
 }
 
-export async function getWorkflowTasks(): Promise<WorkflowTask[]> {
-  return MOCK_TASKS;
+export async function getWorkflowTasks(token: string): Promise<WorkflowTask[]> {
+  const res = await fetch(`${API_BASE}/approvals/tasks`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch workflow tasks");
+  const data = await res.json();
+  return data.map((item: any) => ({
+    id: item.id,
+    approvalId: item.approval_id,
+    taskTitle: item.task_title,
+    assignee: item.assignee,
+    dueDate: item.due_date,
+    priority: item.priority,
+    status: item.status,
+  }));
 }
 
-export async function getWorkflowComments(approvalId: string): Promise<WorkflowComment[]> {
-  return MOCK_COMMENTS.filter((c) => c.approvalId === approvalId);
+export async function getWorkflowComments(token: string, approvalId: string): Promise<WorkflowComment[]> {
+  const res = await fetch(`${API_BASE}/approvals/${approvalId}/comments`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch workflow comments");
+  const data = await res.json();
+  return data.map((item: any) => ({
+    id: item.id,
+    approvalId: item.approval_id,
+    author: item.author,
+    role: item.role,
+    content: item.content,
+    timestamp: item.timestamp,
+  }));
 }
 
-export async function getWorkflowAuditLogs(approvalId: string): Promise<WorkflowAuditLog[]> {
-  return MOCK_AUDIT_LOGS.filter((a) => a.approvalId === approvalId);
+export async function addWorkflowComment(token: string, approvalId: string, content: string): Promise<WorkflowComment> {
+  const res = await fetch(`${API_BASE}/approvals/${approvalId}/comments`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ content }),
+  });
+  if (!res.ok) throw new Error("Failed to add comment");
+  const item = await res.json();
+  return {
+    id: item.id,
+    approvalId: item.approval_id,
+    author: item.author,
+    role: item.role,
+    content: item.content,
+    timestamp: item.timestamp,
+  };
 }
 
-export async function getGovernanceMetrics(): Promise<GovernanceMetrics> {
-  return calculateGovernanceMetrics(MOCK_APPROVAL_ITEMS);
+export async function getWorkflowAuditLogs(token: string, approvalId: string): Promise<WorkflowAuditLog[]> {
+  const res = await fetch(`${API_BASE}/approvals/${approvalId}/audit-logs`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch workflow audit logs");
+  const data = await res.json();
+  return data.map((item: any) => ({
+    id: item.id,
+    approvalId: item.approval_id,
+    actor: item.actor,
+    action: item.action,
+    previousStage: item.previous_stage,
+    newStage: item.new_stage,
+    reason: item.reason,
+    timestamp: item.timestamp,
+  }));
+}
+
+export async function getGovernanceMetrics(token: string): Promise<GovernanceMetrics> {
+  const res = await fetch(`${API_BASE}/approvals/metrics`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch governance metrics");
+  return res.json();
 }
 
 export async function executeApprovalAction(
+  token: string,
   item: ApprovalItem,
   action: ApprovalAction,
   reason?: string
 ): Promise<ApprovalItem> {
-  const newStage = executeActionTransition(item.currentStage, action);
+  const url = new URL(`${API_BASE}/approvals/${item.id}/action`);
+  url.searchParams.append("action", action);
+  if (reason) url.searchParams.append("reason", reason);
+  
+  const res = await fetch(url.toString(), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error("Failed to execute approval action");
+  const data = await res.json();
   return {
-    ...item,
-    currentStage: newStage,
+    id: data.id,
+    initiativeId: data.initiative_id,
+    initiativeName: data.initiative_name || item.initiativeName,
+    businessArea: data.business_area || item.businessArea,
+    requestedBy: data.requested_by,
+    owner: data.owner,
+    currentStage: data.current_stage,
+    requestedBudget: data.requested_budget,
+    expectedOutcome: data.expected_outcome,
+    aiConfidenceScore: data.ai_confidence_score,
+    riskLevel: data.risk_level,
+    submittedDate: data.submitted_date,
+    dueDate: data.due_date,
   };
 }

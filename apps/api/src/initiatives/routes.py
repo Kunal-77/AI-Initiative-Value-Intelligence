@@ -38,6 +38,7 @@ from src.initiatives.schemas import (
     LearningResponse
 )
 from src.initiatives.service import InitiativesService, ReviewsAndEvidenceService, RecommendationsAndDecisionsService, GroundedAIService
+from src.initiatives.models import Initiative
 
 router = APIRouter(prefix="/initiatives", tags=["Initiatives"])
 reviews_evidence_router = APIRouter(tags=["Evidence & Reviews"])
@@ -59,7 +60,12 @@ def create_initiative(
         problem_statement=data.problem_statement,
         proposed_intervention=data.proposed_intervention,
         expected_business_outcome=data.expected_business_outcome,
-        planned_start_date=data.planned_start_date
+        planned_start_date=data.planned_start_date,
+        owner=data.owner,
+        executive_sponsor=data.executive_sponsor,
+        project_lead=data.project_lead,
+        target_metric_name=data.target_metric_name,
+        target_metric_value=data.target_metric_value
     )
 
 @router.get("", response_model=List[InitiativeResponse])
@@ -100,6 +106,29 @@ def update_initiative(
         initiative_id=id,
         data=update_data
     )
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_initiative(
+    id: uuid.UUID,
+    context: AuthorizationContext = Depends(require_capability("edit_initiative")),
+    db: Session = Depends(get_db)
+):
+    """
+    Soft-deletes (archives) an initiative, strictly scoped to organization tenancy.
+    """
+    # Idempotent archive check: query without archived_at constraint first
+    stmt = select(Initiative).where(
+        Initiative.organization_id == context.active_organization_id,
+        Initiative.id == id
+    )
+    initiative = db.scalars(stmt).first()
+    if not initiative:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Initiative not found."
+        )
+    if initiative.archived_at is None:
+        InitiativesService.archive_initiative(db=db, org_id=context.active_organization_id, initiative_id=id)
 
 @router.post("/{id}/transition", response_model=InitiativeResponse)
 def transition_lifecycle(

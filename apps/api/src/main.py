@@ -3,7 +3,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.identity.routes import router as identity_router
 from src.initiatives.routes import router as initiatives_router, reviews_evidence_router
+from src.initiatives.approvals_financials_routes import router as approvals_financials_router
 from src.measurements.routes import router as measurements_router
+from src.personal.routes import router as personal_router
 
 start_time = time.time()
 
@@ -49,5 +51,7 @@ def get_health():
 # Mount domain routing modules
 app.include_router(identity_router, prefix="/api/v1", tags=["Identity"])
 app.include_router(initiatives_router, prefix="/api/v1")
+app.include_router(approvals_financials_router, prefix="/api/v1")
 app.include_router(reviews_evidence_router, prefix="/api/v1")
 app.include_router(measurements_router, prefix="/api/v1")
+app.include_router(personal_router, prefix="/api/v1")

@@ -47,8 +47,9 @@ export default function BusinessInitiativesPage() {
     if (isMountedRef.current) setLoading(true);
     if (isMountedRef.current) setError(null);
     try {
-      // Seed & load from canonical store
-      const stored = getStoredInitiatives();
+      const token = await getToken();
+      if (!token) throw new Error("No session token available.");
+      const stored = await getStoredInitiatives(token);
       if (!isMountedRef.current) return;
       setInitiatives(stored);
     } catch (err: any) {
@@ -67,37 +68,52 @@ export default function BusinessInitiativesPage() {
   }, [orgId]);
 
   const handleWizardSubmit = async (formData: CreateInitiativeFormData) => {
-    // Create in canonical store with full payload & default SUBMITTED status
-    createCanonicalInitiative({
-      name: formData.name,
-      businessArea: formData.businessArea,
-      owner: formData.owner,
-      executiveSponsor: formData.executiveSponsor,
-      projectLead: formData.projectLead,
-      plannedBudget: formData.plannedBudget,
-      currency: formData.currency,
-      plannedStartDate: formData.plannedStartDate,
-      problemStatement: formData.problemStatement,
-      proposedIntervention: formData.proposedIntervention,
-      expectedOutcome: formData.expectedOutcome,
-      targetMetricName: formData.targetMetricName,
-      targetMetricValue: formData.targetMetricValue,
-      status: "SUBMITTED",
-    });
-
-    // Refresh list from store
-    fetchInitiatives();
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("No session token available.");
+      await createCanonicalInitiative(token, {
+        name: formData.name,
+        businessArea: formData.businessArea,
+        owner: formData.owner,
+        executiveSponsor: formData.executiveSponsor,
+        projectLead: formData.projectLead,
+        plannedBudget: formData.plannedBudget,
+        currency: formData.currency,
+        plannedStartDate: formData.plannedStartDate,
+        problemStatement: formData.problemStatement,
+        proposedIntervention: formData.proposedIntervention,
+        expectedOutcome: formData.expectedOutcome,
+        targetMetricName: formData.targetMetricName,
+        targetMetricValue: formData.targetMetricValue,
+        status: "SUBMITTED",
+      });
+      fetchInitiatives();
+    } catch (err: any) {
+      alert(err.message || "Failed to create initiative.");
+    }
   };
 
   const handleSaveEdit = async (updated: Partial<InitiativeModel>) => {
     if (!editingItem) return;
-    updateCanonicalInitiative(editingItem.id, updated);
-    fetchInitiatives();
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("No session token available.");
+      await updateCanonicalInitiative(token, editingItem.id, updated);
+      fetchInitiatives();
+    } catch (err: any) {
+      alert(err.message || "Failed to save edits.");
+    }
   };
 
   const handleConfirmDelete = async (id: string) => {
-    deleteCanonicalInitiative(id);
-    fetchInitiatives();
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("No session token available.");
+      await deleteCanonicalInitiative(token, id);
+      fetchInitiatives();
+    } catch (err: any) {
+      alert(err.message || "Failed to delete initiative.");
+    }
   };
 
   if (!orgId) {

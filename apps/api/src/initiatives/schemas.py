@@ -10,6 +10,11 @@ class InitiativeCreate(BaseModel):
     proposed_intervention: Optional[str] = None
     expected_business_outcome: Optional[str] = None
     planned_start_date: Optional[date] = None
+    owner: Optional[str] = Field(None, max_length=255)
+    executive_sponsor: Optional[str] = Field(None, max_length=255)
+    project_lead: Optional[str] = Field(None, max_length=255)
+    target_metric_name: Optional[str] = Field(None, max_length=255)
+    target_metric_value: Optional[str] = Field(None, max_length=255)
 
 class InitiativeUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=255)
@@ -21,6 +26,11 @@ class InitiativeUpdate(BaseModel):
     planned_start_date: Optional[date] = None
     actual_start_date: Optional[date] = None
     next_review_at: Optional[datetime] = None
+    owner: Optional[str] = Field(None, max_length=255)
+    executive_sponsor: Optional[str] = Field(None, max_length=255)
+    project_lead: Optional[str] = Field(None, max_length=255)
+    target_metric_name: Optional[str] = Field(None, max_length=255)
+    target_metric_value: Optional[str] = Field(None, max_length=255)
 
 class InitiativeResponse(BaseModel):
     id: uuid.UUID
@@ -39,6 +49,11 @@ class InitiativeResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     archived_at: Optional[datetime] = None
+    owner: Optional[str] = None
+    executive_sponsor: Optional[str] = None
+    project_lead: Optional[str] = None
+    target_metric_name: Optional[str] = None
+    target_metric_value: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -62,6 +77,12 @@ class CostItemCreate(BaseModel):
     recurrence: str = Field("ONE_TIME", description="ONE_TIME, MONTHLY, ANNUAL")
     source_reference: Optional[str] = Field(None, max_length=255)
     assumption_note: Optional[str] = None
+    expense_name: Optional[str] = Field(None, max_length=255)
+    vendor: Optional[str] = Field(None, max_length=255)
+    department: Optional[str] = Field(None, max_length=255)
+    date: Optional[date] = None
+    status: Optional[str] = Field(None, max_length=50)
+    approval_owner: Optional[str] = Field(None, max_length=255)
 
 class CostItemResponse(BaseModel):
     id: uuid.UUID
@@ -74,6 +95,12 @@ class CostItemResponse(BaseModel):
     recurrence: str
     source_reference: Optional[str] = None
     assumption_note: Optional[str] = None
+    expense_name: Optional[str] = None
+    vendor: Optional[str] = None
+    department: Optional[str] = None
+    date: Optional[date] = None
+    status: Optional[str] = None
+    approval_owner: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -371,3 +398,119 @@ class LearningResponse(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ApprovalItemResponse(BaseModel):
+    id: uuid.UUID
+    organization_id: uuid.UUID
+    initiative_id: uuid.UUID
+    requested_by: str
+    owner: str
+    current_stage: str
+    requested_budget: float
+    expected_outcome: Optional[str] = None
+    ai_confidence_score: Optional[float] = None
+    risk_level: str
+    submitted_date: date
+    due_date: date
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class WorkflowTaskResponse(BaseModel):
+    id: uuid.UUID
+    organization_id: uuid.UUID
+    approval_id: uuid.UUID
+    task_title: str
+    assignee: str
+    due_date: date
+    priority: str
+    status: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class WorkflowCommentResponse(BaseModel):
+    id: uuid.UUID
+    organization_id: uuid.UUID
+    approval_id: uuid.UUID
+    author: str
+    role: str
+    content: str
+    timestamp: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class WorkflowCommentCreate(BaseModel):
+    content: str
+
+
+class WorkflowAuditLogResponse(BaseModel):
+    id: uuid.UUID
+    organization_id: uuid.UUID
+    approval_id: uuid.UUID
+    actor: str
+    action: str
+    previous_stage: str
+    new_stage: str
+    reason: Optional[str] = None
+    timestamp: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class GovernanceMetricsResponse(BaseModel):
+    approvalThroughputCount: int
+    averageApprovalTimeDays: float
+    rejectionPercentage: int
+    pendingPercentage: int
+    escalationsCount: int
+    bottleneckStage: str
+    overdueReviewsCount: int
+
+
+class ExecutiveFinancialMetricsResponse(BaseModel):
+    totalPlannedInvestment: float
+    totalActualSpend: float
+    totalExpectedBenefit: float
+    totalRealizedBenefit: float
+    overallPortfolioRoi: float
+    budgetVariancePercentage: float
+    benefitRealizationPercentage: float
+    topCostDriver: Optional[str] = None
+    largestSavingInitiative: Optional[str] = None
+
+
+class BenefitItemResponse(BaseModel):
+    id: uuid.UUID
+    organization_id: uuid.UUID
+    initiative_id: uuid.UUID
+    initiative_name: str
+    benefit_name: str
+    owner: Optional[str] = None
+    category: str
+    target_amount: float
+    actual_amount: float
+    variance_amount: float
+    status: str
+    evidence_source: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CostItemLedgerResponse(BaseModel):
+    id: uuid.UUID
+    organization_id: uuid.UUID
+    initiative_id: uuid.UUID
+    initiative_name: str
+    expense_name: Optional[str] = None
+    vendor: Optional[str] = None
+    department: Optional[str] = None
+    category: str
+    planned_amount: float
+    actual_amount: float
+    variance_amount: float
+    date: Optional[date] = None
+    status: Optional[str] = None
+    approval_owner: Optional[str] = None

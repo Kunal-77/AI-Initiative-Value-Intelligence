@@ -27,6 +27,7 @@ import {
   InitiativeModel,
   getInitiativeById,
   updateCanonicalInitiative,
+  addInvestmentCostItem,
 } from "../../../../lib/initiativeStore";
 import { ShieldCheck, Target, Calendar, Users, FileText, Sparkles, ArrowLeft, DollarSign } from "lucide-react";
 
@@ -46,7 +47,7 @@ function InitiativeDetailContent({ params }: PageProps) {
   const resolvedParams = use(params);
   const initiativeId = resolvedParams.id;
 
-  const { orgId } = useAuth();
+  const { getToken, orgId } = useAuth();
   const router = useRouter();
 
   const isMountedRef = useRef(true);
@@ -70,13 +71,15 @@ function InitiativeDetailContent({ params }: PageProps) {
   const [costAmount, setCostAmount] = useState("");
   const [addingCost, setAddingCost] = useState(false);
 
-  const loadData = () => {
+  const loadData = async () => {
     if (!orgId) return;
     if (isMountedRef.current) setLoading(true);
     if (isMountedRef.current) setError(null);
 
     try {
-      const stored = getInitiativeById(initiativeId);
+      const token = await getToken();
+      if (!token) throw new Error("No session token available.");
+      const stored = await getInitiativeById(token, initiativeId);
       if (stored) {
         setInitiative(stored);
       } else {
@@ -96,23 +99,37 @@ function InitiativeDetailContent({ params }: PageProps) {
 
   const handleStatusTransition = async (newState: InitiativeLifecycleState) => {
     if (!initiative) return;
-    const updated = updateCanonicalInitiative(initiative.id, { status: newState as any });
-    if (updated) setInitiative(updated);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("No session token available.");
+      const updated = await updateCanonicalInitiative(token, initiative.id, { status: newState as any });
+      if (updated) setInitiative(updated);
+    } catch (err: any) {
+      alert(err.message || "Failed to transition state.");
+    }
   };
 
-  const handleAddCost = (e: React.FormEvent) => {
+  const handleAddCost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!costAmount || !initiative) return;
     setAddingCost(true);
 
-    // Update planned budget in store if cost type is planned
-    const num = Number(costAmount);
-    const newBudget = (Number(initiative.plannedBudget || 0) + num).toString();
-    const updated = updateCanonicalInitiative(initiative.id, { plannedBudget: newBudget });
-    if (updated) setInitiative(updated);
-
-    setCostAmount("");
-    setAddingCost(false);
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("No session token available.");
+      await addInvestmentCostItem(token, initiative.id, {
+        category: costCategory,
+        value_type: costType,
+        amount: Number(costAmount),
+        currency: initiative.currency || "USD",
+      });
+      await loadData();
+      setCostAmount("");
+    } catch (err: any) {
+      alert(err.message || "Failed to add cost item.");
+    } finally {
+      setAddingCost(false);
+    }
   };
 
   if (!orgId || loading) {

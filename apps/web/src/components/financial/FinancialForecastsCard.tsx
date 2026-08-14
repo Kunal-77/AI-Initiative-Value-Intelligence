@@ -5,8 +5,8 @@ import { Sliders, TrendingUp, DollarSign } from "lucide-react";
 import { FinancialForecastScenario } from "../../types/financial";
 import { calculateForecastScenarios } from "../../lib/financial/calculator";
 
-export function FinancialForecastsCard() {
-  const scenarios = calculateForecastScenarios(2330000, 4940000);
+export function FinancialForecastsCard({ actualSpend = 2330000, realizedBenefit = 4940000 }: { actualSpend?: number; realizedBenefit?: number }) {
+  const scenarios = calculateForecastScenarios(actualSpend, realizedBenefit);
   const [selectedType, setSelectedType] = useState<string>("EXPECTED");
 
   const activeScen = scenarios.find((s) => s.type === selectedType) || scenarios[1];
