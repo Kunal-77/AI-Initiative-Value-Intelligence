@@ -3,6 +3,8 @@
  * Single source of truth for Initiative Management (FastAPI -> PostgreSQL)
  */
 
+import { API_BASE } from "./apiConfig";
+
 export type InitiativeStatus =
   | "DRAFT"
   | "SUBMITTED"
@@ -95,7 +97,7 @@ export function mapInitiativeResponseToModel(init: any, latestInvestment?: any):
 }
 
 export async function getStoredInitiatives(token: string): Promise<InitiativeModel[]> {
-  const res = await fetch("http://127.0.0.1:8000/api/v1/initiatives", {
+  const res = await fetch(`${API_BASE}/api/v1/initiatives`, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
@@ -110,7 +112,7 @@ export async function getStoredInitiatives(token: string): Promise<InitiativeMod
   const mapped = await Promise.all(
     data.map(async (init: any) => {
       try {
-        const investRes = await fetch(`http://127.0.0.1:8000/api/v1/initiatives/${init.id}/investments/latest`, {
+        const investRes = await fetch(`${API_BASE}/api/v1/initiatives/${init.id}/investments/latest`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -130,7 +132,7 @@ export async function getStoredInitiatives(token: string): Promise<InitiativeMod
 }
 
 export async function getInitiativeById(token: string, id: string): Promise<InitiativeModel | undefined> {
-  const res = await fetch(`http://127.0.0.1:8000/api/v1/initiatives/${id}`, {
+  const res = await fetch(`${API_BASE}/api/v1/initiatives/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
@@ -144,7 +146,7 @@ export async function getInitiativeById(token: string, id: string): Promise<Init
 
   let latestInvestment = null;
   try {
-    const investRes = await fetch(`http://127.0.0.1:8000/api/v1/initiatives/${id}/investments/latest`, {
+    const investRes = await fetch(`${API_BASE}/api/v1/initiatives/${id}/investments/latest`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -193,7 +195,7 @@ export async function createCanonicalInitiative(
     target_metric_value: rawInput.targetMetricValue || "",
   };
 
-  const res = await fetch("http://127.0.0.1:8000/api/v1/initiatives", {
+  const res = await fetch(`${API_BASE}/api/v1/initiatives`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -223,7 +225,7 @@ export async function createCanonicalInitiative(
       assumption_note: "Initial planned budget from registration wizard",
     };
 
-    const costRes = await fetch(`http://127.0.0.1:8000/api/v1/initiatives/${id}/investments/cost-items`, {
+    const costRes = await fetch(`${API_BASE}/api/v1/initiatives/${id}/investments/cost-items`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -234,7 +236,7 @@ export async function createCanonicalInitiative(
 
     if (costRes.ok) {
       try {
-        const investRes = await fetch(`http://127.0.0.1:8000/api/v1/initiatives/${id}/investments/latest`, {
+        const investRes = await fetch(`${API_BASE}/api/v1/initiatives/${id}/investments/latest`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -267,7 +269,7 @@ export async function updateCanonicalInitiative(
       targetState = "ABANDONED";
     }
     const transitionRes = await fetch(
-      `http://127.0.0.1:8000/api/v1/initiatives/${id}/transition?target_state=${targetState}`,
+      `${API_BASE}/api/v1/initiatives/${id}/transition?target_state=${targetState}`,
       {
         method: "POST",
         headers: {
@@ -297,7 +299,7 @@ export async function updateCanonicalInitiative(
   if (updatedFields.targetImprovement !== undefined) putPayload.target_metric_value = updatedFields.targetImprovement;
 
   if (Object.keys(putPayload).length > 0) {
-    const putRes = await fetch(`http://127.0.0.1:8000/api/v1/initiatives/${id}`, {
+    const putRes = await fetch(`${API_BASE}/api/v1/initiatives/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -315,7 +317,7 @@ export async function updateCanonicalInitiative(
 }
 
 export async function deleteCanonicalInitiative(token: string, id: string): Promise<boolean> {
-  const res = await fetch(`http://127.0.0.1:8000/api/v1/initiatives/${id}`, {
+  const res = await fetch(`${API_BASE}/api/v1/initiatives/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -339,7 +341,7 @@ export async function addInvestmentCostItem(
     currency: string;
   }
 ): Promise<any> {
-  const res = await fetch(`http://127.0.0.1:8000/api/v1/initiatives/${initiativeId}/investments/cost-items`, {
+  const res = await fetch(`${API_BASE}/api/v1/initiatives/${initiativeId}/investments/cost-items`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,

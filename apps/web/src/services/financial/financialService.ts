@@ -12,7 +12,9 @@ import {
 } from "../../types/financial";
 import { generateCashFlowTimeline, calculateForecastScenarios } from "../../lib/financial/calculator";
 
-const API_BASE = "http://127.0.0.1:8000/api/v1";
+import { API_BASE as BASE_URL } from "../../lib/apiConfig";
+
+const API_BASE = `${BASE_URL}/api/v1`;
 
 export async function getExecutiveFinancialMetrics(token: string): Promise<ExecutiveFinancialMetrics> {
   const res = await fetch(`${API_BASE}/financials/summary`, {

@@ -12,7 +12,9 @@ import {
   ApprovalAction,
 } from "../../types/workflow";
 
-const API_BASE = "http://127.0.0.1:8000/api/v1";
+import { API_BASE as BASE_URL } from "../../lib/apiConfig";
+
+const API_BASE = `${BASE_URL}/api/v1`;
 
 export async function getApprovalsQueue(token: string): Promise<ApprovalItem[]> {
   const res = await fetch(`${API_BASE}/approvals`, {

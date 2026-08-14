@@ -6,7 +6,9 @@ import {
   UsageRecord,
 } from "../../types/personal";
 
-const API_BASE = "http://127.0.0.1:8000/api/v1";
+import { API_BASE as BASE_URL } from "../../lib/apiConfig";
+
+const API_BASE = `${BASE_URL}/api/v1`;
 
 function mapSubscription(item: any): Subscription {
   return {
