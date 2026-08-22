@@ -16,25 +16,25 @@ security_scheme = HTTPBearer(auto_error=False)
 # Role-to-Capability configuration matrix
 ROLE_CAPABILITIES: Dict[str, Set[str]] = {
     "ORG_ADMIN": {
-        "view_portfolio", "manage_members", "manage_settings",
+        "view_portfolio", "view_initiative", "manage_members", "manage_settings",
         "create_initiative", "edit_initiative", "approve_initiative",
         "manage_financials", "validate_metrics", "record_decision",
         "request_analysis", "view_audit_logs", "ingest_data", "manage_sources"
     },
     "EXECUTIVE": {
-        "view_portfolio", "approve_initiative", "record_decision", "request_analysis"
+        "view_portfolio", "view_initiative", "approve_initiative", "record_decision", "request_analysis"
     },
     "FINANCE_ANALYST": {
-        "view_portfolio", "manage_financials", "validate_metrics", "view_audit_logs"
+        "view_portfolio", "view_initiative", "manage_financials", "validate_metrics", "view_audit_logs"
     },
     "INITIATIVE_OWNER": {
-        "view_portfolio", "create_initiative", "edit_initiative"
+        "view_portfolio", "view_initiative", "create_initiative", "edit_initiative"
     },
     "REVIEWER": {
-        "view_portfolio", "validate_metrics"
+        "view_portfolio", "view_initiative", "validate_metrics"
     },
     "VIEWER": {
-        "view_portfolio"
+        "view_portfolio", "view_initiative"
     }
 }
 
