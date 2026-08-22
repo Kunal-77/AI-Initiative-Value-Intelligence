@@ -60,24 +60,24 @@ export function ApprovalDetailModal({
         <WorkflowTimeline currentStage={approval.currentStage} />
 
         {/* Business Justification & Expected Outcome */}
-        <div className="p-4 rounded-xl bg-secondary/30 border border-border space-y-2 text-xs">
+        <div className="p-4 rounded-xl bg-secondary/30 border border-border/80 space-y-2 text-xs">
           <h4 className="font-bold text-foreground flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-accent" /> Business Case Justification & Value Impact
+            <ShieldCheck className="w-4 h-4 text-blue-500 dark:text-blue-400" /> Business Case Justification & Value Impact
           </h4>
           <p className="text-muted-foreground leading-relaxed">{approval.expectedOutcome}</p>
         </div>
 
         {/* Financial & AI Signal Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-          <div className="p-3 rounded-lg bg-secondary/20 border border-border space-y-1">
+          <div className="p-3 rounded-lg bg-secondary/20 border border-border/80 space-y-1">
             <span className="text-[10px] uppercase font-bold text-muted-foreground block">Requested Capital Spend</span>
             <span className="text-lg font-extrabold font-mono text-foreground">${(approval.requestedBudget / 1000).toFixed(0)}k USD</span>
           </div>
-          <div className="p-3 rounded-lg bg-accent/10 border border-accent/30 space-y-1">
-            <span className="text-[10px] uppercase font-bold text-accent block">AI Confidence Score</span>
-            <span className="text-lg font-extrabold font-mono text-accent">{approval.aiConfidenceScore}% Score</span>
+          <div className="p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/25 space-y-1">
+            <span className="text-[10px] uppercase font-bold text-cyan-500 dark:text-cyan-400 block">AI Confidence Score</span>
+            <span className="text-lg font-extrabold font-mono text-cyan-500 dark:text-cyan-400">{approval.aiConfidenceScore}% Score</span>
           </div>
-          <div className="p-3 rounded-lg bg-secondary/20 border border-border space-y-1">
+          <div className="p-3 rounded-lg bg-secondary/20 border border-border/80 space-y-1">
             <span className="text-[10px] uppercase font-bold text-muted-foreground block">Evaluated Risk Level</span>
             <span className="text-lg font-extrabold font-mono text-foreground">{approval.riskLevel} Risk</span>
           </div>

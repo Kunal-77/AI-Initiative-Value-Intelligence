@@ -12,10 +12,12 @@ export function FinancialForecastsCard({ actualSpend = 2330000, realizedBenefit 
   const activeScen = scenarios.find((s) => s.type === selectedType) || scenarios[1];
 
   return (
-    <div className="p-5 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-5">
+    <div className="p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-5">
       <div className="flex items-center justify-between border-b border-border/60 pb-2">
         <div className="flex items-center gap-2">
-          <Sliders className="w-4 h-4 text-accent" />
+          <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
+            <Sliders className="w-4 h-4" />
+          </div>
           <h3 className="text-sm font-bold text-foreground">4-Scenario Financial Valuation Forecast</h3>
         </div>
         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary text-muted-foreground border border-border">
@@ -31,15 +33,15 @@ export function FinancialForecastsCard({ actualSpend = 2330000, realizedBenefit 
               key={sc.type}
               type="button"
               onClick={() => setSelectedType(sc.type)}
-              className={`p-3 rounded-lg border text-left transition-all space-y-1 ${
+              className={`p-3 rounded-xl border text-left transition-all space-y-1 cursor-pointer ${
                 isActive
-                  ? "bg-accent/10 border-accent/40 text-foreground font-bold shadow-2xs"
-                  : "bg-secondary/20 border-border text-muted-foreground hover:bg-secondary"
+                  ? "bg-blue-500/10 border-blue-500/40 text-foreground font-bold shadow-2xs"
+                  : "bg-secondary/20 border-border/80 text-muted-foreground hover:bg-secondary/50"
               }`}
             >
-              <span className="text-[10px] uppercase font-bold text-accent block">{sc.type}</span>
+              <span className="text-[10px] uppercase font-bold text-blue-500 dark:text-blue-400 block">{sc.type}</span>
               <span className="text-xs truncate block font-bold">{sc.name}</span>
-              <span className="text-[10px] font-mono text-emerald-500 block">+{sc.roiPercentage}% ROI</span>
+              <span className="text-[10px] font-mono text-emerald-500 dark:text-emerald-400 block">+{sc.roiPercentage}% ROI</span>
             </button>
           );
         })}

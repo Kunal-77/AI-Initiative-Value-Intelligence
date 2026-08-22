@@ -11,8 +11,8 @@ export function ValueIntelligenceAuthShell({ children }: ValueIntelligenceAuthSh
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between font-sans relative overflow-hidden transition-colors duration-300">
       {/* Background Decorative Gradients */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-purple-900/5 dark:bg-purple-900/10 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-indigo-900/5 dark:bg-indigo-900/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-900/5 dark:bg-blue-950/25 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-indigo-950/5 dark:bg-blue-900/15 rounded-full blur-[150px] pointer-events-none" />
 
       {/* Header with Theme Toggle */}
       <header className="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-end relative z-10">

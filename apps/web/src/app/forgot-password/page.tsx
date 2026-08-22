@@ -184,7 +184,7 @@ export default function ForgotPasswordPage() {
                 loading={loading}
                 loadingText="Sending Code..."
                 disabled={loading}
-                className="w-full h-10 shadow-lg shadow-purple-500/10"
+                className="w-full h-10 shadow-lg shadow-blue-500/15"
               >
                 Send Verification Code
               </Button>
@@ -262,7 +262,7 @@ export default function ForgotPasswordPage() {
                 loading={loading}
                 loadingText="Resetting..."
                 disabled={loading}
-                className="w-full h-10 shadow-lg shadow-purple-500/10"
+                className="w-full h-10 shadow-lg shadow-blue-500/15"
               >
                 Reset Password
               </Button>
@@ -302,7 +302,7 @@ export default function ForgotPasswordPage() {
               onClick={handleReturnToSignIn}
               loading={loading}
               loadingText="Returning..."
-              className="w-full h-10 shadow-lg shadow-purple-500/10"
+              className="w-full h-10 shadow-lg shadow-blue-500/15"
             >
               Return to Sign In
             </Button>

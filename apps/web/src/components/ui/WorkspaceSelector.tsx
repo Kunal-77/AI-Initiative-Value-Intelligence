@@ -155,8 +155,8 @@ export function WorkspaceSelector({ className, ...props }: WorkspaceSelectorProp
         onClick={() => setIsOpen((prev) => !prev)}
         onKeyDown={handleKeyDown}
         className={cn(
-          "w-full h-9 px-3 flex items-center justify-between gap-2 rounded-lg border border-border bg-card hover:bg-secondary text-xs font-semibold text-card-foreground shadow-2xs transition-colors focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed",
-          isOpen && "border-ring ring-2 ring-ring/20 bg-secondary"
+          "w-full h-9 px-3 flex items-center justify-between gap-2 rounded-lg border border-border/80 bg-card hover:bg-secondary/70 hover:border-blue-500/40 text-xs font-semibold text-card-foreground shadow-2xs transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/60 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed",
+          isOpen && "border-blue-500/50 ring-2 ring-blue-500/20 bg-secondary"
         )}
       >
         <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -177,7 +177,7 @@ export function WorkspaceSelector({ className, ...props }: WorkspaceSelectorProp
           id={listboxId}
           role="listbox"
           aria-label="Workspaces"
-          className="absolute top-full left-0 right-0 mt-1 w-full rounded-lg border border-border bg-card text-card-foreground shadow-lg z-50 overflow-hidden animate-in fade-in-50 zoom-in-95 duration-100"
+          className="absolute top-full left-0 right-0 mt-1.5 w-full rounded-xl border border-border/80 bg-card text-card-foreground shadow-xl z-50 overflow-hidden animate-in fade-in-50 zoom-in-95 duration-100"
         >
           <div className="p-1 max-h-60 overflow-y-auto space-y-0.5">
             {options.map((opt, index) => {
@@ -193,9 +193,9 @@ export function WorkspaceSelector({ className, ...props }: WorkspaceSelectorProp
                   onClick={() => handleSelect(opt.id)}
                   onMouseEnter={() => setHighlightedIndex(index)}
                   className={cn(
-                    "flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-colors",
+                    "flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors",
                     isHighlighted ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
-                    isSelected && "font-semibold text-foreground"
+                    isSelected && "font-semibold text-foreground bg-blue-500/5"
                   )}
                 >
                   <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -208,7 +208,7 @@ export function WorkspaceSelector({ className, ...props }: WorkspaceSelectorProp
                   </div>
 
                   {isSelected && (
-                    <Check className="w-3.5 h-3.5 text-accent shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 shrink-0" />
                   )}
                 </div>
               );

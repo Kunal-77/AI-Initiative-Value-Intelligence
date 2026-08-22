@@ -10,14 +10,14 @@ export interface CommandCenterHeaderProps {
 
 export function CommandCenterHeader({ metrics }: CommandCenterHeaderProps) {
   const cards = [
-    { label: "Portfolio Health", value: `${metrics.portfolioHealthScore}/100`, icon: ShieldCheck, color: "text-emerald-500", subtext: "Composite health index" },
-    { label: "Portfolio ROI", value: `${metrics.portfolioRoiPercentage}%`, icon: TrendingUp, color: "text-accent", subtext: "Audited ROI return" },
+    { label: "Portfolio Health", value: `${metrics.portfolioHealthScore}/100`, icon: ShieldCheck, color: "text-emerald-500 dark:text-emerald-400", subtext: "Composite health index" },
+    { label: "Portfolio ROI", value: `${metrics.portfolioRoiPercentage}%`, icon: TrendingUp, color: "text-blue-500 dark:text-blue-400", subtext: "Audited ROI return" },
     { label: "Actual Spend", value: `$${(metrics.portfolioActualSpend / 1000000).toFixed(2)}M`, icon: DollarSign, color: "text-foreground", subtext: "Capital expenditure" },
     { label: "Budget Utilization", value: `${metrics.budgetUtilizationPercentage}%`, icon: PieChart, color: "text-foreground", subtext: "Of allocated funds" },
-    { label: "Value Delivered", value: `$${(metrics.valueDeliveredAmount / 1000000).toFixed(2)}M`, icon: Sparkles, color: "text-emerald-500", subtext: "Realized benefit total" },
-    { label: "Value at Risk", value: `$${(metrics.valueAtRiskAmount / 1000).toFixed(0)}k`, icon: AlertTriangle, color: "text-rose-500", subtext: "Identified exposure" },
-    { label: "AI Portfolio Score", value: `${metrics.aiPortfolioScore}/100`, icon: Layers, color: "text-accent", subtext: "Maturity & adoption" },
-    { label: "Open Decisions", value: `${metrics.openExecutiveDecisionsCount} Pending`, icon: Clock, color: "text-amber-500", subtext: "Action items" },
+    { label: "Value Delivered", value: `$${(metrics.valueDeliveredAmount / 1000000).toFixed(2)}M`, icon: Sparkles, color: "text-emerald-500 dark:text-emerald-400", subtext: "Realized benefit total" },
+    { label: "Value at Risk", value: `$${(metrics.valueAtRiskAmount / 1000).toFixed(0)}k`, icon: AlertTriangle, color: "text-rose-500 dark:text-rose-400", subtext: "Identified exposure" },
+    { label: "AI Portfolio Score", value: `${metrics.aiPortfolioScore}/100`, icon: Layers, color: "text-cyan-500 dark:text-cyan-400", subtext: "Maturity & adoption" },
+    { label: "Open Decisions", value: `${metrics.openExecutiveDecisionsCount} Pending`, icon: Clock, color: "text-amber-500 dark:text-amber-400", subtext: "Action items" },
   ];
 
   return (
@@ -27,7 +27,7 @@ export function CommandCenterHeader({ metrics }: CommandCenterHeaderProps) {
         return (
           <div
             key={idx}
-            className="p-3.5 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-1 hover:border-accent/40 transition-colors"
+            className="p-3.5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-2xs space-y-1 hover:border-blue-500/40 hover:shadow-xs transition-all duration-200"
           >
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground truncate">
@@ -36,7 +36,7 @@ export function CommandCenterHeader({ metrics }: CommandCenterHeaderProps) {
               <Icon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
             </div>
 
-            <span className={`text-base font-extrabold font-mono tracking-tight block ${c.color}`}>
+            <span className={`text-base sm:text-lg font-extrabold font-mono tracking-tight block ${c.color}`}>
               {c.value}
             </span>
 

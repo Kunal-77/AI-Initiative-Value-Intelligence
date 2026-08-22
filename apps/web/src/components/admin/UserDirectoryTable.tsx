@@ -48,18 +48,20 @@ export function UserDirectoryTable({
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card text-card-foreground shadow-2xs overflow-hidden space-y-0">
+    <div className="rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm overflow-hidden space-y-0">
       <div className="p-4 border-b border-border bg-secondary/30 space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-accent" />
+            <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
+              <Users className="w-4 h-4" />
+            </div>
             <h3 className="text-sm font-bold text-foreground">Enterprise User Directory & Access Control</h3>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary text-muted-foreground border border-border">
               {filtered.length} Users
             </span>
           </div>
 
-          <Button onClick={() => setShowInviteModal(true)} variant="primary" className="text-xs h-8 py-1 px-3">
+          <Button onClick={() => setShowInviteModal(true)} variant="primary" className="text-xs h-8 py-1 px-3 shadow-lg shadow-blue-500/15">
             <UserPlus className="w-3.5 h-3.5 mr-1" /> Invite User
           </Button>
         </div>
@@ -113,10 +115,10 @@ export function UserDirectoryTable({
           </TableHeader>
           <TableBody className="divide-y divide-border">
             {filtered.map((user) => (
-              <TableRow key={user.id} className="hover:bg-secondary/40 transition-colors text-xs">
-                <TableCell className="py-3.5 px-4 font-semibold text-foreground flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-accent/15 text-accent border border-accent/30 font-bold flex items-center justify-center text-[10px]">
-                    {user.avatarInitials}
+              <TableRow key={user.id} className="hover:bg-blue-500/5 transition-colors text-xs">
+                <TableCell className="py-3.5 px-4 font-semibold text-foreground flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-[10px] shrink-0 shadow-2xs">
+                    {user.avatarInitials || user.name.charAt(0)}
                   </div>
                   <div>
                     <span>{user.name}</span>
@@ -124,7 +126,7 @@ export function UserDirectoryTable({
                   </div>
                 </TableCell>
                 <TableCell className="py-3.5 px-4 text-muted-foreground">{user.department}</TableCell>
-                <TableCell className="py-3.5 px-4 font-mono font-bold text-accent text-[11px]">
+                <TableCell className="py-3.5 px-4 font-mono font-bold text-blue-500 dark:text-blue-400 text-[11px]">
                   {user.role}
                 </TableCell>
                 <TableCell className="py-3.5 px-4 text-muted-foreground font-mono text-[11px]">

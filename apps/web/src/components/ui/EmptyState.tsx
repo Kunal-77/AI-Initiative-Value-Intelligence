@@ -42,7 +42,7 @@ export const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
 
     return (
       <div ref={ref} className={cn(containerStyle, className)} {...props}>
-        <div className="w-12 h-12 rounded-full bg-secondary text-muted-foreground flex items-center justify-center mb-4 shadow-2xs">
+        <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center mb-4 shadow-xs">
           {icon ? icon : <FolderOpen className="w-6 h-6" />}
         </div>
         <h3 className="text-base font-semibold text-foreground mb-1 tracking-tight">

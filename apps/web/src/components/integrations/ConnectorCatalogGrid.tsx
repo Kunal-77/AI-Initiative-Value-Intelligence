@@ -41,10 +41,12 @@ export function ConnectorCatalogGrid({
   };
 
   return (
-    <div className="p-5 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-4">
+    <div className="p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-4">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border/60 pb-3">
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-accent" />
+          <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
+            <Layers className="w-4 h-4" />
+          </div>
           <h3 className="text-sm font-bold text-foreground">Enterprise Connectors & Ecosystem Catalog</h3>
         </div>
 
@@ -65,9 +67,9 @@ export function ConnectorCatalogGrid({
             key={cat}
             type="button"
             onClick={() => setSelectedCategory(cat)}
-            className={`px-2.5 py-1 rounded border font-semibold transition-colors shrink-0 ${
+            className={`px-2.5 py-1 rounded-md border font-semibold transition-colors shrink-0 ${
               selectedCategory === cat
-                ? "bg-accent/15 text-accent border-accent/30 font-bold"
+                ? "bg-blue-500/15 text-blue-500 dark:text-blue-400 border-blue-500/30 font-bold"
                 : "bg-secondary text-muted-foreground border-border hover:bg-secondary/80"
             }`}
           >
@@ -79,7 +81,7 @@ export function ConnectorCatalogGrid({
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
         {filtered.map((c) => (
-          <div key={c.id} className="p-4 rounded-lg bg-secondary/30 border border-border space-y-3 flex flex-col justify-between">
+          <div key={c.id} className="p-4 rounded-xl bg-secondary/30 border border-border/80 space-y-3 flex flex-col justify-between hover:border-blue-500/40 hover:shadow-xs transition-all duration-200">
             <div className="space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <div>

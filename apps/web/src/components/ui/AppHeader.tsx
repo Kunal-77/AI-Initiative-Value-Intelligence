@@ -49,7 +49,7 @@ export const AppHeader = React.forwardRef<HTMLElement, AppHeaderProps>(
       <header
         ref={ref}
         className={cn(
-          "sticky top-0 z-30 h-16 border-b border-border bg-card/85 text-card-foreground backdrop-blur-md transition-colors",
+          "sticky top-0 z-30 h-16 border-b border-border/80 bg-background/80 text-card-foreground backdrop-blur-xl transition-colors",
           className
         )}
         {...props}
@@ -61,7 +61,7 @@ export const AppHeader = React.forwardRef<HTMLElement, AppHeaderProps>(
               <button
                 type="button"
                 onClick={onToggleSidebar}
-                className="p-1.5 text-muted-foreground hover:text-foreground rounded-md hover:bg-secondary transition-colors"
+                className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary transition-colors cursor-pointer"
                 aria-label="Toggle Sidebar Navigation"
                 title="Toggle Sidebar Navigation"
               >
@@ -73,13 +73,13 @@ export const AppHeader = React.forwardRef<HTMLElement, AppHeaderProps>(
               {showLink ? (
                 <Link
                   href={homeHref}
-                  className="font-bold tracking-tight text-foreground text-sm hover:opacity-85 shrink-0 hidden sm:inline-block"
+                  className="font-extrabold tracking-wider text-xs bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent hover:opacity-85 shrink-0 hidden sm:inline-block uppercase"
                 >
-                  VALUE INTELLIGENCE
+                  Value Intelligence
                 </Link>
               ) : (
-                <span className="font-bold tracking-tight text-foreground text-sm shrink-0 hidden sm:inline-block">
-                  VALUE INTELLIGENCE
+                <span className="font-extrabold tracking-wider text-xs bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent shrink-0 hidden sm:inline-block uppercase">
+                  Value Intelligence
                 </span>
               )}
 

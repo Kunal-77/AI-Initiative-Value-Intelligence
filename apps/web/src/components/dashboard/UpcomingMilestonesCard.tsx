@@ -35,22 +35,26 @@ export function UpcomingMilestonesCard({
   }
 
   return (
-    <div className="p-5 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-4">
+    <div className="p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-4 hover:border-blue-500/30 transition-all duration-200">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <Calendar className="w-4 h-4 text-accent shrink-0" />
+          <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400 shrink-0">
+            <Calendar className="w-4 h-4" />
+          </div>
           <h3 className="text-sm font-bold text-foreground truncate" title="Upcoming Decision Gates & Milestones">
             Upcoming Decision Gates & Milestones
           </h3>
         </div>
-        <span className="text-[10px] font-mono text-muted-foreground shrink-0">{milestones.length} Pending</span>
+        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary text-muted-foreground border border-border shrink-0">
+          {milestones.length} Pending
+        </span>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {milestones.map((ms) => (
           <div
             key={ms.id}
-            className="p-3 rounded-lg bg-secondary/30 border border-border flex items-center justify-between gap-3 text-xs"
+            className="p-3 rounded-xl bg-secondary/35 border border-border/70 hover:border-blue-500/30 transition-all flex items-center justify-between gap-3 text-xs"
           >
             <div className="space-y-0.5 min-w-0 flex-1">
               <p className="font-semibold text-foreground truncate">{ms.title}</p>

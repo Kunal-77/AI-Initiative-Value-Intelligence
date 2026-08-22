@@ -206,7 +206,7 @@ function SignUpContent() {
             loading={loading}
             loadingText="Verifying..."
             disabled={loading}
-            className="w-full h-10 shadow-lg shadow-purple-500/10"
+            className="w-full h-10 shadow-lg shadow-blue-500/15"
           >
             Verify Code
           </Button>
@@ -217,7 +217,7 @@ function SignUpContent() {
             type="button"
             onClick={handleResendCode}
             disabled={loading}
-            className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-500 font-semibold focus:outline-none cursor-pointer disabled:opacity-50"
+            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-500 font-semibold focus:outline-none cursor-pointer disabled:opacity-50"
           >
             Resend activation code
           </button>
@@ -319,7 +319,7 @@ function SignUpContent() {
           loading={loading}
           loadingText="Creating..."
           disabled={isFormDisabled}
-          className="w-full h-10 shadow-lg shadow-purple-500/10"
+          className="w-full h-10 shadow-lg shadow-blue-500/15"
         >
           Create Account <UserPlus className="w-4 h-4" />
         </Button>
@@ -361,7 +361,7 @@ function SignUpContent() {
         Already have an account?{" "}
         <Link
           href={`/sign-in?redirect_url=${encodeURIComponent(redirectUrl)}`}
-          className="text-purple-600 dark:text-purple-400 hover:text-purple-500 font-semibold focus:outline-none focus:underline"
+          className="text-blue-600 dark:text-blue-400 hover:text-blue-500 font-semibold focus:outline-none focus:underline"
         >
           Sign In
         </Link>

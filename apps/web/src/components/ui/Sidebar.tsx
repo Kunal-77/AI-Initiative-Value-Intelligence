@@ -117,7 +117,7 @@ export function Sidebar({ className, collapsed = false, onToggleCollapse, ...pro
               collapsed && "justify-center w-full"
             )}
           >
-            <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-extrabold text-sm shrink-0 shadow-xs">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-extrabold text-sm shrink-0 shadow-md shadow-blue-500/20">
               VI
             </div>
             {!collapsed && (
@@ -186,21 +186,21 @@ export function Sidebar({ className, collapsed = false, onToggleCollapse, ...pro
                       className={cn(
                         "group relative flex items-center gap-3 px-2.5 py-2 rounded-lg text-xs font-medium transition-all duration-150",
                         isActive
-                          ? "bg-secondary text-foreground font-semibold shadow-2xs"
-                          : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
+                          ? "bg-blue-500/10 text-blue-500 dark:text-blue-400 font-semibold shadow-xs border border-blue-500/20"
+                          : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
                         collapsed && "justify-center px-0 py-2.5"
                       )}
                     >
                       {/* Active Left Pill */}
                       {isActive && (
-                        <div className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-accent" />
+                        <div className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-blue-500 shadow-sm shadow-blue-500/50" />
                       )}
 
                       <Icon
                         className={cn(
                           "w-4 h-4 shrink-0 transition-colors",
                           isActive
-                            ? "text-accent"
+                            ? "text-blue-500 dark:text-blue-400"
                             : "text-muted-foreground group-hover:text-foreground"
                         )}
                       />
@@ -210,7 +210,18 @@ export function Sidebar({ className, collapsed = false, onToggleCollapse, ...pro
                       )}
 
                       {!collapsed && item.badge && (
-                        <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-accent/15 text-accent border border-accent/30">
+                        <span
+                          className={cn(
+                            "text-[9px] font-semibold px-1.5 py-0.5 rounded-full border",
+                            item.badge === "AI" || item.badge === "LLM"
+                              ? "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20"
+                              : item.badge === "Alerts"
+                              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                              : item.badge === "Sync"
+                              ? "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20"
+                              : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
+                          )}
+                        >
                           {item.badge}
                         </span>
                       )}

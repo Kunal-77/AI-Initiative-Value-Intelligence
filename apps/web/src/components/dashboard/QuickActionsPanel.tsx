@@ -44,7 +44,7 @@ export function QuickActionsPanel({
       desc: "Analyze ROI & cost variance",
       icon: Sparkles,
       onClick: onRunAiStudio,
-      accent: "text-purple-500",
+      accent: "text-blue-400",
     },
     {
       title: "Export Executive Briefing",

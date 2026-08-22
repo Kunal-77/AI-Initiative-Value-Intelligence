@@ -16,7 +16,7 @@ export function WorkflowTimeline({ currentStage }: WorkflowTimelineProps) {
     <div className="p-4 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-3">
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold text-foreground">Governance Approval Lifecycle Timeline</span>
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-accent/15 text-accent border border-accent/30 font-bold">
+        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 font-bold">
           Stage: {currentStage}
         </span>
       </div>
@@ -34,13 +34,13 @@ export function WorkflowTimeline({ currentStage }: WorkflowTimelineProps) {
                     isDone
                       ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
                       : isCurrent
-                      ? "bg-accent/15 text-accent border-accent/40 animate-pulse"
+                      ? "bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/40 animate-pulse"
                       : "bg-secondary text-muted-foreground border-border"
                   }`}
                 >
                   {isDone ? <CheckCircle2 className="w-3.5 h-3.5" /> : idx + 1}
                 </div>
-                <span className={`text-[9px] font-mono uppercase tracking-tighter ${isCurrent ? "text-accent font-bold" : "text-muted-foreground"}`}>
+                <span className={`text-[9px] font-mono uppercase tracking-tighter ${isCurrent ? "text-blue-500 dark:text-blue-400 font-bold" : "text-muted-foreground"}`}>
                   {stage.replace("_", " ")}
                 </span>
               </div>

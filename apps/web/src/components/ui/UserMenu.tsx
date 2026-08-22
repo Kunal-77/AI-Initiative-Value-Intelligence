@@ -94,7 +94,7 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-semibold text-xs shadow-md hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer"
+        className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-semibold text-xs shadow-md shadow-blue-500/20 hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer"
         aria-label="User menu"
       >
         {user.imageUrl ? (
@@ -113,7 +113,7 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
           {/* Header info */}
           <div className="p-3 border-b border-border bg-secondary/30">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shrink-0 overflow-hidden">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shrink-0 overflow-hidden">
                 {user.imageUrl ? (
                   <img src={user.imageUrl} alt={fullName} className="w-full h-full object-cover" />
                 ) : (
@@ -141,7 +141,7 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
               onClick={handleSwitchToBusiness}
               className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-foreground hover:bg-secondary transition-colors cursor-pointer"
             >
-              <Briefcase className="w-3.5 h-3.5 text-purple-500" />
+              <Briefcase className="w-3.5 h-3.5 text-blue-500" />
               <span>Business Workspace</span>
             </button>
             <button
@@ -149,7 +149,7 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
               onClick={handleSwitchToPersonal}
               className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-foreground hover:bg-secondary transition-colors cursor-pointer"
             >
-              <User className="w-3.5 h-3.5 text-indigo-400" />
+              <User className="w-3.5 h-3.5 text-sky-400" />
               <span>Personal Workspace</span>
             </button>
             <button
@@ -190,7 +190,7 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
                 {theme === "system" ? (
                   <Laptop className="w-3.5 h-3.5 text-accent" />
                 ) : resolvedTheme === "dark" ? (
-                  <Moon className="w-3.5 h-3.5 text-purple-400" />
+                  <Moon className="w-3.5 h-3.5 text-blue-400" />
                 ) : (
                   <Sun className="w-3.5 h-3.5 text-amber-500" />
                 )}

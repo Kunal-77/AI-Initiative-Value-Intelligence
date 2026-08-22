@@ -86,13 +86,13 @@ export function ExecutiveFinancialSummary({
           return (
             <div
               key={idx}
-              className="p-5 rounded-xl border border-border bg-card text-card-foreground shadow-2xs hover:shadow-md hover:border-ring/40 transition-all flex flex-col justify-between gap-3"
+              className="p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-blue-500/40 transition-all duration-200 flex flex-col justify-between gap-3"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                   {c.title}
                 </span>
-                <div className="p-1.5 rounded-lg bg-secondary text-muted-foreground">
+                <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
                   <Icon className="w-4 h-4" />
                 </div>
               </div>
@@ -108,7 +108,7 @@ export function ExecutiveFinancialSummary({
                 </span>
               </div>
 
-              <p className="text-[11px] text-muted-foreground truncate border-t border-border/50 pt-2 mt-1">
+              <p className="text-[11px] text-muted-foreground/80 truncate border-t border-border/50 pt-2 mt-1">
                 {c.subtext}
               </p>
             </div>

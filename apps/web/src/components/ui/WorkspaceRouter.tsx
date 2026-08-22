@@ -30,6 +30,17 @@ export function WorkspaceRouter() {
       } else {
         endTransition();
       }
+    } else if (pathname.startsWith("/personal")) {
+      if (orgId && setActive) {
+        setActive({ organization: null })
+          .then(() => endTransition())
+          .catch((err) => {
+            console.error("Failed to clear org in Personal route:", err);
+            endTransition();
+          });
+      } else {
+        endTransition();
+      }
     } else {
       endTransition();
     }

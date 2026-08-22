@@ -19,10 +19,12 @@ export function BenefitsRealization({ expectedBenefit = 4850000, realizedBenefit
   ];
 
   return (
-    <div className="p-5 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-4">
+    <div className="p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-4">
       <div className="flex items-center justify-between border-b border-border/60 pb-2">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-emerald-500" />
+          <div className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 dark:text-emerald-400">
+            <TrendingUp className="w-4 h-4" />
+          </div>
           <h3 className="text-sm font-bold text-foreground">Benefits Realization & Forecast Trend</h3>
         </div>
 
@@ -32,9 +34,9 @@ export function BenefitsRealization({ expectedBenefit = 4850000, realizedBenefit
               key={tf}
               type="button"
               onClick={() => setTimeframe(tf)}
-              className={`px-2 py-0.5 rounded border transition-colors ${
+              className={`px-2.5 py-1 rounded-md border font-semibold transition-colors cursor-pointer ${
                 timeframe === tf
-                  ? "bg-accent/15 text-accent border-accent/30 font-bold"
+                  ? "bg-blue-500/15 text-blue-500 dark:text-blue-400 border-blue-500/30 font-bold"
                   : "bg-secondary text-muted-foreground border-border hover:bg-secondary/80"
               }`}
             >

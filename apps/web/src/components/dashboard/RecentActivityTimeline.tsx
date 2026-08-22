@@ -35,11 +35,13 @@ export function RecentActivityTimeline({
   }
 
   return (
-    <div className="p-5 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-4">
+    <div className="p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-4 hover:border-blue-500/30 transition-all duration-200">
       {/* Header */}
       <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-accent" />
+          <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
+            <Clock className="w-4 h-4" />
+          </div>
           <h3 className="text-sm font-bold text-foreground">Recent Audit & Activity Log</h3>
         </div>
         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary text-muted-foreground border border-border">
@@ -51,14 +53,14 @@ export function RecentActivityTimeline({
       <div className="relative pl-6 space-y-5 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-border/80">
         {events.map((event) => {
           let badgeColor = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
-          if (event.type === "cost") badgeColor = "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20";
-          if (event.type === "ai") badgeColor = "bg-accent/15 text-accent border-accent/30";
+          if (event.type === "cost") badgeColor = "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20";
+          if (event.type === "ai") badgeColor = "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20";
           if (event.type === "milestone") badgeColor = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
 
           return (
             <div key={event.id} className="relative flex items-start gap-3 text-xs group">
               {/* User Avatar Circle on Timeline Connector */}
-              <div className="absolute -left-6 top-0 w-5 h-5 rounded-full bg-primary text-primary-foreground font-semibold text-[9px] flex items-center justify-center border border-border shadow-xs shrink-0">
+              <div className="absolute -left-6 top-0 w-5 h-5 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-semibold text-[9px] flex items-center justify-center border border-border/60 shadow-xs shadow-blue-500/20 shrink-0">
                 {event.userInitials}
               </div>
 

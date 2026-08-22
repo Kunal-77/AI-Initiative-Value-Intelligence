@@ -45,23 +45,23 @@ export function ExecutiveWelcome({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-border bg-card p-6 sm:p-8 shadow-2xs transition-all">
+    <div className="relative overflow-hidden rounded-xl border border-border/80 bg-gradient-to-br from-card via-card to-secondary/30 p-6 sm:p-8 shadow-sm transition-all">
       {/* Subtle ambient accent glow in top right */}
-      <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-accent/5 blur-3xl pointer-events-none" />
+      <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-blue-600/10 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-2.5">
           {/* Organization & Fiscal Context Badges */}
           <div className="flex items-center gap-2.5 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground text-xs font-semibold border border-border">
-              <Building2 className="w-3.5 h-3.5 text-accent" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-semibold border border-blue-500/20">
+              <Building2 className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
               {orgName}
             </span>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold border border-emerald-500/20">
               <CheckCircle2 className="w-3.5 h-3.5" />
               Q3 FY2026 Executive Context
             </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-medium border border-indigo-500/20">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium border border-blue-500/20">
               <ShieldCheck className="w-3.5 h-3.5" />
               Audit Verified
             </span>
@@ -80,9 +80,9 @@ export function ExecutiveWelcome({
           <Button
             onClick={onRunAiStudio}
             variant="secondary"
-            className="border border-accent/30 hover:border-accent/60 text-xs h-9 px-3.5"
+            className="border border-cyan-500/30 hover:border-cyan-500/60 text-xs h-9 px-3.5"
           >
-            <Sparkles className="w-3.5 h-3.5 text-accent" />
+            <Sparkles className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
             AI Value Studio
           </Button>
 

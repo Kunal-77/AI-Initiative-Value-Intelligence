@@ -70,13 +70,14 @@ export function RecommendationFeed({
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header & Filter Controls */}
-      <div className="p-4 rounded-xl border border-border bg-card space-y-3 shadow-2xs">
-        <div className="flex items-center justify-between">
+    <div className="p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-4">
+      <div className="p-4 border-b border-border/60 bg-secondary/30 rounded-xl space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-accent" />
-            <h3 className="text-sm font-bold text-foreground">AI Executive Decision Center</h3>
+            <div className="p-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 dark:text-cyan-400">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <h3 className="text-sm font-bold text-foreground">AI Intelligence & Recommendations Feed</h3>
           </div>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary text-muted-foreground border border-border">
             {filtered.length} Filtered
@@ -122,19 +123,19 @@ export function RecommendationFeed({
           const isExpanded = expandedIds.includes(rec.id);
 
           let statusBadge = "bg-secondary text-secondary-foreground border-border";
-          if (rec.status === "ACCEPTED") statusBadge = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
-          if (rec.status === "REJECTED") statusBadge = "bg-rose-500/10 text-rose-600 border-rose-500/20";
-          if (rec.status === "SAVED") statusBadge = "bg-indigo-500/10 text-indigo-600 border-indigo-500/20";
+          if (rec.status === "ACCEPTED") statusBadge = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
+          if (rec.status === "REJECTED") statusBadge = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20";
+          if (rec.status === "SAVED") statusBadge = "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20";
 
           return (
             <div
               key={rec.id}
-              className="p-5 rounded-xl border border-border bg-card text-card-foreground shadow-2xs hover:shadow-md hover:border-accent/40 transition-all flex flex-col justify-between gap-3 relative overflow-hidden"
+              className="p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-cyan-500/40 transition-all flex flex-col justify-between gap-3 relative overflow-hidden"
             >
               <div className="space-y-2">
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-0.5 min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-accent block">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-500 dark:text-cyan-400 block">
                       {rec.category}
                     </span>
                     <h4 className="text-sm font-bold text-foreground leading-snug">{rec.title}</h4>

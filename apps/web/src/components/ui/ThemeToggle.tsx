@@ -34,7 +34,7 @@ export function ThemeToggle({ className, ...props }: ThemeToggleProps) {
   const activeIcon = () => {
     if (theme === "system") return <Laptop className="w-4 h-4 text-accent" />;
     return resolvedTheme === "dark" ? (
-      <Moon className="w-4 h-4 text-purple-400" />
+      <Moon className="w-4 h-4 text-blue-400" />
     ) : (
       <Sun className="w-4 h-4 text-amber-500" />
     );
@@ -57,7 +57,7 @@ export function ThemeToggle({ className, ...props }: ThemeToggleProps) {
         <div className="absolute right-0 mt-1.5 w-32 rounded-lg border border-border bg-card p-1 shadow-lg z-50 animate-in fade-in duration-100 focus:outline-none">
           {[
             { value: "light", label: "Light", icon: Sun, color: "text-amber-500" },
-            { value: "dark", label: "Dark", icon: Moon, color: "text-purple-400" },
+            { value: "dark", label: "Dark", icon: Moon, color: "text-blue-400" },
             { value: "system", label: "System", icon: Laptop, color: "text-accent" },
           ].map((item) => {
             const Icon = item.icon;

@@ -42,18 +42,20 @@ export function PortfolioHealthCard({ loading = false, error = null }: Portfolio
     {
       title: "Pending Baseline Review",
       count: 2,
-      badgeClass: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+      badgeClass: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
       icon: HelpCircle,
       desc: "Awaiting executive sign-off on targets",
     },
   ];
 
   return (
-    <div className="p-6 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-5">
+    <div className="p-6 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-5 hover:border-blue-500/30 transition-all duration-200">
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
           <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-            <Activity className="w-4 h-4 text-accent" />
+            <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
+              <Activity className="w-4 h-4" />
+            </div>
             Portfolio Risk & Health Overview
           </h3>
           <p className="text-xs text-muted-foreground">
@@ -69,7 +71,7 @@ export function PortfolioHealthCard({ loading = false, error = null }: Portfolio
         {healthItems.map((item, idx) => {
           const Icon = item.icon;
           return (
-            <div key={idx} className="p-4 rounded-lg bg-secondary/30 border border-border space-y-2 min-w-0">
+            <div key={idx} className="p-4 rounded-xl bg-secondary/35 border border-border/70 hover:border-blue-500/30 transition-all space-y-2 min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-semibold text-foreground truncate" title={item.title}>
                   {item.title}

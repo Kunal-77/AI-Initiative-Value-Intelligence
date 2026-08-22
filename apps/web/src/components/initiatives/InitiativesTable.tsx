@@ -82,12 +82,14 @@ export function InitiativesTable({
   if (error) return <ErrorBanner message={`Failed to load initiatives: ${error}`} variant="red" />;
 
   return (
-    <div className="rounded-xl border border-border bg-card text-card-foreground shadow-2xs overflow-hidden space-y-0">
+    <div className="rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm overflow-hidden space-y-0">
       {/* Top Filter Bar */}
       <div className="p-4 border-b border-border bg-secondary/30 space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <FolderKanban className="w-4 h-4 text-accent" />
+            <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
+              <FolderKanban className="w-4 h-4" />
+            </div>
             <h3 className="text-sm font-bold text-foreground">Initiative Management Directory</h3>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary text-muted-foreground border border-border">
               {filteredInitiatives.length} Registered
@@ -151,7 +153,7 @@ export function InitiativesTable({
               type="button"
               onClick={() => toggleSort("name")}
               className={`font-semibold flex items-center gap-0.5 hover:underline ${
-                sortField === "name" ? "text-accent" : "text-muted-foreground"
+                sortField === "name" ? "text-blue-500 dark:text-blue-400 font-bold" : "text-muted-foreground"
               }`}
             >
               Name <ArrowUpDown className="w-3 h-3" />
@@ -160,7 +162,7 @@ export function InitiativesTable({
               type="button"
               onClick={() => toggleSort("plannedBudget")}
               className={`font-semibold flex items-center gap-0.5 hover:underline ${
-                sortField === "plannedBudget" ? "text-accent" : "text-muted-foreground"
+                sortField === "plannedBudget" ? "text-blue-500 dark:text-blue-400 font-bold" : "text-muted-foreground"
               }`}
             >
               Budget <ArrowUpDown className="w-3 h-3" />
@@ -193,7 +195,7 @@ export function InitiativesTable({
                 <TableHead className="py-3 px-4 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-border">
+            <TableBody className="divide-y divide-border/60">
               {paginatedData.map((item) => {
                 const formattedBudget = `$${Number(item.plannedBudget || 0).toLocaleString()} ${item.currency || "USD"}`;
 
@@ -202,9 +204,9 @@ export function InitiativesTable({
                 if (item.health === "Review") healthColor = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
 
                 return (
-                  <TableRow key={item.id} className="hover:bg-secondary/40 transition-colors group">
+                  <TableRow key={item.id} className="hover:bg-blue-500/5 transition-colors group">
                     <TableCell className="py-3.5 px-4 font-semibold text-foreground">
-                      <Link href={`/business/initiatives/${item.id}`} className="hover:text-accent transition-colors flex items-center gap-1.5">
+                      <Link href={`/business/initiatives/${item.id}`} className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center gap-1.5">
                         {item.name}
                       </Link>
                     </TableCell>
@@ -228,7 +230,7 @@ export function InitiativesTable({
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={`/business/initiatives/${item.id}`}
-                          className="p-1 rounded text-muted-foreground hover:text-accent hover:bg-secondary transition-colors"
+                          className="p-1 rounded text-muted-foreground hover:text-blue-500 dark:hover:text-blue-400 hover:bg-secondary transition-colors"
                           title="View Details"
                         >
                           <ArrowUpRight className="w-3.5 h-3.5" />

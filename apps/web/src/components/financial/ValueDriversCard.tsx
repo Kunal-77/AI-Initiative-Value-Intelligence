@@ -6,9 +6,9 @@ import { Layers, ShieldCheck, Zap, Heart, Award, CheckCircle } from "lucide-reac
 export function ValueDriversCard() {
   const drivers = [
     { category: "Cost Reduction", impact: "$3.45M", score: 94, color: "bg-emerald-500" },
-    { category: "Productivity Uplift", impact: "$850k", score: 88, color: "bg-indigo-500" },
+    { category: "Productivity Uplift", impact: "$850k", score: 88, color: "bg-blue-600" },
     { category: "Operational Efficiency", impact: "$640k", score: 82, color: "bg-accent" },
-    { category: "Risk & Compliance", impact: "$420k", score: 91, color: "bg-purple-500" },
+    { category: "Risk & Compliance", impact: "$420k", score: 91, color: "bg-sky-500" },
     { category: "Customer Satisfaction", impact: "+14 NPS", score: 86, color: "bg-amber-500" },
   ];
 

@@ -39,11 +39,13 @@ export function ApprovalQueue({
   }, [approvals, filterTab, searchQuery]);
 
   return (
-    <div className="rounded-xl border border-border bg-card text-card-foreground shadow-2xs overflow-hidden space-y-0">
+    <div className="rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm overflow-hidden space-y-0">
       <div className="p-4 border-b border-border bg-secondary/30 space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-accent" />
+            <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
             <h3 className="text-sm font-bold text-foreground">Executive Governance & Approval Queue</h3>
           </div>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary text-muted-foreground border border-border">
@@ -66,7 +68,7 @@ export function ApprovalQueue({
                 onClick={() => setFilterTab(tab.id)}
                 className={`px-2.5 py-1 rounded-md border font-medium transition-colors ${
                   filterTab === tab.id
-                    ? "bg-accent/15 text-accent border-accent/30 font-bold"
+                    ? "bg-blue-500/15 text-blue-500 dark:text-blue-400 border-blue-500/30 font-bold"
                     : "bg-secondary text-muted-foreground border-border hover:bg-secondary/80"
                 }`}
               >
@@ -96,9 +98,9 @@ export function ApprovalQueue({
               <TableHead className="py-3 px-4 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="divide-y divide-border">
+          <TableBody className="divide-y divide-border/60">
             {filtered.map((item) => (
-              <TableRow key={item.id} className="hover:bg-secondary/40 transition-colors text-xs">
+              <TableRow key={item.id} className="hover:bg-blue-500/5 transition-colors text-xs">
                 <TableCell className="py-3.5 px-4 font-semibold text-foreground">
                   {item.initiativeName}
                   <span className="block text-[10px] text-muted-foreground font-normal">Requested by: {item.requestedBy}</span>
@@ -112,7 +114,7 @@ export function ApprovalQueue({
                 <TableCell className="py-3.5 px-4 font-mono font-semibold text-foreground">
                   ${(item.requestedBudget / 1000).toFixed(0)}k
                 </TableCell>
-                <TableCell className="py-3.5 px-4 text-center font-mono font-bold text-accent">
+                <TableCell className="py-3.5 px-4 text-center font-mono font-bold text-cyan-500 dark:text-cyan-400">
                   {item.aiConfidenceScore}%
                 </TableCell>
                 <TableCell className="py-3.5 px-4 text-right">

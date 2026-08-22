@@ -263,7 +263,7 @@ function SignInContent() {
             loading={loading}
             loadingText="Verifying..."
             disabled={loading}
-            className="w-full h-10 shadow-lg shadow-purple-500/10"
+            className="w-full h-10 shadow-lg shadow-blue-500/15"
           >
             Verify Code
           </Button>
@@ -273,7 +273,7 @@ function SignInContent() {
               type="button"
               onClick={handleResendCode}
               disabled={loading || resendLoading}
-              className="text-purple-600 dark:text-purple-400 hover:text-purple-500 font-semibold focus:outline-none disabled:opacity-50"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-500 font-semibold focus:outline-none disabled:opacity-50"
             >
               {resendLoading ? "Sending..." : resendSuccess ? "Code sent!" : "Resend code"}
             </button>
@@ -325,7 +325,7 @@ function SignInContent() {
             <Label htmlFor="password" required>Password</Label>
             <Link
               href="/forgot-password"
-              className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-500 font-semibold focus:outline-none focus:underline"
+              className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-500 font-semibold focus:outline-none focus:underline"
             >
               Forgot password?
             </Link>
@@ -360,7 +360,7 @@ function SignInContent() {
           loading={loading}
           loadingText="Signing In..."
           disabled={isFormDisabled}
-          className="w-full h-10 shadow-lg shadow-purple-500/10"
+          className="w-full h-10 shadow-lg shadow-blue-500/15"
         >
           Sign In <LogIn className="w-4 h-4" />
         </Button>
@@ -402,7 +402,7 @@ function SignInContent() {
         Don't have an account?{" "}
         <Link
           href={`/sign-up?redirect_url=${encodeURIComponent(redirectUrl)}`}
-          className="text-purple-600 dark:text-purple-400 hover:text-purple-500 font-semibold focus:outline-none focus:underline"
+          className="text-blue-600 dark:text-blue-400 hover:text-blue-500 font-semibold focus:outline-none focus:underline"
         >
           Create an account
         </Link>

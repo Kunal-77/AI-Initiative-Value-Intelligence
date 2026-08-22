@@ -280,7 +280,7 @@ export default function PersonalWorkspacePage() {
   const getSubBadge = (type: string) => {
     switch (type) {
       case "ai":
-        return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-purple-500/10 text-purple-600 dark:text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/20"><Cpu className="w-3 h-3" /> AI Tool</span>;
+        return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-2 py-0.5 rounded-full border border-cyan-500/20"><Cpu className="w-3 h-3" /> AI Tool</span>;
       case "cloud":
         return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20"><Cloud className="w-3 h-3" /> Cloud</span>;
       default:
@@ -351,7 +351,7 @@ export default function PersonalWorkspacePage() {
             <Button
               onClick={() => setIsSubModalOpen(true)}
               variant="primary"
-              className="h-10 text-xs px-4 shadow-lg shadow-purple-500/10"
+              className="h-10 text-xs px-4 shadow-lg shadow-blue-500/15"
             >
               <Plus className="w-3.5 h-3.5 mr-1.5" /> Register Subscription
             </Button>
@@ -360,40 +360,60 @@ export default function PersonalWorkspacePage() {
 
         {/* Metrics Grid */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-card border border-border p-5 rounded-xl shadow-xs flex flex-col gap-1.5">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <DollarSign className="w-3.5 h-3.5 text-purple-500" /> Monthly Spend
-            </span>
+          <div className="bg-card border border-border/80 p-5 rounded-xl shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-blue-500/40 transition-all duration-200 flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Monthly Spend
+              </span>
+              <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
+                <DollarSign className="w-3.5 h-3.5" />
+              </div>
+            </div>
             <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
               ${dashboard?.monthlySpend.toFixed(2) || "0.00"}
             </span>
             <span className="text-[10px] text-muted-foreground">Active recurring commitments</span>
           </div>
 
-          <div className="bg-card border border-border p-5 rounded-xl shadow-xs flex flex-col gap-1.5">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <Cpu className="w-3.5 h-3.5 text-indigo-500" /> AI Tools Spend
-            </span>
+          <div className="bg-card border border-border/80 p-5 rounded-xl shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-cyan-500/40 transition-all duration-200 flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                AI Tools Spend
+              </span>
+              <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 dark:text-cyan-400">
+                <Cpu className="w-3.5 h-3.5" />
+              </div>
+            </div>
             <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
               ${dashboard?.aiSpend.toFixed(2) || "0.00"}
             </span>
             <span className="text-[10px] text-muted-foreground">Generative AI subscriptions</span>
           </div>
 
-          <div className="bg-card border border-border p-5 rounded-xl shadow-xs flex flex-col gap-1.5">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-blue-500" /> Subscriptions
-            </span>
+          <div className="bg-card border border-border/80 p-5 rounded-xl shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-blue-500/40 transition-all duration-200 flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Subscriptions
+              </span>
+              <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
+                <Layers className="w-3.5 h-3.5" />
+              </div>
+            </div>
             <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
               {dashboard?.activeSubscriptionsCount || 0}
             </span>
             <span className="text-[10px] text-muted-foreground">Active tracking records</span>
           </div>
 
-          <div className="bg-card border border-border p-5 rounded-xl shadow-xs flex flex-col gap-1.5">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <Cloud className="w-3.5 h-3.5 text-sky-500" /> Cloud Projects
-            </span>
+          <div className="bg-card border border-border/80 p-5 rounded-xl shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-blue-500/40 transition-all duration-200 flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Cloud Projects
+              </span>
+              <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
+                <Cloud className="w-3.5 h-3.5" />
+              </div>
+            </div>
             <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
               {dashboard?.cloudProjectsCount || 0}
             </span>
@@ -437,7 +457,7 @@ export default function PersonalWorkspacePage() {
                     </thead>
                     <tbody className="divide-y divide-border">
                       {subscriptions.map((sub) => (
-                        <tr key={sub.id} className="hover:bg-muted/10 transition-colors">
+                        <tr key={sub.id} className="hover:bg-blue-500/5 transition-colors">
                           <td className="p-3.5 font-bold text-foreground">{sub.name}</td>
                           <td className="p-3.5">{getSubBadge(sub.subscriptionType)}</td>
                           <td className="p-3.5">
@@ -534,7 +554,7 @@ export default function PersonalWorkspacePage() {
             <div className="bg-card border border-border rounded-xl shadow-xs overflow-hidden">
               <div className="px-5 py-4 border-b border-border flex items-center justify-between">
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-purple-500" /> Renewal Calendar (30 Days)
+                  <Calendar className="w-4 h-4 text-blue-500" /> Renewal Calendar (30 Days)
                 </h3>
               </div>
 
@@ -564,7 +584,7 @@ export default function PersonalWorkspacePage() {
             <div className="bg-card border border-border rounded-xl shadow-xs overflow-hidden">
               <div className="px-5 py-4 border-b border-border flex items-center justify-between">
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
-                  <CreditCard className="w-4 h-4 text-indigo-500" /> Saved Payment Methods
+                  <CreditCard className="w-4 h-4 text-sky-500" /> Saved Payment Methods
                 </h3>
               </div>
 
@@ -573,7 +593,7 @@ export default function PersonalWorkspacePage() {
                   <span>No payment methods registered yet.</span>
                   <button
                     onClick={() => setIsPmModalOpen(true)}
-                    className="text-[10px] text-purple-600 dark:text-purple-400 font-bold hover:underline cursor-pointer"
+                    className="text-[10px] text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer"
                   >
                     Add credit card
                   </button>
@@ -627,7 +647,7 @@ export default function PersonalWorkspacePage() {
                     placeholder="e.g. OpenAI Plus, AWS Personal Sandbox"
                     value={subName}
                     onChange={(e) => setSubName(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                   />
                 </div>
 
@@ -636,7 +656,7 @@ export default function PersonalWorkspacePage() {
                   <select
                     value={subType}
                     onChange={(e) => setSubType(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                   >
                     <option value="generic">Generic SaaS</option>
                     <option value="cloud">Cloud Sandbox</option>
@@ -649,7 +669,7 @@ export default function PersonalWorkspacePage() {
                   <select
                     value={subCategory}
                     onChange={(e) => setSubCategory(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                   >
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -665,7 +685,7 @@ export default function PersonalWorkspacePage() {
                     placeholder="0.00"
                     value={subCost}
                     onChange={(e) => setSubCost(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                   />
                 </div>
 
@@ -674,7 +694,7 @@ export default function PersonalWorkspacePage() {
                   <select
                     value={subCycle}
                     onChange={(e) => setSubCycle(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                   >
                     <option value="MONTHLY">Monthly</option>
                     <option value="ANNUAL">Annual</option>
@@ -686,7 +706,7 @@ export default function PersonalWorkspacePage() {
                   <select
                     value={subPaymentMethod}
                     onChange={(e) => setSubPaymentMethod(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                   >
                     <option value="">No linked payment method</option>
                     {paymentMethods.map((pm) => (

@@ -23,6 +23,7 @@ export function ExecutiveInsightCards({ recommendations }: ExecutiveInsightCards
       subtext: `Initiative: ${highestSavings?.initiativeName || "Customer Support"}`,
       icon: DollarSign,
       border: "border-emerald-500/30 bg-emerald-500/5",
+      metricColor: "text-emerald-500 dark:text-emerald-400",
     },
     {
       title: "Highest Confidence AI Signal",
@@ -30,7 +31,8 @@ export function ExecutiveInsightCards({ recommendations }: ExecutiveInsightCards
       metric: `${highestConfidence?.confidenceScore || 94}% Confidence`,
       subtext: "Validated against GCP inference logs",
       icon: TrendingUp,
-      border: "border-accent/30 bg-accent/5",
+      border: "border-cyan-500/30 bg-cyan-500/5",
+      metricColor: "text-cyan-500 dark:text-cyan-400",
     },
     {
       title: "Validation Needed (Low Confidence)",
@@ -39,6 +41,7 @@ export function ExecutiveInsightCards({ recommendations }: ExecutiveInsightCards
       subtext: "Requires executive sponsor sign-off",
       icon: HelpCircle,
       border: "border-amber-500/30 bg-amber-500/5",
+      metricColor: "text-amber-500 dark:text-amber-400",
     },
   ];
 
@@ -47,15 +50,15 @@ export function ExecutiveInsightCards({ recommendations }: ExecutiveInsightCards
       {highlights.map((h, idx) => {
         const Icon = h.icon;
         return (
-          <div key={idx} className={`p-4 rounded-xl border ${h.border} text-card-foreground shadow-2xs space-y-2`}>
+          <div key={idx} className={`p-4 rounded-xl border ${h.border} text-card-foreground shadow-2xs space-y-2 hover:shadow-xs transition-all duration-200`}>
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{h.title}</span>
-              <Icon className="w-4 h-4 text-foreground" />
+              <Icon className="w-4 h-4 text-muted-foreground" />
             </div>
 
             <div className="space-y-0.5">
               <h4 className="text-xs font-bold text-foreground truncate">{h.item}</h4>
-              <span className="text-sm font-extrabold font-mono text-foreground block">{h.metric}</span>
+              <span className={`text-sm font-extrabold font-mono block ${h.metricColor}`}>{h.metric}</span>
             </div>
 
             <p className="text-[10px] text-muted-foreground truncate">{h.subtext}</p>

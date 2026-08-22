@@ -46,7 +46,7 @@ export function FinancialExport() {
           variant="secondary"
           className="text-xs h-9 justify-start"
         >
-          <TableIcon className="w-3.5 h-3.5 mr-1.5 text-purple-500" /> Budget Ledger (CSV)
+          <TableIcon className="w-3.5 h-3.5 mr-1.5 text-sky-400" /> Budget Ledger (CSV)
         </Button>
       </div>
     </div>

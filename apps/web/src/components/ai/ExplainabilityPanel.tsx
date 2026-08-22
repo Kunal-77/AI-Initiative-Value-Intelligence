@@ -33,7 +33,7 @@ export function ExplainabilityPanel({
       <DialogHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-accent px-2 py-0.5 rounded bg-accent/15 border border-accent/30">
+            <span className="text-xs font-bold uppercase tracking-wider text-cyan-500 dark:text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">
               {recommendation.category}
             </span>
             <span className="text-xs font-mono text-muted-foreground">{recommendation.version}</span>
@@ -47,15 +47,15 @@ export function ExplainabilityPanel({
           {recommendation.title}
         </DialogTitle>
         <DialogDescription className="text-xs text-muted-foreground">
-          Initiative: <strong className="text-foreground">{recommendation.initiativeName}</strong> • Confidence: <strong className="text-accent">{recommendation.confidenceScore}%</strong>
+          Initiative: <strong className="text-foreground">{recommendation.initiativeName}</strong> • Confidence: <strong className="text-cyan-500 dark:text-cyan-400">{recommendation.confidenceScore}%</strong>
         </DialogDescription>
       </DialogHeader>
 
       <DialogContent className="space-y-4 py-3 max-h-[70vh] overflow-y-auto pr-1">
         {/* Model Weight & Confidence Breakdown */}
-        <div className="p-4 rounded-xl bg-accent/5 border border-accent/30 space-y-2">
+        <div className="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/25 space-y-2">
           <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-            <Cpu className="w-4 h-4 text-accent" /> AI Confidence Breakdown & Model Weights
+            <Cpu className="w-4 h-4 text-cyan-500 dark:text-cyan-400" /> AI Confidence Breakdown & Model Weights
           </h4>
           <div className="space-y-2 pt-1">
             {weights.map((w, idx) => (
@@ -65,7 +65,7 @@ export function ExplainabilityPanel({
                   <span className="font-mono font-bold text-foreground">{w.weight}% Weight</span>
                 </div>
                 <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
-                  <div className="h-full bg-accent" style={{ width: `${w.weight * 2.5}%` }} />
+                  <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" style={{ width: `${w.weight * 2.5}%` }} />
                 </div>
               </div>
             ))}

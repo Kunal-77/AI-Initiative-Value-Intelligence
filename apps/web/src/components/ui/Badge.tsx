@@ -28,10 +28,10 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
         break;
       case "SUBMITTED":
       case "info":
-        variantStyles = "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20";
+        variantStyles = "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20";
         break;
       case "COMPLETED":
-        variantStyles = "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20";
+        variantStyles = "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20";
         break;
       case "PAUSED":
       case "warning":

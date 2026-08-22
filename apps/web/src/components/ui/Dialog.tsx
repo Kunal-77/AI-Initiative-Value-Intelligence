@@ -24,7 +24,7 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
     return (
       <div
         ref={ref}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150"
         onClick={(e) => {
           if (e.target === e.currentTarget) {
             onClose();
@@ -32,7 +32,7 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
         }}
         {...props}
       >
-        <div className={cn("bg-card text-card-foreground border border-border rounded-xl p-6 max-w-md w-full flex flex-col gap-4 shadow-xl", className)}>
+        <div className={cn("bg-card text-card-foreground border border-border/80 rounded-2xl p-6 max-w-md w-full flex flex-col gap-4 shadow-2xl shadow-black/50 animate-in fade-in zoom-in-95 duration-150", className)}>
           {children}
         </div>
       </div>

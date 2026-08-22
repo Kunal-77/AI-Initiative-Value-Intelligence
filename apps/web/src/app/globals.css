@@ -3,75 +3,76 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Brand Core */
-  --background: 0 0% 100%;       /* #ffffff */
-  --foreground: 240 10% 3.9%;    /* #09090b */
+  /* Brand Core - Clean Cool-Slate Enterprise Base */
+  --background: 220 20% 98%;      /* #f8fafc */
+  --foreground: 222 47% 11%;      /* #0f172a */
   --card: 0 0% 100%;             /* #ffffff */
-  --card-foreground: 240 10% 3.9%;
+  --card-foreground: 222 47% 11%;
   
   /* Borders & Grids */
-  --border: 240 5.9% 90%;        /* #e4e4e7 */
-  --input: 240 5.9% 90%;         /* #e4e4e7 */
-  --ring: 263.4 70% 50.4%;       /* Indigo Focus */
+  --border: 220 13% 91%;         /* #e2e8f0 */
+  --input: 220 13% 91%;          /* #e2e8f0 */
+  --ring: 217 91% 60%;           /* Electric Blue #3b82f6 */
   
   /* Interactive Accents */
-  --primary: 240 5.9% 10%;       /* Zinc-900 */
-  --primary-foreground: 0 0% 98%;
-  --secondary: 240 4.8% 95.9%;   /* Zinc-100 */
-  --secondary-foreground: 240 5.9% 10%;
-  --accent: 262.1 83.3% 57.8%;   /* Violet-600 */
+  --primary: 217 91% 60%;        /* Electric Blue #3b82f6 */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 14% 96%;      /* #f1f5f9 */
+  --secondary-foreground: 222 47% 11%;
+  --accent: 221.2 83.2% 53.3%;   /* Vivid Blue #2563eb */
   --accent-foreground: 0 0% 100%;
   
   /* Status Color Palette */
   --success: 142.1 76.2% 36.3%;  /* Emerald-600 */
-  --success-foreground: 355.7 100% 97.3%;
+  --success-foreground: 0 0% 100%;
   --warning: 37.9 90.2% 49.8%;   /* Amber-600 */
-  --warning-foreground: 38 92% 95%;
+  --warning-foreground: 0 0% 100%;
   --destructive: 346.8 77.2% 49.8%; /* Rose-600 */
-  --destructive-foreground: 347 100% 97%;
-  
-  /* AI Insights Accent */
-  --ai-glow: 271 91.2% 65.1%;     /* Purple-500 */
-  --ai-bg: 270 50% 98%;           /* Pastel Purple */
-  --ai-border: 271 70% 85%;
-
-  --muted-foreground: 240 3.8% 46.1%;
-}
-
-.dark {
-  /* Brand Core */
-  --background: 240 10% 3.9%;    /* #09090b */
-  --foreground: 0 0% 98%;        /* #fafafa */
-  --card: 240 10% 5.9%;          /* #0f0f12 */
-  --card-foreground: 0 0% 98%;
-  
-  /* Borders & Grids */
-  --border: 240 3.7% 15.9%;      /* Zinc-800 */
-  --input: 240 3.7% 15.9%;
-  --ring: 263.4 70% 50.4%;
-  
-  /* Interactive Accents */
-  --primary: 0 0% 98%;           /* Zinc-50 */
-  --primary-foreground: 240 5.9% 10%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --accent: 263.4 70% 50.4%;     /* Violet-500 */
-  --accent-foreground: 0 0% 100%;
-  
-  /* Status Color Palette */
-  --success: 142.1 70.6% 45.3%;  /* Emerald-500 */
-  --success-foreground: 144 61% 95%;
-  --warning: 47.9 95.8% 53.1%;   /* Amber-500 */
-  --warning-foreground: 48 96% 96%;
-  --destructive: 346.8 77.2% 49.8%;
   --destructive-foreground: 0 0% 100%;
   
   /* AI Insights Accent */
-  --ai-glow: 271 91.2% 65.1%;     /* Purple-500 */
-  --ai-bg: 270 20% 8%;            /* Dark Velvet */
-  --ai-border: 271 40% 25%;
+  --ai-glow: 217 91% 60%;        /* Electric Blue-500 */
+  --ai-bg: 214 100% 97%;         /* Pastel Cyan/Blue */
+  --ai-border: 217 80% 85%;
 
-  --muted-foreground: 240 5% 64.9%;
+  --muted-foreground: 215 16% 47%; /* #64748b */
+}
+
+.dark {
+  /* Brand Core - Deep Dark Navy / Near-Black (#060814 & #0a0f1f) */
+  --background: 222 47% 4%;      /* #060814 - Deep Dark Navy */
+  --foreground: 210 40% 98%;     /* #f8fafc - Crisp White */
+  --card: 222 47% 7.5%;          /* #0a0f1f - Card Surface */
+  --card-foreground: 210 40% 98%;
+  
+  /* Borders & Grids */
+  --border: 222 35% 15%;         /* #16203b - Subtle Blue-Gray Border */
+  --input: 222 35% 15%;          /* #16203b */
+  --ring: 217 91% 60%;           /* #3b82f6 - Electric Blue Focus Ring */
+  
+  /* Interactive Accents */
+  --primary: 217 91% 60%;        /* #3b82f6 - Electric Blue */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 222 40% 13%;      /* #101930 - Secondary Surface / Hover */
+  --secondary-foreground: 210 40% 98%;
+  --accent: 217 91% 60%;         /* #3b82f6 - Electric Blue Accent */
+  --accent-foreground: 0 0% 100%;
+  
+  /* Status Color Palette */
+  --success: 142.1 70.6% 45.3%;  /* Emerald-500 #10b981 */
+  --success-foreground: 144 61% 95%;
+  --warning: 47.9 95.8% 53.1%;   /* Amber-500 #f59e0b */
+  --warning-foreground: 48 96% 96%;
+  --destructive: 346.8 77.2% 49.8%; /* Rose-500 #f43f5e */
+  --destructive-foreground: 0 0% 100%;
+  
+  /* AI Insights Accent - Electric Cyan/Blue */
+  --ai-glow: 217 91% 60%;        /* #3b82f6 - Electric Blue */
+  --ai-bg: 222 47% 9%;           /* #0c1428 - Deep Navy Glow Surface */
+  --ai-border: 217 60% 25%;      /* #1e3a68 */
+
+  --card-elevated: 222 45% 10%;  /* #0e162c - Elevated Navy Surface */
+  --muted-foreground: 215 20.2% 65.1%; /* #94a3b8 - Cool Slate Gray */
 }
 
 @theme inline {
@@ -103,4 +104,123 @@ body {
   color: hsl(var(--foreground));
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Subtle enterprise glowing effects & elevated surfaces */
+.glow-blue-sm {
+  box-shadow: 0 0 15px -3px rgba(59, 130, 246, 0.15);
+}
+
+.glow-blue-md {
+  box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.25);
+}
+
+.border-glow-blue {
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 0 12px -2px rgba(59, 130, 246, 0.2);
+}
+
+.glass-panel {
+  backdrop-filter: blur(12px);
+  background-color: hsla(var(--card) / 0.85);
+  border: 1px solid hsla(var(--border) / 0.8);
+}
+
+.bg-radial-navy {
+  background-image: radial-gradient(circle at top, rgba(30, 58, 138, 0.12) 0%, transparent 70%);
+}
+
+/* Ambient Dot Pattern & Subtle Grid */
+.bg-dot-pattern {
+  background-image: radial-gradient(rgba(59, 130, 246, 0.15) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.bg-grid-subtle {
+  background-image: 
+    linear-gradient(to right, rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Single Signature Hero Gradient Mesh (Violet -> Indigo -> Electric Blue -> Navy) */
+.hero-gradient-mesh {
+  background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(139, 92, 246, 0.10) 0%, rgba(99, 102, 241, 0.08) 35%, rgba(59, 130, 246, 0.06) 65%, transparent 85%);
+  filter: blur(80px);
+}
+
+/* Keyframe Animations */
+@keyframes meshSlowShift {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.08) translateY(12px);
+    opacity: 1;
+  }
+}
+
+@keyframes productFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes beamSlide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulseSlow {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.08);
+  }
+}
+
+.animate-hero-mesh {
+  animation: meshSlowShift 80s ease-in-out infinite;
+}
+
+.animate-product-float {
+  animation: productFloat 10s ease-in-out infinite;
+}
+
+.animate-beam-slide {
+  animation: beamSlide 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-mesh,
+  .animate-product-float,
+  .animate-beam-slide,
+  .animate-pulse-slow {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* Suppress development overlay indicator badges */
+nextjs-portal,
+[data-nextjs-dev-tools],
+[data-nextjs-toast],
+#__next-build-watcher,
+div[data-nextjs-dialog-overlay] {
+  display: none !important;
 }

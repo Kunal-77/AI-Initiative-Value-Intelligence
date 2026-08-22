@@ -31,11 +31,13 @@ export function BudgetUtilizationCard({ loading = false, error = null }: BudgetU
   ];
 
   return (
-    <div className="p-6 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-5">
+    <div className="p-6 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-5 hover:border-blue-500/30 transition-all duration-200">
       <div className="flex flex-col 2xl:flex-row 2xl:items-start justify-between gap-3">
         <div className="space-y-0.5 min-w-0 flex-1">
           <h3 className="text-base font-bold text-foreground flex items-center gap-2 min-w-0">
-            <PieChart className="w-4 h-4 text-accent shrink-0" />
+            <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400 shrink-0">
+              <PieChart className="w-4 h-4" />
+            </div>
             <span className="truncate" title="Budget Allocation & Expenditure">Budget Allocation & Expenditure</span>
           </h3>
           <p className="text-xs text-muted-foreground">
@@ -60,7 +62,7 @@ export function BudgetUtilizationCard({ loading = false, error = null }: BudgetU
             </div>
             <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
               <div
-                className="h-full bg-accent rounded-full transition-all duration-300"
+                className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-300"
                 style={{ width: `${cat.percentage}%` }}
               />
             </div>
