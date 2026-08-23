@@ -2,18 +2,39 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
+import dynamic from "next/dynamic";
 import {
   AppHeader,
   GovernanceDashboard,
-  ApprovalQueue,
-  ApprovalDetailModal,
-  TaskManagementCard,
-  CommentThread,
-  AuditLogStream,
   SkeletonMetricsRow,
   UnifiedLifecycleBar,
   CrossModuleNav,
+  SkeletonTable,
+  SkeletonCard,
+  SkeletonTimeline,
 } from "../../../components/ui";
+
+const ApprovalQueue = dynamic(
+  () => import("../../../components/workflow/ApprovalQueue").then(mod => mod.ApprovalQueue),
+  { loading: () => <SkeletonTable rows={4} /> }
+);
+const TaskManagementCard = dynamic(
+  () => import("../../../components/workflow/TaskManagementCard").then(mod => mod.TaskManagementCard),
+  { loading: () => <SkeletonCard /> }
+);
+const CommentThread = dynamic(
+  () => import("../../../components/workflow/CommentThread").then(mod => mod.CommentThread),
+  { loading: () => <SkeletonCard /> }
+);
+const AuditLogStream = dynamic(
+  () => import("../../../components/workflow/AuditLogStream").then(mod => mod.AuditLogStream),
+  { loading: () => <SkeletonTimeline /> }
+);
+const ApprovalDetailModal = dynamic(
+  () => import("../../../components/workflow/ApprovalDetailModal").then(mod => mod.ApprovalDetailModal),
+  { ssr: false }
+);
+
 import {
   getApprovalsQueue,
   getWorkflowTasks,
@@ -129,7 +150,7 @@ export default function BusinessApprovalsPage() {
     }
   };
 
-  if (!orgId || loading || !metrics) {
+  if (!orgId) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
         <AppHeader badge="Governance Approval Center" />
@@ -141,7 +162,7 @@ export default function BusinessApprovalsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors animate-page-entrance">
       <AppHeader badge="Governance Approval Center" />
 
       <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
@@ -152,7 +173,7 @@ export default function BusinessApprovalsPage() {
         <CrossModuleNav />
 
         {/* 1. Governance Throughput & SLA Metrics Bar */}
-        <GovernanceDashboard metrics={metrics} />
+        <GovernanceDashboard metrics={metrics} loading={loading} />
 
         {/* 2. Main Grid: Queue & Tasks (Left 8) | Comments & Audit Logs (Right 4) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

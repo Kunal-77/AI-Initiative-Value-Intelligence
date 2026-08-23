@@ -28,7 +28,16 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { Button, ThemeToggle } from "../components/ui";
+import { Button, ThemeToggle, LazyViewport, ScrollAnimate } from "../components/ui";
+
+const SectionPlaceholder = ({ height }: { height: string }) => (
+  <div style={{ height }} className="w-full rounded-2xl border border-border/40 bg-card/20 animate-pulse backdrop-blur-xs flex items-center justify-center">
+    <div className="text-[10px] text-muted-foreground/60 font-mono tracking-widest uppercase flex items-center gap-2">
+      <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
+      <span>Initializing Context...</span>
+    </div>
+  </div>
+);
 
 export default function LandingPage() {
   const { isLoaded: authLoaded, isSignedIn } = useAuth();
@@ -54,6 +63,37 @@ export default function LandingPage() {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const stepRefs = useRef<(HTMLElement | null)[]>([]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || window.innerWidth < 1024) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number(entry.target.getAttribute("data-step-index"));
+            if (!isNaN(index)) {
+              setActiveTourStep(index);
+            }
+          }
+        });
+      },
+      {
+        rootMargin: "-25% 0px -45% 0px",
+        threshold: 0.1,
+      }
+    );
+
+    stepRefs.current.forEach((el) => {
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   if (!authLoaded) {
@@ -429,8 +469,9 @@ export default function LandingPage() {
         </div>
  
         {/* Dashboard Preview Frame */}
-        <div className="pt-12 max-w-5xl mx-auto relative group hero-entrance-dashboard">
-          <div className="rounded-2xl border border-border/80 dark:border-blue-500/25 bg-card p-4 relative overflow-hidden backdrop-blur-xs animate-product-float dashboard-rim-glow dashboard-hover-state">
+        <div className="pt-12 max-w-5xl mx-auto relative group hero-scroll-wrapper">
+          <div className="hero-entrance-dashboard">
+            <div className="rounded-2xl border border-border/80 dark:border-blue-500/25 bg-card p-4 relative overflow-hidden backdrop-blur-xs animate-product-float dashboard-rim-glow dashboard-hover-state">
             <div className="flex items-center gap-1.5 pb-3 border-b border-border/60 text-muted-foreground">
               <span className="w-2.5 h-2.5 rounded-full bg-border" />
               <span className="w-2.5 h-2.5 rounded-full bg-border" />
@@ -447,18 +488,18 @@ export default function LandingPage() {
                     </div>
                     <div>
                       <span className="text-muted-foreground">PORTFOLIO ROI: </span>
-                      <span className="font-bold text-blue-500 motion-number-reveal">+185.4%</span>
+                      <span className="font-bold text-blue-500 motion-number-reveal delay-200">+185.4%</span>
                     </div>
                   </div>
                   <span className="text-[10px] text-muted-foreground font-mono">Q3 Enterprise Forecast</span>
                 </div>
                 <div className="space-y-2">
                   {[
-                    { name: "Customer Support Automation Bot", roi: "+215%", stage: "APPROVED", color: "text-blue-600 dark:text-blue-400" },
-                    { name: "GPU Infrastructure Scheduler", roi: "+148%", stage: "EXECUTIVE_REVIEW", color: "text-indigo-600 dark:text-indigo-400" },
-                    { name: "Automated Financial Reconciliation", roi: "+95%", stage: "DEPLOYED", color: "text-emerald-600 dark:text-emerald-400" }
+                    { name: "Customer Support Automation Bot", roi: "+215%", stage: "APPROVED", color: "text-blue-600 dark:text-blue-400", delay: "delay-300" },
+                    { name: "GPU Infrastructure Scheduler", roi: "+148%", stage: "EXECUTIVE_REVIEW", color: "text-indigo-600 dark:text-indigo-400", delay: "delay-400" },
+                    { name: "Automated Financial Reconciliation", roi: "+95%", stage: "DEPLOYED", color: "text-emerald-600 dark:text-emerald-400", delay: "delay-500" }
                   ].map((item, idx) => (
-                    <div key={idx} className="p-3 rounded-lg border border-border/60 bg-secondary/20 flex flex-col gap-2 text-xs hover:border-blue-500/30 transition-colors">
+                    <div key={idx} className={`p-3 rounded-lg border border-border/60 bg-secondary/20 flex flex-col gap-2 text-xs hover:border-blue-500/30 transition-colors animate-in fade-in slide-in-from-bottom-2 duration-300 ${item.delay}`}>
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
                           <span className="font-semibold text-foreground block">{item.name}</span>
@@ -481,7 +522,7 @@ export default function LandingPage() {
                   ))}
                 </div>
               </div>
-              <div className="p-5 rounded-xl border border-border bg-background/90 space-y-4 flex flex-col justify-between shadow-2xs motion-hover-lift-cyan">
+              <div className="p-5 rounded-xl border border-border bg-background/90 space-y-4 flex flex-col justify-between shadow-2xs motion-hover-lift-cyan animate-in fade-in duration-300 delay-500">
                 <div className="space-y-2 text-xs">
                   <span className="text-[10px] font-mono text-cyan-500 dark:text-cyan-400 tracking-wider uppercase block">AI Insights</span>
                   <p className="text-muted-foreground leading-relaxed text-[11px]">
@@ -504,10 +545,12 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+      </div>
       </section>
 
       {/* Business Problems Section */}
-      <section id="problems" className="py-24 border-t border-border/80 bg-secondary/35 dark:bg-secondary/20 relative z-10 transition-colors duration-300 overflow-hidden">
+      <LazyViewport placeholder={<SectionPlaceholder height="350px" />} minHeight="350px">
+        <section id="problems" className="py-24 border-t border-border/80 bg-secondary/35 dark:bg-secondary/20 relative z-10 transition-colors duration-300 overflow-hidden">
         {/* Subtle Ambient Backlight */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
 
@@ -540,21 +583,25 @@ export default function LandingPage() {
                 fix: "Secured enterprise secrets and RBAC scopes."
               }
             ].map((p, idx) => (
-              <div key={idx} className="p-5 rounded-xl border border-border/85 bg-card space-y-3 flex flex-col justify-between hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-500/40 dark:hover:border-blue-500/40 transition-all duration-200">
-                <div className="space-y-1">
-                  <h3 className="font-bold text-foreground text-sm">{p.title}</h3>
-                  <p className="text-muted-foreground text-[11px] leading-relaxed">{p.desc}</p>
+              <ScrollAnimate key={idx} delayMs={idx * 150}>
+                <div className="p-5 rounded-xl border border-border/85 bg-card space-y-3 flex flex-col justify-between hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-500/40 dark:hover:border-blue-500/40 transition-all duration-200 h-full">
+                  <div className="space-y-1">
+                    <h3 className="font-bold text-foreground text-sm">{p.title}</h3>
+                    <p className="text-muted-foreground text-[11px] leading-relaxed">{p.desc}</p>
+                  </div>
+                  <div className="pt-3 border-t border-border/65 text-blue-500 dark:text-blue-400 font-semibold flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 shrink-0" /> {p.fix}
+                  </div>
                 </div>
-                <div className="pt-3 border-t border-border/65 text-blue-500 dark:text-blue-400 font-semibold flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5 shrink-0" /> {p.fix}
-                </div>
-              </div>
+              </ScrollAnimate>
             ))}
           </div>
         </div>
       </section>
+    </LazyViewport>
 
-      {/* Platform Overview Workflow */}
+    {/* Platform Overview Workflow */}
+    <LazyViewport placeholder={<SectionPlaceholder height="400px" />} minHeight="400px">
       <section id="overview" className="py-24 border-t border-border/80 bg-background relative z-10 overflow-hidden">
         {/* Subtle Grid Texture & Ambient Glow */}
         <div className="absolute inset-0 bg-grid-subtle opacity-[0.035] pointer-events-none" />
@@ -588,28 +635,32 @@ export default function LandingPage() {
               ].map((p, idx) => {
                 const Icon = p.icon;
                 return (
-                  <div key={idx} className="p-4 rounded-xl border border-border/80 bg-card shadow-2xs text-center space-y-2 relative transition-all hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-500/40 duration-200">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto text-blue-500 dark:text-blue-400 shadow-2xs">
-                      <Icon className="w-4 h-4" />
+                  <ScrollAnimate key={idx} delayMs={idx * 80}>
+                    <div className="p-4 rounded-xl border border-border/80 bg-card shadow-2xs text-center space-y-2 relative transition-all hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-500/40 duration-200 h-full">
+                      <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto text-blue-500 dark:text-blue-400 shadow-2xs">
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="font-bold text-foreground block text-xs">{p.step}</span>
+                        <span className="text-[10px] text-muted-foreground leading-normal">{p.desc}</span>
+                      </div>
                     </div>
-                    <div>
-                      <span className="font-bold text-foreground block text-xs">{p.step}</span>
-                      <span className="text-[10px] text-muted-foreground leading-normal">{p.desc}</span>
-                    </div>
-                  </div>
+                  </ScrollAnimate>
                 );
               })}
             </div>
           </div>
         </div>
       </section>
+    </LazyViewport>
 
-      {/* Guided Scroll Tour */}
+    {/* Guided Scroll Tour */}
+    <LazyViewport placeholder={<SectionPlaceholder height="500px" />} minHeight="500px">
       <section id="tour" className="py-24 border-t border-border/80 bg-secondary/30 dark:bg-secondary/25 relative z-10 transition-colors duration-300 overflow-hidden">
         {/* Ambient Halo behind Showcase */}
         <div className="absolute top-1/2 right-12 -translate-y-1/2 w-[550px] h-[450px] bg-gradient-to-tr from-blue-600/10 via-cyan-500/6 to-transparent rounded-full blur-[140px] pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start relative z-10">
           <div className="space-y-6">
             <div className="space-y-3">
               <span className="text-[10px] font-mono uppercase tracking-wider text-blue-500 dark:text-blue-400 font-bold">Interactive Demo</span>
@@ -626,6 +677,10 @@ export default function LandingPage() {
                 <button
                   key={idx}
                   type="button"
+                  ref={(el) => {
+                    stepRefs.current[idx] = el;
+                  }}
+                  data-step-index={idx}
                   onClick={() => setActiveTourStep(idx)}
                   className={`w-full p-4 rounded-xl border text-left transition-all flex flex-col gap-1 cursor-pointer ${
                     activeTourStep === idx
@@ -647,15 +702,26 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="relative p-6 rounded-2xl border border-border/80 dark:border-blue-500/20 bg-card shadow-2xl shadow-blue-950/30 flex items-center justify-center min-h-[300px] transition-colors duration-300">
-            <div className="w-full transition-all duration-300 transform scale-100">
-              {tourSteps[activeTourStep].mockup}
-            </div>
+          <div className="lg:sticky lg:top-32 relative p-6 rounded-2xl border border-border/80 dark:border-blue-500/20 bg-card shadow-2xl shadow-blue-950/30 flex items-center justify-center min-h-[330px] transition-colors duration-300 overflow-hidden">
+            {tourSteps.map((step, idx) => (
+              <div
+                key={idx}
+                className={`w-full transition-all duration-500 ease-in-out absolute top-6 left-6 right-6 ${
+                  activeTourStep === idx
+                    ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
+                    : "opacity-0 translate-y-4 scale-[0.98] pointer-events-none"
+                }`}
+              >
+                {step.mockup}
+              </div>
+            ))}
           </div>
         </div>
       </section>
+    </LazyViewport>
 
-      {/* Dual Workspace Sections */}
+    {/* Dual Workspace Sections */}
+    <LazyViewport placeholder={<SectionPlaceholder height="800px" />} minHeight="800px">
       <section id="features" className="py-24 border-t border-border/80 bg-background relative z-10 transition-colors duration-300 overflow-hidden">
         {/* Subtle Ambient Workspace Halos */}
         <div className="absolute top-1/4 left-[-8%] w-[500px] h-[400px] bg-blue-600/5 rounded-full blur-[150px] pointer-events-none" />
@@ -722,10 +788,12 @@ export default function LandingPage() {
                   { title: "PMO Manager", desc: "Manage milestone schedules" },
                   { title: "AI Engineers", desc: "Monitor prompt outputs" }
                 ].map((st, idx) => (
-                  <div key={idx} className="p-3 rounded-lg border border-border/60 bg-secondary/35 hover:border-blue-500/30 transition-colors">
-                    <span className="font-bold text-foreground block">{st.title}</span>
-                    <span className="text-[10px] text-muted-foreground">{st.desc}</span>
-                  </div>
+                  <ScrollAnimate key={idx} delayMs={idx * 100}>
+                    <div className="p-3 rounded-lg border border-border/60 bg-secondary/35 hover:border-blue-500/30 transition-colors h-full">
+                      <span className="font-bold text-foreground block">{st.title}</span>
+                      <span className="text-[10px] text-muted-foreground">{st.desc}</span>
+                    </div>
+                  </ScrollAnimate>
                 ))}
               </div>
             </div>
@@ -741,10 +809,12 @@ export default function LandingPage() {
                   { label: "Individual Task Planning", desc: "Structure personal projects with milestones." },
                   { label: "Developer Connectivity Logs", desc: "Validate backend health and context routes directly." }
                 ].map((cap, idx) => (
-                  <div key={idx} className="p-3 rounded-lg border border-border/60 bg-secondary/35 space-y-1 hover:border-indigo-500/30 transition-colors">
-                    <span className="font-bold text-foreground block">{cap.label}</span>
-                    <p className="text-[11px] text-muted-foreground">{cap.desc}</p>
-                  </div>
+                  <ScrollAnimate key={idx} delayMs={idx * 100}>
+                    <div className="p-3 rounded-lg border border-border/60 bg-secondary/35 space-y-1 hover:border-indigo-500/30 transition-colors">
+                      <span className="font-bold text-foreground block">{cap.label}</span>
+                      <p className="text-[11px] text-muted-foreground">{cap.desc}</p>
+                    </div>
+                  </ScrollAnimate>
                 ))}
               </div>
             </div>
@@ -814,13 +884,15 @@ export default function LandingPage() {
                 { title: "Role-Based Access Control (RBAC)", desc: "10 default roles mapping across 12 permission scopes." },
                 { title: "Encrypted Secrets Vault", desc: "LLM API keys and webhook tokens are encrypted at rest." }
               ].map((sc, idx) => (
-                <div key={idx} className="p-3.5 rounded-xl border border-border/80 bg-card flex gap-3 shadow-2xs hover:border-blue-500/30 hover:-translate-y-0.5 transition-all duration-200">
-                  <Lock className="w-4 h-4 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
-                  <div className="space-y-0.5">
-                    <span className="font-bold text-foreground block">{sc.title}</span>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">{sc.desc}</p>
+                <ScrollAnimate key={idx} delayMs={idx * 120}>
+                  <div className="p-3.5 rounded-xl border border-border/80 bg-card flex gap-3 shadow-2xs hover:border-blue-500/30 hover:-translate-y-0.5 transition-all duration-200">
+                    <Lock className="w-4 h-4 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                      <span className="font-bold text-foreground block">{sc.title}</span>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">{sc.desc}</p>
+                    </div>
                   </div>
-                </div>
+                </ScrollAnimate>
               ))}
             </div>
           </div>
@@ -851,8 +923,10 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+    </LazyViewport>
 
-      {/* Pricing Section */}
+    {/* Pricing Section */}
+    <LazyViewport placeholder={<SectionPlaceholder height="550px" />} minHeight="550px">
       <section id="pricing" className="py-24 border-t border-border/80 bg-secondary/35 dark:bg-secondary/20 relative z-10 transition-colors duration-300 overflow-hidden">
         {/* Centered Soft Blue Backlight */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-blue-600/6 rounded-full blur-[140px] pointer-events-none" />
@@ -911,54 +985,57 @@ export default function LandingPage() {
                 features: ["Unlimited Organizations & Seats", "Custom RBAC permission matrix", "Dedicated database instance (Supabase)", "Custom LLM provider registry integration", "Sync logs CSV & Power BI streams", "Dedicated Success Manager"]
               }
             ].map((plan, idx) => (
-              <div
-                key={idx}
-                className={`p-6 rounded-2xl border bg-card relative flex flex-col justify-between transition-all duration-200 hover:shadow-xl hover:-translate-y-1 ${
-                  plan.popular
-                    ? "border-blue-500 shadow-xl shadow-blue-500/10 dark:shadow-blue-500/5 ring-2 ring-blue-500/15"
-                    : "border-border/80 hover:border-blue-500/40"
-                }`}
-              >
-                {plan.popular && (
-                  <span className="absolute top-0 right-6 -translate-y-1/2 px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[9px] font-bold uppercase tracking-wider">
-                    Popular
-                  </span>
-                )}
-                <div className="space-y-6">
-                  <div className="space-y-2 text-xs">
-                    <h3 className="font-bold text-foreground text-base">{plan.name}</h3>
-                    <p className="text-muted-foreground">{plan.desc}</p>
+              <ScrollAnimate key={idx} delayMs={idx * 150}>
+                <div
+                  className={`p-6 rounded-2xl border bg-card relative flex flex-col justify-between transition-all duration-200 hover:shadow-xl hover:-translate-y-1 h-full ${
+                    plan.popular
+                      ? "border-blue-500 shadow-xl shadow-blue-500/10 dark:shadow-blue-500/5 ring-2 ring-blue-500/15"
+                      : "border-border/80 hover:border-blue-500/40"
+                  }`}
+                >
+                  {plan.popular && (
+                    <span className="absolute top-0 right-6 -translate-y-1/2 px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[9px] font-bold uppercase tracking-wider">
+                      Popular
+                    </span>
+                  )}
+                  <div className="space-y-6">
+                    <div className="space-y-2 text-xs">
+                      <h3 className="font-bold text-foreground text-base">{plan.name}</h3>
+                      <p className="text-muted-foreground">{plan.desc}</p>
+                    </div>
+
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-extrabold text-foreground font-mono">${plan.price}</span>
+                      <span className="text-[10px] text-muted-foreground">/month</span>
+                    </div>
+
+                    <div className="pt-4 border-t border-border/60 space-y-2">
+                      {plan.features.map((ft, i) => (
+                        <div key={i} className="flex items-start gap-2 text-[11px] text-foreground">
+                          <Check className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
+                          <span>{ft}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold text-foreground font-mono">${plan.price}</span>
-                    <span className="text-[10px] text-muted-foreground">/month</span>
-                  </div>
-
-                  <div className="pt-4 border-t border-border/60 space-y-2">
-                    {plan.features.map((ft, i) => (
-                      <div key={i} className="flex items-start gap-2 text-[11px] text-foreground">
-                        <Check className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
-                        <span>{ft}</span>
-                      </div>
-                    ))}
+                  <div className="mt-8">
+                    <Link href={isSignedIn ? "/workspace-select" : "/sign-up"}>
+                      <Button variant={plan.popular ? "primary" : "secondary"} className="w-full text-xs font-bold py-2.5 cursor-pointer active:scale-[0.98] transition-all">
+                        {isSignedIn ? "Launch Console" : "Get Started"}
+                      </Button>
+                    </Link>
                   </div>
                 </div>
-
-                <div className="mt-8">
-                  <Link href={isSignedIn ? "/workspace-select" : "/sign-up"}>
-                    <Button variant={plan.popular ? "primary" : "secondary"} className="w-full text-xs font-bold py-2.5 cursor-pointer active:scale-[0.98] transition-all">
-                      {isSignedIn ? "Launch Console" : "Get Started"}
-                    </Button>
-                  </Link>
-                </div>
-              </div>
+              </ScrollAnimate>
             ))}
           </div>
         </div>
       </section>
+    </LazyViewport>
 
-      {/* FAQ Section */}
+    {/* FAQ Section */}
+    <LazyViewport placeholder={<SectionPlaceholder height="400px" />} minHeight="400px">
       <section id="faq" className="py-24 border-t border-border/80 bg-background relative z-10 transition-colors duration-300">
         <div className="max-w-3xl mx-auto px-6 space-y-12">
           <div className="text-center space-y-3">
@@ -970,30 +1047,33 @@ export default function LandingPage() {
 
           <div className="space-y-4 text-xs">
             {faqs.map((faq, idx) => (
-              <div key={idx} className="rounded-xl border border-border/80 bg-card shadow-2xs hover:border-blue-500/30 transition-colors overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
-                  className="w-full p-4 text-left font-bold text-foreground hover:bg-secondary/40 transition-colors flex items-center justify-between cursor-pointer"
-                >
-                  <span>{faq.q}</span>
-                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${openFaqIndex === idx ? "rotate-180" : ""}`} />
-                </button>
-                {openFaqIndex === idx && (
-                  <div className="p-4 border-t border-border/70 bg-secondary/20 text-muted-foreground leading-relaxed text-[11px] animate-in fade-in duration-150">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
+              <ScrollAnimate key={idx} delayMs={0}>
+                <div className="rounded-xl border border-border/80 bg-card shadow-2xs hover:border-blue-500/30 transition-colors overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
+                    className="w-full p-4 text-left font-bold text-foreground hover:bg-secondary/40 transition-colors flex items-center justify-between cursor-pointer"
+                  >
+                    <span>{faq.q}</span>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${openFaqIndex === idx ? "rotate-180" : ""}`} />
+                  </button>
+                  {openFaqIndex === idx && (
+                    <div className="p-4 border-t border-border/70 bg-secondary/20 text-muted-foreground leading-relaxed text-[11px] animate-in fade-in duration-150">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              </ScrollAnimate>
             ))}
           </div>
         </div>
       </section>
+    </LazyViewport>
 
       {/* Final CTA Section */}
       <section className="py-32 border-t border-border/80 bg-background relative overflow-hidden z-10 transition-colors duration-300">
         <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/12 via-indigo-600/10 to-cyan-500/6 blur-[150px] pointer-events-none animate-aurora-slow" />
-        <div className="max-w-5xl mx-auto px-6 text-center space-y-8 relative z-10">
+        <ScrollAnimate className="scroll-trigger max-w-5xl mx-auto px-6 text-center space-y-8 relative z-10 duration-1000">
           {isSignedIn ? (
             <>
               <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground dark:from-zinc-50 dark:to-zinc-400 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -1042,7 +1122,7 @@ export default function LandingPage() {
               </div>
             </>
           )}
-        </div>
+        </ScrollAnimate>
       </section>
 
       {/* Global Footer */}

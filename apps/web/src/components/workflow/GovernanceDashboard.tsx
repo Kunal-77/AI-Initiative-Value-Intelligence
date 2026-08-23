@@ -5,10 +5,30 @@ import { ShieldCheck, Clock, AlertTriangle, CheckCircle2, AlertCircle } from "lu
 import { GovernanceMetrics } from "../../types/workflow";
 
 export interface GovernanceDashboardProps {
-  metrics: GovernanceMetrics;
+  metrics: GovernanceMetrics | null;
+  loading?: boolean;
 }
 
-export function GovernanceDashboard({ metrics }: GovernanceDashboardProps) {
+export function GovernanceDashboard({ metrics, loading = false }: GovernanceDashboardProps) {
+  if (loading || !metrics) {
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {Array.from({ length: 6 }).map((_, idx) => (
+          <div
+            key={idx}
+            className="p-3.5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-2xs space-y-2 animate-pulse"
+          >
+            <div className="flex items-center justify-between">
+              <div className="h-3 w-16 bg-secondary/80 rounded" />
+              <div className="h-3.5 w-3.5 bg-secondary/80 rounded" />
+            </div>
+            <div className="h-5 w-12 bg-secondary/80 rounded" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   const cards = [
     { label: "Approval Throughput", value: `${metrics.approvalThroughputCount} Passed`, icon: CheckCircle2, color: "text-emerald-500 dark:text-emerald-400" },
     { label: "Avg Approval SLA", value: `${metrics.averageApprovalTimeDays} days`, icon: Clock, color: "text-blue-500 dark:text-blue-400" },

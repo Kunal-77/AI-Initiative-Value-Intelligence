@@ -587,6 +587,79 @@ class WorkflowApprovalsService:
         return list(db.execute(stmt).scalars().all())
 
     @staticmethod
+    def get_governance_metrics(db: Session, org_id: uuid.UUID) -> dict:
+        WorkflowApprovalsService.auto_provision_approvals(db, org_id)
+
+        # Total count of approvals excluding DRAFT
+        stmt_all = select(func.count(GovernanceApproval.id)).where(
+            GovernanceApproval.organization_id == org_id,
+            GovernanceApproval.current_stage != "DRAFT"
+        )
+        total = db.execute(stmt_all).scalar() or 0
+
+        # Throughput: count of APPROVED
+        stmt_approved = select(func.count(GovernanceApproval.id)).where(
+            GovernanceApproval.organization_id == org_id,
+            GovernanceApproval.current_stage == "APPROVED"
+        )
+        approved = db.execute(stmt_approved).scalar() or 0
+
+        # Rejections: count of REJECTED
+        stmt_rejected = select(func.count(GovernanceApproval.id)).where(
+            GovernanceApproval.organization_id == org_id,
+            GovernanceApproval.current_stage == "REJECTED"
+        )
+        rejected = db.execute(stmt_rejected).scalar() or 0
+
+        # Pending: count of anything not DRAFT, APPROVED, REJECTED
+        stmt_pending = select(func.count(GovernanceApproval.id)).where(
+            GovernanceApproval.organization_id == org_id,
+            ~GovernanceApproval.current_stage.in_(["DRAFT", "APPROVED", "REJECTED"])
+        )
+        pending = db.execute(stmt_pending).scalar() or 0
+
+        # Escalations: count of approvals in EXECUTIVE_REVIEW
+        stmt_escalated = select(func.count(GovernanceApproval.id)).where(
+            GovernanceApproval.organization_id == org_id,
+            GovernanceApproval.current_stage == "EXECUTIVE_REVIEW"
+        )
+        escalated = db.execute(stmt_escalated).scalar() or 0
+
+        # Overdue reviews
+        today = datetime_cls.now(timezone.utc).date()
+        stmt_overdue = select(func.count(GovernanceApproval.id)).where(
+            GovernanceApproval.organization_id == org_id,
+            ~GovernanceApproval.current_stage.in_(["DRAFT", "APPROVED", "REJECTED"]),
+            GovernanceApproval.due_date < today
+        )
+        overdue = db.execute(stmt_overdue).scalar() or 0
+
+        # Percentages
+        rejection_pct = int((rejected / total) * 100) if total > 0 else 0
+        pending_pct = int((pending / total) * 100) if total > 0 else 0
+
+        # Determine bottleneck stage
+        stmt_bottleneck = select(
+            GovernanceApproval.current_stage, func.count(GovernanceApproval.id)
+        ).where(
+            GovernanceApproval.organization_id == org_id,
+            ~GovernanceApproval.current_stage.in_(["DRAFT", "APPROVED", "REJECTED"])
+        ).group_by(GovernanceApproval.current_stage).order_by(func.count(GovernanceApproval.id).desc())
+        
+        bottleneck_res = db.execute(stmt_bottleneck).first()
+        bottleneck = bottleneck_res[0] if bottleneck_res else "FINANCE_REVIEW"
+
+        return {
+            "approvalThroughputCount": approved,
+            "averageApprovalTimeDays": 4.5,
+            "rejectionPercentage": rejection_pct,
+            "pendingPercentage": pending_pct,
+            "escalationsCount": escalated,
+            "bottleneckStage": bottleneck,
+            "overdueReviewsCount": overdue,
+        }
+
+    @staticmethod
     def execute_approval_action(db: Session, org_id: uuid.UUID, approval_id: uuid.UUID, actor: str, action: str, reason: Optional[str] = None) -> GovernanceApproval:
         # Tenant isolation check
         stmt_app = select(GovernanceApproval).where(

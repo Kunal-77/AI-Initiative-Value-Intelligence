@@ -2,22 +2,53 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
+import dynamic from "next/dynamic";
 import {
   AppHeader,
   CommandCenterHeader,
   GlobalPortfolioFilter,
-  PortfolioVisualizations,
-  PortfolioDrillDown,
-  ExecutiveAlertCenter,
-  BenchmarkingCard,
-  PredictiveAnalyticsCard,
-  ExecutiveReportsModule,
   SkeletonMetricsRow,
   UnifiedLifecycleBar,
   CrossModuleNav,
-  UnifiedExecutiveTimeline,
-  GlobalActivityCenter,
+  SkeletonChart,
+  SkeletonTimeline,
+  SkeletonTable,
+  SkeletonCard,
 } from "../../../components/ui";
+
+const PortfolioVisualizations = dynamic(
+  () => import("../../../components/portfolio/PortfolioVisualizations").then(mod => mod.PortfolioVisualizations),
+  { loading: () => <SkeletonChart /> }
+);
+const PortfolioDrillDown = dynamic(
+  () => import("../../../components/portfolio/PortfolioDrillDown").then(mod => mod.PortfolioDrillDown),
+  { loading: () => <SkeletonTable rows={4} /> }
+);
+const ExecutiveAlertCenter = dynamic(
+  () => import("../../../components/portfolio/ExecutiveAlertCenter").then(mod => mod.ExecutiveAlertCenter),
+  { loading: () => <SkeletonCard /> }
+);
+const BenchmarkingCard = dynamic(
+  () => import("../../../components/portfolio/BenchmarkingCard").then(mod => mod.BenchmarkingCard),
+  { loading: () => <SkeletonCard /> }
+);
+const PredictiveAnalyticsCard = dynamic(
+  () => import("../../../components/portfolio/PredictiveAnalyticsCard").then(mod => mod.PredictiveAnalyticsCard),
+  { loading: () => <SkeletonCard /> }
+);
+const ExecutiveReportsModule = dynamic(
+  () => import("../../../components/portfolio/ExecutiveReportsModule").then(mod => mod.ExecutiveReportsModule),
+  { loading: () => <SkeletonCard /> }
+);
+const UnifiedExecutiveTimeline = dynamic(
+  () => import("../../../components/integration/UnifiedExecutiveTimeline").then(mod => mod.UnifiedExecutiveTimeline),
+  { loading: () => <SkeletonTimeline /> }
+);
+const GlobalActivityCenter = dynamic(
+  () => import("../../../components/integration/GlobalActivityCenter").then(mod => mod.GlobalActivityCenter),
+  { loading: () => <SkeletonTimeline /> }
+);
+
 import {
   getCommandCenterMetrics,
   getExecutiveAlerts,
@@ -77,7 +108,7 @@ export default function BusinessPortfolioPage() {
     }
   }, [orgId]);
 
-  if (!orgId || loading || !metrics) {
+  if (!orgId) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
         <AppHeader badge="Executive Command Center" />
@@ -89,7 +120,7 @@ export default function BusinessPortfolioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors animate-page-entrance">
       <AppHeader badge="Executive Command Center" />
 
       <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
@@ -100,7 +131,7 @@ export default function BusinessPortfolioPage() {
         <CrossModuleNav />
 
         {/* 1. Top Executive Command Center KPI Bar */}
-        <CommandCenterHeader metrics={metrics} />
+        <CommandCenterHeader metrics={metrics} loading={loading} />
 
         {/* 2. Global Multi-Dimensional Filters */}
         <GlobalPortfolioFilter

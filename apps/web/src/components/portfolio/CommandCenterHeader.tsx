@@ -5,10 +5,31 @@ import { Sparkles, ShieldCheck, DollarSign, TrendingUp, AlertTriangle, PieChart,
 import { ExecutiveCommandCenterMetrics } from "../../types/portfolio";
 
 export interface CommandCenterHeaderProps {
-  metrics: ExecutiveCommandCenterMetrics;
+  metrics: ExecutiveCommandCenterMetrics | null;
+  loading?: boolean;
 }
 
-export function CommandCenterHeader({ metrics }: CommandCenterHeaderProps) {
+export function CommandCenterHeader({ metrics, loading = false }: CommandCenterHeaderProps) {
+  if (loading || !metrics) {
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        {Array.from({ length: 8 }).map((_, idx) => (
+          <div
+            key={idx}
+            className="p-3.5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-2xs space-y-2 animate-pulse"
+          >
+            <div className="flex items-center justify-between">
+              <div className="h-3 w-16 bg-secondary/80 rounded" />
+              <div className="h-3.5 w-3.5 bg-secondary/80 rounded" />
+            </div>
+            <div className="h-5 w-12 bg-secondary/80 rounded" />
+            <div className="h-2 w-16 bg-secondary/60 rounded" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   const cards = [
     { label: "Portfolio Health", value: `${metrics.portfolioHealthScore}/100`, icon: ShieldCheck, color: "text-emerald-500 dark:text-emerald-400", subtext: "Composite health index" },
     { label: "Portfolio ROI", value: `${metrics.portfolioRoiPercentage}%`, icon: TrendingUp, color: "text-blue-500 dark:text-blue-400", subtext: "Audited ROI return" },

@@ -2,16 +2,27 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useAuth, useOrganization } from "@clerk/nextjs";
+import dynamic from "next/dynamic";
 import {
   AppHeader,
   ExecutiveDashboard,
   InitiativesTable,
-  CreateInitiativeWizard,
-  EditInitiativeModal,
-  DeleteInitiativeDialog,
   SkeletonMetricsRow,
   CreateInitiativeFormData,
 } from "../../../components/ui";
+
+const CreateInitiativeWizard = dynamic(
+  () => import("../../../components/initiatives/CreateInitiativeWizard").then(mod => mod.CreateInitiativeWizard),
+  { ssr: false }
+);
+const EditInitiativeModal = dynamic(
+  () => import("../../../components/initiatives/EditInitiativeModal").then(mod => mod.EditInitiativeModal),
+  { ssr: false }
+);
+const DeleteInitiativeDialog = dynamic(
+  () => import("../../../components/initiatives/DeleteInitiativeDialog").then(mod => mod.DeleteInitiativeDialog),
+  { ssr: false }
+);
 import {
   InitiativeModel,
   getStoredInitiatives,
@@ -128,7 +139,7 @@ export default function BusinessInitiativesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors animate-page-entrance">
       <AppHeader badge="Executive Portfolio" />
 
       <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-8">

@@ -70,3 +70,61 @@ export function SkeletonTable({ rows = 4, className }: { rows?: number; classNam
     </div>
   );
 }
+
+export function SkeletonChart({ className }: { className?: string }) {
+  return (
+    <div className={cn("p-5 rounded-xl border border-border bg-card space-y-4", className)}>
+      <div className="flex justify-between items-center pb-2 border-b border-border/40">
+        <Skeleton className="h-5 w-1/3" />
+        <Skeleton className="h-4 w-16" />
+      </div>
+      <div className="h-32 flex items-end justify-between gap-2 pt-4 px-2">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="flex-1 flex flex-col items-center gap-2">
+            <Skeleton className="w-full bg-secondary/60 rounded-t" style={{ height: `${20 + (i % 3) * 25}%` }} />
+            <Skeleton className="h-3 w-8" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonTimeline({ className }: { className?: string }) {
+  return (
+    <div className={cn("p-5 rounded-xl border border-border bg-card space-y-4", className)}>
+      <div className="flex justify-between items-center pb-2 border-b border-border/40">
+        <Skeleton className="h-5 w-1/4" />
+        <Skeleton className="h-4 w-12" />
+      </div>
+      <div className="space-y-4 pt-2">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="flex items-start gap-3 border-l-2 border-border/50 pl-4 relative">
+            <div className="absolute -left-[6px] top-1.5 w-2.5 h-2.5 rounded-full bg-border" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-3 w-2/3" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonConsole({ className }: { className?: string }) {
+  return (
+    <div className={cn("p-5 rounded-xl border border-border bg-card space-y-4", className)}>
+      <div className="flex justify-between items-center pb-2 border-b border-border/40">
+        <Skeleton className="h-5 w-1/4" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+      <div className="bg-secondary/40 p-4 rounded-lg font-mono space-y-2 min-h-[140px]">
+        <Skeleton className="h-3.5 w-full bg-secondary/80" />
+        <Skeleton className="h-3.5 w-11/12 bg-secondary/80" />
+        <Skeleton className="h-3.5 w-10/12 bg-secondary/80" />
+        <Skeleton className="h-3.5 w-9/12 bg-secondary/80" />
+      </div>
+    </div>
+  );
+}

@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, date
+from datetime import datetime, date as date_type
 from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -9,7 +9,7 @@ class InitiativeCreate(BaseModel):
     problem_statement: Optional[str] = None
     proposed_intervention: Optional[str] = None
     expected_business_outcome: Optional[str] = None
-    planned_start_date: Optional[date] = None
+    planned_start_date: Optional[date_type] = None
     owner: Optional[str] = Field(None, max_length=255)
     executive_sponsor: Optional[str] = Field(None, max_length=255)
     project_lead: Optional[str] = Field(None, max_length=255)
@@ -23,8 +23,8 @@ class InitiativeUpdate(BaseModel):
     problem_statement: Optional[str] = None
     proposed_intervention: Optional[str] = None
     expected_business_outcome: Optional[str] = None
-    planned_start_date: Optional[date] = None
-    actual_start_date: Optional[date] = None
+    planned_start_date: Optional[date_type] = None
+    actual_start_date: Optional[date_type] = None
     next_review_at: Optional[datetime] = None
     owner: Optional[str] = Field(None, max_length=255)
     executive_sponsor: Optional[str] = Field(None, max_length=255)
@@ -42,8 +42,8 @@ class InitiativeResponse(BaseModel):
     problem_statement: Optional[str] = None
     proposed_intervention: Optional[str] = None
     expected_business_outcome: Optional[str] = None
-    planned_start_date: Optional[date] = None
-    actual_start_date: Optional[date] = None
+    planned_start_date: Optional[date_type] = None
+    actual_start_date: Optional[date_type] = None
     next_review_at: Optional[datetime] = None
     created_by_user_id: Optional[uuid.UUID] = None
     created_at: datetime
@@ -80,7 +80,7 @@ class CostItemCreate(BaseModel):
     expense_name: Optional[str] = Field(None, max_length=255)
     vendor: Optional[str] = Field(None, max_length=255)
     department: Optional[str] = Field(None, max_length=255)
-    date: Optional[date] = None
+    date: Optional[date_type] = None
     status: Optional[str] = Field(None, max_length=50)
     approval_owner: Optional[str] = Field(None, max_length=255)
 
@@ -98,7 +98,7 @@ class CostItemResponse(BaseModel):
     expense_name: Optional[str] = None
     vendor: Optional[str] = None
     department: Optional[str] = None
-    date: Optional[date] = None
+    date: Optional[date_type] = None
     status: Optional[str] = None
     approval_owner: Optional[str] = None
 
@@ -110,8 +110,8 @@ class InvestmentResponse(BaseModel):
     initiative_id: uuid.UUID
     version_number: int
     currency: str
-    period_start: Optional[date] = None
-    period_end: Optional[date] = None
+    period_start: Optional[date_type] = None
+    period_end: Optional[date_type] = None
     status: str
     assumptions: Optional[dict] = None
     created_by_user_id: Optional[uuid.UUID] = None
@@ -411,8 +411,8 @@ class ApprovalItemResponse(BaseModel):
     expected_outcome: Optional[str] = None
     ai_confidence_score: Optional[float] = None
     risk_level: str
-    submitted_date: date
-    due_date: date
+    submitted_date: date_type
+    due_date: date_type
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -423,7 +423,7 @@ class WorkflowTaskResponse(BaseModel):
     approval_id: uuid.UUID
     task_title: str
     assignee: str
-    due_date: date
+    due_date: date_type
     priority: str
     status: str
 
@@ -511,6 +511,6 @@ class CostItemLedgerResponse(BaseModel):
     planned_amount: float
     actual_amount: float
     variance_amount: float
-    date: Optional[date] = None
+    date: Optional[date_type] = None
     status: Optional[str] = None
     approval_owner: Optional[str] = None

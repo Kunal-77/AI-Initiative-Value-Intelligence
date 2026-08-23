@@ -2,16 +2,12 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
+import dynamic from "next/dynamic";
 import {
   AppHeader,
   AiStudioHeader,
   AiScorecard,
   ExecutiveInsightCards,
-  RoiTrendChart,
-  CostVsBenefitChart,
-  RecommendationFeed,
-  ExplainabilityPanel,
-  ScenarioComparison,
   PortfolioRiskOverview,
   FinancialProjections,
   RecommendationHistory,
@@ -19,7 +15,31 @@ import {
   SkeletonMetricsRow,
   UnifiedLifecycleBar,
   CrossModuleNav,
+  SkeletonChart,
+  SkeletonTable,
+  SkeletonCard,
 } from "../../../components/ui";
+
+const RecommendationFeed = dynamic(
+  () => import("../../../components/ai/RecommendationFeed").then(mod => mod.RecommendationFeed),
+  { loading: () => <SkeletonTable rows={3} /> }
+);
+const RoiTrendChart = dynamic(
+  () => import("../../../components/ai/AiCharts").then(mod => mod.RoiTrendChart),
+  { loading: () => <SkeletonChart /> }
+);
+const CostVsBenefitChart = dynamic(
+  () => import("../../../components/ai/AiCharts").then(mod => mod.CostVsBenefitChart),
+  { loading: () => <SkeletonChart /> }
+);
+const ScenarioComparison = dynamic(
+  () => import("../../../components/ai/ScenarioComparison").then(mod => mod.ScenarioComparison),
+  { loading: () => <SkeletonCard /> }
+);
+const ExplainabilityPanel = dynamic(
+  () => import("../../../components/ai/ExplainabilityPanel").then(mod => mod.ExplainabilityPanel),
+  { ssr: false }
+);
 import { defaultAiEngine } from "../../../services/ai/aiEngine";
 import { AiAnalysisResult, AiRecommendation, RecommendationStatus } from "../../../types/ai";
 import { getStoredInitiatives } from "../../../lib/initiativeStore";
@@ -110,7 +130,7 @@ export default function BusinessAiStudioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors animate-page-entrance">
       <AppHeader badge="AI Value Studio" />
 
       <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-8">

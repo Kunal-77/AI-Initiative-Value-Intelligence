@@ -2,17 +2,34 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
+import dynamic from "next/dynamic";
 import {
   AppHeader,
   ProviderSelectorCard,
-  StreamingConsole,
-  PromptLibraryManager,
-  AgentRegistryCard,
-  AiObservabilityDashboard,
   UnifiedLifecycleBar,
   CrossModuleNav,
   SkeletonMetricsRow,
+  SkeletonConsole,
+  SkeletonCard,
+  SkeletonTable,
 } from "../../../components/ui";
+
+const StreamingConsole = dynamic(
+  () => import("../../../components/ai-platform/StreamingConsole").then(mod => mod.StreamingConsole),
+  { loading: () => <SkeletonConsole /> }
+);
+const PromptLibraryManager = dynamic(
+  () => import("../../../components/ai-platform/PromptLibraryManager").then(mod => mod.PromptLibraryManager),
+  { loading: () => <SkeletonCard /> }
+);
+const AgentRegistryCard = dynamic(
+  () => import("../../../components/ai-platform/AgentRegistryCard").then(mod => mod.AgentRegistryCard),
+  { loading: () => <SkeletonCard /> }
+);
+const AiObservabilityDashboard = dynamic(
+  () => import("../../../components/ai-platform/AiObservabilityDashboard").then(mod => mod.AiObservabilityDashboard),
+  { loading: () => <SkeletonTable rows={3} /> }
+);
 import {
   LlmModelConfig,
   LlmCompletionResponse,
@@ -91,7 +108,7 @@ export default function BusinessAiPlaygroundPage() {
     setStreamOutput((prev) => prev + "\n[Stream execution cancelled by user]");
   };
 
-  if (!orgId || loading) {
+  if (!orgId) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
         <AppHeader badge="AI Playground & Agent Platform" />
@@ -103,7 +120,7 @@ export default function BusinessAiPlaygroundPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors animate-page-entrance">
       <AppHeader badge="AI Playground & Agent Platform" />
 
       <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-8">

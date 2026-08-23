@@ -2,21 +2,44 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
+import dynamic from "next/dynamic";
 import {
   AppHeader,
   ExecutiveFinancialSummary,
-  BenefitsRealization,
-  CostManagementCard,
-  CashFlowCharts,
   ValueDriversCard,
-  BenefitsRegister,
-  CostRegister,
-  FinancialForecastsCard,
   FinancialExport,
   SkeletonMetricsRow,
   UnifiedLifecycleBar,
   CrossModuleNav,
+  SkeletonChart,
+  SkeletonTable,
+  SkeletonCard,
 } from "../../../components/ui";
+
+const FinancialForecastsCard = dynamic(
+  () => import("../../../components/financial/FinancialForecastsCard").then(mod => mod.FinancialForecastsCard),
+  { loading: () => <SkeletonCard /> }
+);
+const BenefitsRealization = dynamic(
+  () => import("../../../components/financial/BenefitsRealization").then(mod => mod.BenefitsRealization),
+  { loading: () => <SkeletonChart /> }
+);
+const CostManagementCard = dynamic(
+  () => import("../../../components/financial/CostManagementCard").then(mod => mod.CostManagementCard),
+  { loading: () => <SkeletonCard /> }
+);
+const BenefitsRegister = dynamic(
+  () => import("../../../components/financial/BenefitsRegister").then(mod => mod.BenefitsRegister),
+  { loading: () => <SkeletonTable rows={4} /> }
+);
+const CostRegister = dynamic(
+  () => import("../../../components/financial/CostRegister").then(mod => mod.CostRegister),
+  { loading: () => <SkeletonTable rows={4} /> }
+);
+const CashFlowCharts = dynamic(
+  () => import("../../../components/financial/CashFlowCharts").then(mod => mod.CashFlowCharts),
+  { loading: () => <SkeletonChart /> }
+);
 import {
   getExecutiveFinancialMetrics,
   getBenefitsRegister,
@@ -69,7 +92,7 @@ export default function BusinessFinancialsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors animate-page-entrance">
       <AppHeader badge="Financial Intelligence" />
 
       <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-8">

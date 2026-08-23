@@ -1,16 +1,31 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
 import { ExecutiveWelcome } from "./ExecutiveWelcome";
 import { PortfolioKpiCards } from "./PortfolioKpiCards";
 import { RoiSummaryCard } from "./RoiSummaryCard";
 import { BudgetUtilizationCard } from "./BudgetUtilizationCard";
 import { PortfolioHealthCard } from "./PortfolioHealthCard";
-import { ActiveInitiativesGrid } from "./ActiveInitiativesGrid";
-import { RecentActivityTimeline } from "./RecentActivityTimeline";
-import { UpcomingMilestonesCard } from "./UpcomingMilestonesCard";
-import { AiInsightsPanel } from "./AiInsightsPanel";
 import { QuickActionsPanel } from "./QuickActionsPanel";
+import { SkeletonTable, SkeletonTimeline, SkeletonCard } from "../ui";
+
+const ActiveInitiativesGrid = dynamic(
+  () => import("./ActiveInitiativesGrid").then(mod => mod.ActiveInitiativesGrid),
+  { loading: () => <SkeletonTable rows={3} /> }
+);
+const RecentActivityTimeline = dynamic(
+  () => import("./RecentActivityTimeline").then(mod => mod.RecentActivityTimeline),
+  { loading: () => <SkeletonTimeline /> }
+);
+const AiInsightsPanel = dynamic(
+  () => import("./AiInsightsPanel").then(mod => mod.AiInsightsPanel),
+  { loading: () => <SkeletonCard /> }
+);
+const UpcomingMilestonesCard = dynamic(
+  () => import("./UpcomingMilestonesCard").then(mod => mod.UpcomingMilestonesCard),
+  { loading: () => <SkeletonCard /> }
+);
 
 export interface ExecutiveDashboardProps {
   orgName?: string;

@@ -36,3 +36,5 @@ export * from "../notifications";
 export * from "../collaboration";
 export * from "../ai-platform";
 export * from "../integrations";
+export * from "./LazyViewport";
+export * from "./ScrollAnimate";

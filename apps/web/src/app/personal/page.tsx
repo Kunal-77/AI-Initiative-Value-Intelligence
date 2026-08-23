@@ -17,7 +17,7 @@ import {
   PlusCircle,
   HelpCircle,
 } from "lucide-react";
-import { AppHeader, Button, SkeletonMetricsRow, SkeletonCard } from "../../components/ui";
+import { AppHeader, Button, SkeletonMetricsRow, SkeletonCard, Skeleton } from "../../components/ui";
 import {
   getPersonalDashboard,
   getSubscriptions,
@@ -288,7 +288,7 @@ export default function PersonalWorkspacePage() {
     }
   };
 
-  if (!userLoaded || (loading && !dashboard)) {
+  if (!userLoaded) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
         <AppHeader badge="Personal Workspace" />
@@ -321,7 +321,7 @@ export default function PersonalWorkspacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors animate-page-entrance">
       <AppHeader
         showLink={true}
         badge="Personal Workspace"
@@ -370,7 +370,11 @@ export default function PersonalWorkspacePage() {
               </div>
             </div>
             <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
-              ${dashboard?.monthlySpend.toFixed(2) || "0.00"}
+              {loading && !dashboard ? (
+                <Skeleton className="h-6 w-20" />
+              ) : (
+                `$${dashboard?.monthlySpend.toFixed(2) || "0.00"}`
+              )}
             </span>
             <span className="text-[10px] text-muted-foreground">Active recurring commitments</span>
           </div>
@@ -385,7 +389,11 @@ export default function PersonalWorkspacePage() {
               </div>
             </div>
             <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
-              ${dashboard?.aiSpend.toFixed(2) || "0.00"}
+              {loading && !dashboard ? (
+                <Skeleton className="h-6 w-20" />
+              ) : (
+                `$${dashboard?.aiSpend.toFixed(2) || "0.00"}`
+              )}
             </span>
             <span className="text-[10px] text-muted-foreground">Generative AI subscriptions</span>
           </div>
@@ -400,7 +408,11 @@ export default function PersonalWorkspacePage() {
               </div>
             </div>
             <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
-              {dashboard?.activeSubscriptionsCount || 0}
+              {loading && !dashboard ? (
+                <Skeleton className="h-6 w-8" />
+              ) : (
+                dashboard?.activeSubscriptionsCount || 0
+              )}
             </span>
             <span className="text-[10px] text-muted-foreground">Active tracking records</span>
           </div>
@@ -415,7 +427,11 @@ export default function PersonalWorkspacePage() {
               </div>
             </div>
             <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
-              {dashboard?.cloudProjectsCount || 0}
+              {loading && !dashboard ? (
+                <Skeleton className="h-6 w-8" />
+              ) : (
+                dashboard?.cloudProjectsCount || 0
+              )}
             </span>
             <span className="text-[10px] text-muted-foreground">AWS / GCP / Azure project keys</span>
           </div>
@@ -432,7 +448,17 @@ export default function PersonalWorkspacePage() {
                 <span className="text-[11px] text-muted-foreground font-mono">Verified PostgreSQL persistence</span>
               </div>
 
-              {subscriptions.length === 0 ? (
+              {loading && subscriptions.length === 0 ? (
+                <div className="p-4 space-y-3">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex justify-between items-center py-2.5 border-b border-border/50 last:border-0">
+                      <Skeleton className="h-4 w-1/3" />
+                      <Skeleton className="h-4 w-1/4" />
+                      <Skeleton className="h-4 w-12" />
+                    </div>
+                  ))}
+                </div>
+              ) : subscriptions.length === 0 ? (
                 <div className="p-12 flex flex-col items-center justify-center text-center gap-3">
                   <div className="p-3 bg-secondary rounded-full text-muted-foreground border border-border">
                     <Layers className="w-6 h-6" />
@@ -520,7 +546,12 @@ export default function PersonalWorkspacePage() {
                 )}
               </div>
 
-              {dashboard?.recentUsage.length === 0 ? (
+              {loading && !dashboard ? (
+                <div className="p-5 space-y-3">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
+                </div>
+              ) : dashboard?.recentUsage.length === 0 ? (
                 <div className="p-8 text-center text-xs text-muted-foreground">
                   No metered API consumption logged yet.
                 </div>
@@ -558,7 +589,12 @@ export default function PersonalWorkspacePage() {
                 </h3>
               </div>
 
-              {dashboard?.upcomingRenewals.length === 0 ? (
+              {loading && !dashboard ? (
+                <div className="p-4 space-y-3">
+                  <Skeleton className="h-4 w-1/3" />
+                  <Skeleton className="h-4 w-1/4" />
+                </div>
+              ) : dashboard?.upcomingRenewals.length === 0 ? (
                 <div className="p-6 text-center text-xs text-muted-foreground">
                   No upcoming subscription renewals in the next 30 days.
                 </div>
@@ -588,7 +624,12 @@ export default function PersonalWorkspacePage() {
                 </h3>
               </div>
 
-              {paymentMethods.length === 0 ? (
+              {loading && paymentMethods.length === 0 ? (
+                <div className="p-4 space-y-2">
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-4 w-1/3" />
+                </div>
+              ) : paymentMethods.length === 0 ? (
                 <div className="p-6 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
                   <span>No payment methods registered yet.</span>
                   <button

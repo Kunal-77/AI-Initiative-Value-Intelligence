@@ -450,6 +450,58 @@ div[data-nextjs-dialog-overlay] {
   animation: drawVertical 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* 10. Native Smooth Scroll on Anchors */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 11. Reusable Scroll Entrance Animation */
+.scroll-trigger {
+  opacity: 0;
+  transform: translateY(24px) scale(0.985);
+  transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1), transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+}
+
+.scroll-trigger.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* 12. Route Page Entrance Transition */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-page-entrance {
+  animation: pageFadeIn 350ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* 13. Hero Scroll-driven Animation (progressive enhancement) */
+@keyframes heroScrollAway {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.97);
+    opacity: 0.85;
+  }
+}
+@supports (animation-timeline: scroll()) {
+  .hero-scroll-wrapper {
+    animation: heroScrollAway linear both;
+    animation-timeline: scroll();
+    animation-range: exit 0% exit 80%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .motion-reveal,
   .motion-float,
@@ -459,7 +511,11 @@ div[data-nextjs-dialog-overlay] {
   .motion-draw,
   .motion-draw-vertical,
   .motion-number-reveal,
-  .motion-hover-lift {
+  .motion-hover-lift,
+  .scroll-trigger,
+  .animate-page-entrance,
+  .hero-entrance-dashboard,
+  .hero-scroll-wrapper {
     animation: none !important;
     transform: none !important;
     transition: none !important;
