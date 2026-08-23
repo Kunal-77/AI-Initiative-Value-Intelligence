@@ -49,7 +49,7 @@ export function PortfolioHealthCard({ loading = false, error = null }: Portfolio
   ];
 
   return (
-    <div className="p-6 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-5 hover:border-blue-500/30 transition-all duration-200">
+    <div className="p-6 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-5 hover:border-blue-500/30 transition-all duration-200 motion-reveal motion-hover-lift">
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
           <h3 className="text-base font-bold text-foreground flex items-center gap-2">
@@ -71,12 +71,12 @@ export function PortfolioHealthCard({ loading = false, error = null }: Portfolio
         {healthItems.map((item, idx) => {
           const Icon = item.icon;
           return (
-            <div key={idx} className="p-4 rounded-xl bg-secondary/35 border border-border/70 hover:border-blue-500/30 transition-all space-y-2 min-w-0">
+            <div key={idx} className="p-4 rounded-xl bg-secondary/35 border border-border/70 hover:border-blue-500/30 transition-all space-y-2 min-w-0 motion-hover-lift">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-semibold text-foreground truncate" title={item.title}>
                   {item.title}
                 </span>
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full border shrink-0 ${item.badgeClass}`}>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full border shrink-0 motion-number-reveal ${item.badgeClass}`}>
                   {item.count}
                 </span>
               </div>

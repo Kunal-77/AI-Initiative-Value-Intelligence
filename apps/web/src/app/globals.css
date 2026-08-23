@@ -145,19 +145,19 @@ body {
 
 /* Single Signature Hero Gradient Mesh (Violet -> Indigo -> Electric Blue -> Navy) */
 .hero-gradient-mesh {
-  background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(139, 92, 246, 0.10) 0%, rgba(99, 102, 241, 0.08) 35%, rgba(59, 130, 246, 0.06) 65%, transparent 85%);
-  filter: blur(80px);
+  background: radial-gradient(ellipse 70% 60% at 45% 35%, rgba(139, 92, 246, 0.09) 0%, rgba(99, 102, 241, 0.07) 35%, rgba(59, 130, 246, 0.05) 65%, transparent 85%);
+  filter: blur(120px);
 }
 
 /* Keyframe Animations */
 @keyframes meshSlowShift {
   0%, 100% {
-    transform: scale(1) translateY(0);
-    opacity: 0.85;
+    transform: scale(1) translate(0px, 0px);
+    opacity: 0.8;
   }
   50% {
-    transform: scale(1.08) translateY(12px);
-    opacity: 1;
+    transform: scale(1.06) translate(15px, -10px);
+    opacity: 0.95;
   }
 }
 
@@ -166,7 +166,7 @@ body {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-6px);
+    transform: translateY(-5px);
   }
 }
 
@@ -190,6 +190,82 @@ body {
   }
 }
 
+/* Premium Dashboard Shadow & Soft Rim Glow */
+.dashboard-rim-glow {
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    0 16px 32px rgba(0, 0, 0, 0.5),
+    0 0 50px -10px rgba(59, 130, 246, 0.12),
+    0 0 80px -30px rgba(139, 92, 246, 0.12);
+}
+
+/* Dashboard Hover Parallax-like CSS Effect (pushed back up to prevent animation overwrite conflicts) */
+.dashboard-hover-state {
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.8s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dashboard-hover-state:hover {
+  animation-play-state: paused !important;
+  transform: translateY(-8px) scale(1.005) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 24px 48px -8px rgba(0, 0, 0, 0.6),
+    0 0 60px -5px rgba(59, 130, 246, 0.18),
+    0 0 90px -15px rgba(139, 92, 246, 0.18) !important;
+}
+
+/* Hero Entrance Animations */
+@keyframes heroFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-entrance-badge {
+  opacity: 0;
+  animation: heroFadeInUp 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 100ms;
+}
+.hero-entrance-title {
+  opacity: 0;
+  animation: heroFadeInUp 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 200ms;
+}
+.hero-entrance-desc {
+  opacity: 0;
+  animation: heroFadeInUp 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 350ms;
+}
+.hero-entrance-ctas {
+  opacity: 0;
+  animation: heroFadeInUp 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 500ms;
+}
+.hero-entrance-dashboard {
+  opacity: 0;
+  animation: heroFadeInUp 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 650ms;
+}
+
+/* Button micro-interactions */
+.cta-button-hover {
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), filter 200ms ease, box-shadow 200ms ease !important;
+}
+.cta-button-hover:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.cta-button-hover:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
 .animate-hero-mesh {
   animation: meshSlowShift 80s ease-in-out infinite;
 }
@@ -210,9 +286,18 @@ body {
   .animate-hero-mesh,
   .animate-product-float,
   .animate-beam-slide,
-  .animate-pulse-slow {
+  .animate-pulse-slow,
+  .hero-entrance-badge,
+  .hero-entrance-title,
+  .hero-entrance-desc,
+  .hero-entrance-ctas,
+  .hero-entrance-dashboard,
+  .dashboard-hover-state,
+  .cta-button-hover {
     animation: none !important;
     transform: none !important;
+    transition: none !important;
+    opacity: 1 !important;
   }
 }
 
@@ -224,3 +309,162 @@ nextjs-portal,
 div[data-nextjs-dialog-overlay] {
   display: none !important;
 }
+
+/* ==================================================
+   REUSABLE LIVING UI MOTION UTILITIES (PHASE 2)
+   ================================================== */
+
+/* 1. Motion Reveal - Generic Fade + Slide Up */
+@keyframes motionRevealKeyframe {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.motion-reveal {
+  opacity: 0;
+  animation: motionRevealKeyframe 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Staggered utility delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* 2. Motion Float - Gentle floating animation */
+.motion-float {
+  animation: productFloat 12s ease-in-out infinite;
+}
+
+/* 3. Motion Glow - Breathing ambient drop shadow or background pulse */
+@keyframes motionGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px -5px rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px 0px rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.45);
+  }
+}
+.motion-glow {
+  animation: motionGlowPulse 4s ease-in-out infinite;
+}
+
+.motion-glow-cyan {
+  animation: motionGlowPulseCyan 4s ease-in-out infinite;
+}
+@keyframes motionGlowPulseCyan {
+  0%, 100% {
+    box-shadow: 0 0 15px -5px rgba(6, 182, 212, 0.15);
+    border-color: rgba(6, 182, 212, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px 0px rgba(6, 182, 212, 0.3);
+    border-color: rgba(6, 182, 212, 0.45);
+  }
+}
+
+/* 4. Motion Pulse Soft - Quiet opacity breathing */
+@keyframes motionPulseSoftKeyframe {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+.motion-pulse-soft {
+  animation: motionPulseSoftKeyframe 3s ease-in-out infinite;
+}
+
+/* 5. Motion Draw - SVG path/bar growth animation */
+@keyframes motionDrawKeyframe {
+  from {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  to {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+.motion-draw {
+  animation: motionDrawKeyframe 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 6. Motion Number Reveal - Subtle font slide or scale */
+@keyframes motionNumberRevealKeyframe {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.motion-number-reveal {
+  opacity: 0;
+  animation: motionNumberRevealKeyframe 500ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* 7. Motion Hover Lift - lift by 1-2px and softly illuminate border */
+.motion-hover-lift {
+  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), border-color 250ms ease, box-shadow 250ms ease;
+}
+.motion-hover-lift:hover {
+  transform: translateY(-2px);
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.15);
+}
+
+/* 8. SVG Sparkline Draw Animation */
+@keyframes svgDraw {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* 9. Vertical Bar Chart Growth Animation */
+@keyframes drawVertical {
+  from {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+  to {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+}
+.motion-draw-vertical {
+  animation: drawVertical 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-reveal,
+  .motion-float,
+  .motion-glow,
+  .motion-glow-cyan,
+  .motion-pulse-soft,
+  .motion-draw,
+  .motion-draw-vertical,
+  .motion-number-reveal,
+  .motion-hover-lift {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+  }
+}
+

@@ -13,7 +13,7 @@ export function WorkflowTimeline({ currentStage }: WorkflowTimelineProps) {
   const currentIndex = STAGE_ORDER.indexOf(currentStage);
 
   return (
-    <div className="p-4 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-3">
+    <div className="p-4 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-3 motion-reveal motion-hover-lift">
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold text-foreground">Governance Approval Lifecycle Timeline</span>
         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 font-bold">
@@ -27,14 +27,18 @@ export function WorkflowTimeline({ currentStage }: WorkflowTimelineProps) {
           const isCurrent = idx === currentIndex && currentStage !== "APPROVED";
 
           return (
-            <div key={stage} className="flex items-center gap-1.5 shrink-0">
+            <div
+              key={stage}
+              className="flex items-center gap-1.5 shrink-0 motion-reveal"
+              style={{ animationDelay: `${idx * 80}ms` }}
+            >
               <div className="flex flex-col items-center gap-1">
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border transition-colors ${
                     isDone
                       ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
                       : isCurrent
-                      ? "bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/40 animate-pulse"
+                      ? "bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/40 motion-glow"
                       : "bg-secondary text-muted-foreground border-border"
                   }`}
                 >

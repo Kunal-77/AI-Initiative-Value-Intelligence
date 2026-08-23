@@ -31,7 +31,7 @@ export function BudgetUtilizationCard({ loading = false, error = null }: BudgetU
   ];
 
   return (
-    <div className="p-6 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-5 hover:border-blue-500/30 transition-all duration-200">
+    <div className="p-6 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-5 hover:border-blue-500/30 transition-all duration-200 motion-reveal motion-hover-lift">
       <div className="flex flex-col 2xl:flex-row 2xl:items-start justify-between gap-3">
         <div className="space-y-0.5 min-w-0 flex-1">
           <h3 className="text-base font-bold text-foreground flex items-center gap-2 min-w-0">
@@ -45,7 +45,7 @@ export function BudgetUtilizationCard({ loading = false, error = null }: BudgetU
           </p>
         </div>
         <div className="text-left 2xl:text-right shrink-0">
-          <div className="text-sm font-bold font-mono text-foreground">$1.82M / $2.33M</div>
+          <div className="text-sm font-bold font-mono text-foreground motion-number-reveal">$1.82M / $2.33M</div>
           <div className="text-[10px] text-muted-foreground">78.2% Utilized</div>
         </div>
       </div>
@@ -62,7 +62,7 @@ export function BudgetUtilizationCard({ loading = false, error = null }: BudgetU
             </div>
             <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-300"
+                className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-300 motion-draw"
                 style={{ width: `${cat.percentage}%` }}
               />
             </div>

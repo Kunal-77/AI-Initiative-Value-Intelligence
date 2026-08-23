@@ -41,14 +41,14 @@ export function AiInsightsPanel({
   const visibleInsights = activeInsights.slice(0, 2);
 
   return (
-    <div className="p-5 rounded-xl border border-blue-500/30 bg-card text-card-foreground shadow-sm space-y-4 relative overflow-hidden">
+    <div className="p-5 rounded-xl border border-blue-500/30 bg-card text-card-foreground shadow-sm space-y-4 relative overflow-hidden motion-reveal motion-glow-cyan">
       {/* Accent blue glow backdrop */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
 
       {/* Header */}
       <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border border-cyan-500/20">
+          <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border border-cyan-500/20 animate-pulse-slow">
             <Sparkles className="w-3.5 h-3.5" />
           </div>
           <div>
@@ -56,7 +56,7 @@ export function AiInsightsPanel({
             <p className="text-[10px] text-muted-foreground">Top recommendations</p>
           </div>
         </div>
-        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 animate-pulse">
           AI Active
         </span>
       </div>
@@ -70,7 +70,7 @@ export function AiInsightsPanel({
           {visibleInsights.map((item, index) => (
             <div
               key={item.id}
-              className={`p-3 rounded-xl border transition-colors space-y-2 ${
+              className={`p-3 rounded-xl border transition-colors space-y-2 motion-hover-lift-cyan ${
                 index === 0
                   ? "bg-cyan-500/5 border-cyan-500/30 shadow-2xs"
                   : "bg-secondary/35 border-border/70 hover:border-border"
@@ -94,7 +94,7 @@ export function AiInsightsPanel({
               <div className="flex items-center justify-between pt-0.5 text-[10px]">
                 <div className="flex items-center gap-1 text-muted-foreground">
                   <ShieldCheck className="w-3 h-3 text-cyan-500 dark:text-cyan-400" />
-                  <span>{item.confidence}% conf</span>
+                  <span className="motion-number-reveal">{item.confidence}% conf</span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
@@ -109,7 +109,7 @@ export function AiInsightsPanel({
                   <Button
                     onClick={() => setAcceptedIds((prev) => [...prev, item.id])}
                     variant="primary"
-                    className="py-0.5 px-2 text-[10px] h-6"
+                    className="py-0.5 px-2 text-[10px] h-6 cta-button-hover"
                   >
                     <Check className="w-3 h-3 mr-1" />
                     Accept

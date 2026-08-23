@@ -39,7 +39,7 @@ export function ApprovalQueue({
   }, [approvals, filterTab, searchQuery]);
 
   return (
-    <div className="rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm overflow-hidden space-y-0">
+    <div className="rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm overflow-hidden space-y-0 motion-reveal motion-hover-lift">
       <div className="p-4 border-b border-border bg-secondary/30 space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -54,7 +54,7 @@ export function ApprovalQueue({
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-          <div className="flex gap-1 text-[11px]">
+          <div className="flex gap-1 text-[11px] flex-wrap">
             {[
               { id: "ALL", label: "All Items" },
               { id: "PENDING", label: "Pending Review" },
@@ -66,10 +66,10 @@ export function ApprovalQueue({
                 key={tab.id}
                 type="button"
                 onClick={() => setFilterTab(tab.id)}
-                className={`px-2.5 py-1 rounded-md border font-medium transition-colors ${
+                className={`px-2.5 py-1 rounded-md border font-medium transition-all duration-200 active:scale-95 ${
                   filterTab === tab.id
                     ? "bg-blue-500/15 text-blue-500 dark:text-blue-400 border-blue-500/30 font-bold"
-                    : "bg-secondary text-muted-foreground border-border hover:bg-secondary/80"
+                    : "bg-secondary text-muted-foreground border-border hover:bg-secondary/85"
                 }`}
               >
                 {tab.label}
@@ -100,7 +100,7 @@ export function ApprovalQueue({
           </TableHeader>
           <TableBody className="divide-y divide-border/60">
             {filtered.map((item) => (
-              <TableRow key={item.id} className="hover:bg-blue-500/5 transition-colors text-xs">
+              <TableRow key={item.id} className="hover:bg-blue-500/5 hover:translate-x-0.5 transition-all duration-150 text-xs">
                 <TableCell className="py-3.5 px-4 font-semibold text-foreground">
                   {item.initiativeName}
                   <span className="block text-[10px] text-muted-foreground font-normal">Requested by: {item.requestedBy}</span>
@@ -115,13 +115,13 @@ export function ApprovalQueue({
                   ${(item.requestedBudget / 1000).toFixed(0)}k
                 </TableCell>
                 <TableCell className="py-3.5 px-4 text-center font-mono font-bold text-cyan-500 dark:text-cyan-400">
-                  {item.aiConfidenceScore}%
+                  <span className="motion-number-reveal">{item.aiConfidenceScore}%</span>
                 </TableCell>
                 <TableCell className="py-3.5 px-4 text-right">
                   <Button
                     onClick={() => onSelectApproval(item)}
                     variant="primary"
-                    className="text-[10px] h-7 px-2.5"
+                    className="text-[10px] h-7 px-2.5 cta-button-hover"
                   >
                     Review & Decide <ArrowUpRight className="w-3 h-3 ml-1" />
                   </Button>

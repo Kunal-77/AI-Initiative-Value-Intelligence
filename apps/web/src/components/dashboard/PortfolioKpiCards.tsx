@@ -91,6 +91,12 @@ function Sparkline({ data, isPositive }: { data: number[]; isPositive: boolean }
         strokeLinecap="round"
         strokeLinejoin="round"
         points={points}
+        className="motion-draw"
+        style={{
+          strokeDasharray: 100,
+          strokeDashoffset: 100,
+          animation: "svgDraw 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards"
+        }}
       />
     </svg>
   );
@@ -125,12 +131,20 @@ export function PortfolioKpiCards({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {data.map((kpi) => {
+      {data.map((kpi, idx) => {
         const Icon = kpi.icon;
+        const delayClass = 
+          idx === 0 ? "delay-100" :
+          idx === 1 ? "delay-200" :
+          idx === 2 ? "delay-300" :
+          "delay-400";
         return (
           <div
             key={kpi.id}
-            className="group relative p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-blue-500/40 transition-all duration-200 flex flex-col justify-between gap-3"
+            className={cn(
+              "group relative p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-2xs flex flex-col justify-between gap-3 motion-reveal motion-hover-lift",
+              delayClass
+            )}
           >
             {/* Top row: Title + Icon */}
             <div className="flex items-center justify-between">
@@ -138,14 +152,14 @@ export function PortfolioKpiCards({
                 {kpi.title}
               </span>
               <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400 group-hover:bg-blue-500/15 transition-colors">
-                <Icon className="w-4 h-4" />
+                <Icon className="w-4 h-4 text-blue-500" />
               </div>
             </div>
 
             {/* Middle row: Big Value + Sparkline + Trend Badge */}
             <div className="flex items-end justify-between gap-2 pt-1">
               <div>
-                <span className="text-2xl sm:text-3xl font-extrabold font-mono text-foreground tracking-tight block">
+                <span className="text-2xl sm:text-3xl font-extrabold font-mono text-foreground tracking-tight block motion-number-reveal">
                   {kpi.value}
                 </span>
               </div>

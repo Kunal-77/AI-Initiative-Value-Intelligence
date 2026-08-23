@@ -380,34 +380,34 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto text-center space-y-8 relative z-10">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-semibold text-blue-600 dark:text-blue-400 tracking-wide animate-in fade-in duration-500">
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-semibold text-blue-600 dark:text-blue-400 tracking-wide hero-entrance-badge">
           <Sparkles className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" /> Built for enterprise AI governance teams
         </div>
-
-        <div className="space-y-4 max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-500">
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.1] text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground">
+ 
+        <div className="space-y-4 max-w-4xl mx-auto">
+          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.1] text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground hero-entrance-title">
             Transform AI Investments Into Measurable Business Value
           </h1>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed hero-entrance-desc">
             The world's first unified public decision intelligence system. Model ROIs, review governance gates, monitor multi-provider models, and manage personal productivity.
           </p>
         </div>
-
-        <div className="flex items-center justify-center gap-3.5 animate-in fade-in slide-in-from-bottom-3 duration-600">
+ 
+        <div className="flex items-center justify-center gap-3.5 hero-entrance-ctas">
           {isSignedIn ? (
             <>
               <Button
                 variant="primary"
                 onClick={handleBusinessWorkspaceClick}
                 disabled={loadingBusiness}
-                className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all"
+                className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all cta-button-hover"
               >
                 {loadingBusiness ? "Loading..." : "Business Workspace"} <ArrowRight className="w-3.5 h-3.5" />
               </Button>
               <Button
                 variant="secondary"
                 onClick={handlePersonalWorkspaceClick}
-                className="px-5 py-2.5 text-xs font-bold active:scale-[0.98] transition-all"
+                className="px-5 py-2.5 text-xs font-bold active:scale-[0.98] transition-all cta-button-hover"
               >
                 Personal Workspace <ArrowRight className="w-3.5 h-3.5" />
               </Button>
@@ -415,22 +415,22 @@ export default function LandingPage() {
           ) : (
             <>
               <Link href="/sign-up">
-                <Button variant="primary" className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all">
+                <Button variant="primary" className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all cta-button-hover">
                   Get Started
                 </Button>
               </Link>
               <a href="#tour">
-                <Button variant="secondary" className="px-5 py-2.5 text-xs font-bold active:scale-[0.98] transition-all">
+                <Button variant="secondary" className="px-5 py-2.5 text-xs font-bold active:scale-[0.98] transition-all cta-button-hover">
                   Explore Guided Tour
                 </Button>
               </a>
             </>
           )}
         </div>
-
+ 
         {/* Dashboard Preview Frame */}
-        <div className="pt-12 max-w-5xl mx-auto relative group animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="rounded-2xl border border-border/80 dark:border-blue-500/25 bg-card p-4 shadow-2xl shadow-blue-950/40 dark:shadow-blue-950/70 relative overflow-hidden backdrop-blur-xs transition-all duration-300 animate-product-float">
+        <div className="pt-12 max-w-5xl mx-auto relative group hero-entrance-dashboard">
+          <div className="rounded-2xl border border-border/80 dark:border-blue-500/25 bg-card p-4 relative overflow-hidden backdrop-blur-xs animate-product-float dashboard-rim-glow dashboard-hover-state">
             <div className="flex items-center gap-1.5 pb-3 border-b border-border/60 text-muted-foreground">
               <span className="w-2.5 h-2.5 rounded-full bg-border" />
               <span className="w-2.5 h-2.5 rounded-full bg-border" />
@@ -438,10 +438,19 @@ export default function LandingPage() {
               <span className="text-[9px] font-mono ml-2 tracking-wider text-muted-foreground uppercase">HTTPS://APP.VALUEINTEL.AI/PORTFOLIO</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 text-left">
-              <div className="md:col-span-3 p-5 rounded-xl border border-border bg-background/90 space-y-4 shadow-2xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-foreground">Active Strategic Initiatives</span>
-                  <span className="text-[10px] text-muted-foreground">Q3 Enterprise Forecast</span>
+              <div className="md:col-span-3 p-5 rounded-xl border border-border bg-background/90 space-y-4 shadow-2xs motion-hover-lift">
+                <div className="flex items-center justify-between border-b border-border/40 pb-2 mb-2">
+                  <div className="flex items-center gap-4 text-[10px] font-mono">
+                    <div>
+                      <span className="text-muted-foreground">REALIZED SAVINGS: </span>
+                      <span className="font-bold text-emerald-500 motion-number-reveal">$4.94M</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">PORTFOLIO ROI: </span>
+                      <span className="font-bold text-blue-500 motion-number-reveal">+185.4%</span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground font-mono">Q3 Enterprise Forecast</span>
                 </div>
                 <div className="space-y-2">
                   {[
@@ -449,28 +458,47 @@ export default function LandingPage() {
                     { name: "GPU Infrastructure Scheduler", roi: "+148%", stage: "EXECUTIVE_REVIEW", color: "text-indigo-600 dark:text-indigo-400" },
                     { name: "Automated Financial Reconciliation", roi: "+95%", stage: "DEPLOYED", color: "text-emerald-600 dark:text-emerald-400" }
                   ].map((item, idx) => (
-                    <div key={idx} className="p-3 rounded-lg border border-border/60 bg-secondary/20 flex items-center justify-between text-xs hover:border-blue-500/30 transition-colors">
-                      <div className="space-y-0.5">
-                        <span className="font-semibold text-foreground block">{item.name}</span>
-                        <span className="text-[9px] text-muted-foreground font-mono">Stage: {item.stage}</span>
+                    <div key={idx} className="p-3 rounded-lg border border-border/60 bg-secondary/20 flex flex-col gap-2 text-xs hover:border-blue-500/30 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <span className="font-semibold text-foreground block">{item.name}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[9px] text-muted-foreground font-mono">Stage: {item.stage}</span>
+                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                              item.stage === "DEPLOYED" || item.stage === "APPROVED"
+                                ? "bg-emerald-500/80 shadow-[0_0_6px_rgba(16,185,129,0.5)]"
+                                : "bg-amber-500/80 shadow-[0_0_6px_rgba(245,158,11,0.5)]"
+                            } animate-pulse`} />
+                          </div>
+                        </div>
+                        <span className={`font-bold font-mono ${item.color}`}>{item.roi} ROI</span>
                       </div>
-                      <span className={`font-bold font-mono ${item.color}`}>{item.roi} ROI</span>
+                      {/* Mini trend progress bar acting as drawn chart visual */}
+                      <div className="h-1 bg-secondary rounded-full overflow-hidden w-32 border border-border/40">
+                        <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full motion-draw" style={{ width: item.roi === "+215%" ? "85%" : item.roi === "+148%" ? "68%" : "42%" }} />
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="p-5 rounded-xl border border-border bg-background/90 space-y-4 flex flex-col justify-between shadow-2xs">
+              <div className="p-5 rounded-xl border border-border bg-background/90 space-y-4 flex flex-col justify-between shadow-2xs motion-hover-lift-cyan">
                 <div className="space-y-2 text-xs">
                   <span className="text-[10px] font-mono text-cyan-500 dark:text-cyan-400 tracking-wider uppercase block">AI Insights</span>
                   <p className="text-muted-foreground leading-relaxed text-[11px]">
                     "Automating Customer Support presents a 9.2 month payback period with a 94% confidence indicator."
                   </p>
                 </div>
-                <div className="pt-3 border-t border-border flex items-center gap-2">
-                  <div className="w-5 h-5 rounded bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                <div className="pt-3 border-t border-border flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center animate-pulse-slow">
+                      <Sparkles className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                    </div>
+                    <span className="text-[9px] font-bold text-foreground">94% Confidence</span>
                   </div>
-                  <span className="text-[9px] font-bold text-foreground">94% Confidence</span>
+                  {/* Subtle animated fill/reveal indicator */}
+                  <div className="h-1 bg-secondary rounded-full overflow-hidden w-full border border-border/40">
+                    <div className="h-full bg-cyan-500 rounded-full motion-draw" style={{ width: "94%" }} />
+                  </div>
                 </div>
               </div>
             </div>

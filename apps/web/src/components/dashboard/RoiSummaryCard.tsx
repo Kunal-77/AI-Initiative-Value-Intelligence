@@ -32,7 +32,7 @@ export function RoiSummaryCard({ loading = false, error = null }: RoiSummaryCard
   ];
 
   return (
-    <div className="p-6 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-5 hover:border-blue-500/30 transition-all duration-200">
+    <div className="p-6 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-5 hover:border-blue-500/30 transition-all duration-200 motion-reveal motion-hover-lift">
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
           <h3 className="text-base font-bold text-foreground flex items-center gap-2">
@@ -53,11 +53,11 @@ export function RoiSummaryCard({ loading = false, error = null }: RoiSummaryCard
       {/* Metric Boxes */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {roiMetrics.map((item, idx) => (
-          <div key={idx} className="p-4 rounded-xl bg-secondary/35 border border-border/70 hover:border-blue-500/30 transition-all space-y-1 min-w-0">
+          <div key={idx} className="p-4 rounded-xl bg-secondary/35 border border-border/70 hover:border-blue-500/30 transition-all space-y-1 min-w-0 motion-hover-lift">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground truncate block" title={item.label}>
               {item.label}
             </span>
-            <div className="text-xl font-bold font-mono text-foreground">{item.value}</div>
+            <div className="text-xl font-bold font-mono text-foreground motion-number-reveal">{item.value}</div>
             <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
               <ShieldCheck className="w-3 h-3 shrink-0" />
               <span className="truncate">{item.target}</span>
@@ -73,7 +73,7 @@ export function RoiSummaryCard({ loading = false, error = null }: RoiSummaryCard
           <span className="text-foreground font-mono">135.2% achieved</span>
         </div>
         <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full w-[85%]" />
+          <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full w-[85%] motion-draw" />
         </div>
       </div>
     </div>

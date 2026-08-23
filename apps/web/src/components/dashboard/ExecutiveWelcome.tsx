@@ -45,7 +45,7 @@ export function ExecutiveWelcome({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-border/80 bg-gradient-to-br from-card via-card to-secondary/30 p-6 sm:p-8 shadow-sm transition-all">
+    <div className="relative overflow-hidden rounded-xl border border-border/80 bg-gradient-to-br from-card via-card to-secondary/30 p-6 sm:p-8 shadow-sm transition-all motion-reveal motion-hover-lift">
       {/* Subtle ambient accent glow in top right */}
       <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-blue-600/10 blur-3xl pointer-events-none" />
 
@@ -80,7 +80,7 @@ export function ExecutiveWelcome({
           <Button
             onClick={onRunAiStudio}
             variant="secondary"
-            className="border border-cyan-500/30 hover:border-cyan-500/60 text-xs h-9 px-3.5"
+            className="border border-cyan-500/30 hover:border-cyan-500/60 text-xs h-9 px-3.5 cta-button-hover"
           >
             <Sparkles className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
             AI Value Studio
@@ -89,7 +89,7 @@ export function ExecutiveWelcome({
           <Button
             onClick={onNewInitiative}
             variant="primary"
-            className="text-xs h-9 px-3.5"
+            className="text-xs h-9 px-3.5 cta-button-hover"
           >
             <Plus className="w-3.5 h-3.5" />
             New Initiative
