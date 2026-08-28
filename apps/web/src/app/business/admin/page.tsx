@@ -12,7 +12,10 @@ import {
   SubscriptionBillingCard,
   AuditCenterTable,
   SkeletonMetricsRow,
-} from "../../../components/ui";
+  LazyViewport,
+  SkeletonCard,
+  SkeletonTable,
+} from "@/components/ui";
 import {
   getAdminUsers,
   getOrganizationProfile,
@@ -22,7 +25,7 @@ import {
   getAdminAuditLogs,
   updateUserStatus,
   inviteAdminUser,
-} from "../../../services/admin/adminService";
+} from "@/services/admin/adminService";
 import {
   AdminUser,
   OrganizationProfile,
@@ -31,7 +34,7 @@ import {
   SubscriptionBilling,
   AdminAuditLog,
   UserStatus,
-} from "../../../types/admin";
+} from "@/types/admin";
 
 export default function BusinessAdminPage() {
   const { orgId } = useAuth();
@@ -113,19 +116,29 @@ export default function BusinessAdminPage() {
         />
 
         {/* 3. Role-Based Access Control (RBAC) Matrix View */}
-        <RbacMatrixView roles={roles} />
-
+        <LazyViewport name="RBAC Matrix Rules Configurator" placeholder={<SkeletonTable rows={4} />} minHeight="250px">
+          {() => <RbacMatrixView roles={roles} />}
+        </LazyViewport>
+ 
         {/* 4. Organization Settings Form */}
-        <OrganizationSettingsForm profile={profile} />
-
+        <LazyViewport name="Enterprise Settings Profiles" placeholder={<SkeletonCard />} minHeight="300px">
+          {() => <OrganizationSettingsForm profile={profile} />}
+        </LazyViewport>
+ 
         {/* 5. Main Grid: Security & Billing (Left 6 / Right 6) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          <SecurityCenterCard security={security} />
-          <SubscriptionBillingCard billing={billing} />
+          <LazyViewport name="Compliance Security Health Monitor" placeholder={<SkeletonCard />} minHeight="200px">
+            {() => <SecurityCenterCard security={security} />}
+          </LazyViewport>
+          <LazyViewport name="Billing Subscription Registry" placeholder={<SkeletonCard />} minHeight="200px">
+            {() => <SubscriptionBillingCard billing={billing} />}
+          </LazyViewport>
         </div>
-
+ 
         {/* 6. System Audit Trail & Security Event Table */}
-        <AuditCenterTable logs={auditLogs} />
+        <LazyViewport name="Full Activity Audit Trail" placeholder={<SkeletonTable rows={4} />} minHeight="250px">
+          {() => <AuditCenterTable logs={auditLogs} />}
+        </LazyViewport>
       </main>
     </div>
   );

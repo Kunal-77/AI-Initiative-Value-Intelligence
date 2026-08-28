@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import Link from "@/compat/link";
 import { Clock, Sparkles, DollarSign, ShieldCheck, Layers, User, ArrowUpRight } from "lucide-react";
 import { UnifiedTimelineEvent } from "../../types/integration";
 

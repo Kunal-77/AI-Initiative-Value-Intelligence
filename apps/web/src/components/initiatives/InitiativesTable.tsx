@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import Link from "next/link";
+import Link from "@/compat/link";
 import { FolderKanban, ArrowUpRight, Edit3, Trash2, ArrowUpDown, ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { Badge, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, SkeletonTable, EmptyState, ErrorBanner, Button, Input, Select } from "../ui";
 import { InitiativeModel } from "../../lib/initiativeStore";

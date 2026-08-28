@@ -2,9 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth, useUser, useClerk, useOrganizationList } from "@clerk/nextjs";
-import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
-import { User, Briefcase, Settings, LogOut, Moon, Sun, ShieldCheck, Laptop, Layers } from "lucide-react";
+import { useRouter } from "@/compat/navigation";
+import { User, Briefcase, Settings, LogOut, ShieldCheck, Layers } from "lucide-react";
 import { useWorkspaceTransition } from "./WorkspaceTransitionContext";
 import { cn } from "./cn";
 
@@ -20,7 +19,6 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
   const { startTransition, endTransition } = useWorkspaceTransition();
 
   const router = useRouter();
-  const { theme, setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -34,15 +32,6 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const toggleTheme = () => {
-    if (theme === "light") {
-      setTheme("dark");
-    } else if (theme === "dark") {
-      setTheme("system");
-    } else {
-      setTheme("light");
-    }
-  };
 
   const handleSwitchToPersonal = async () => {
     setOpen(false);
@@ -180,23 +169,6 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
             >
               <Settings className="w-3.5 h-3.5 text-muted-foreground" />
               <span>Manage Account</span>
-            </button>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-foreground hover:bg-secondary transition-colors cursor-pointer"
-            >
-              <div className="flex items-center gap-2.5">
-                {theme === "system" ? (
-                  <Laptop className="w-3.5 h-3.5 text-accent" />
-                ) : resolvedTheme === "dark" ? (
-                  <Moon className="w-3.5 h-3.5 text-blue-400" />
-                ) : (
-                  <Sun className="w-3.5 h-3.5 text-amber-500" />
-                )}
-                <span>Theme</span>
-              </div>
-              <span className="text-[10px] text-muted-foreground uppercase font-mono">{theme}</span>
             </button>
           </div>
 

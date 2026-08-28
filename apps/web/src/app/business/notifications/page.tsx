@@ -11,20 +11,20 @@ import {
   UnifiedLifecycleBar,
   CrossModuleNav,
   SkeletonMetricsRow,
-} from "../../../components/ui";
+} from "@/components/ui";
 import {
   getNotifications,
   getNotificationPreferences,
   markNotificationAsRead,
   toggleNotificationPin,
-} from "../../../services/notifications/notificationService";
+} from "@/services/notifications/notificationService";
 import {
   getCollaborationThreads,
   addCollaborationComment,
   toggleReaction,
-} from "../../../services/collaboration/collaborationService";
-import { NotificationItem, NotificationPreference } from "../../../types/notification";
-import { CollaborationComment } from "../../../types/collaboration";
+} from "@/services/collaboration/collaborationService";
+import { NotificationItem, NotificationPreference } from "@/types/notification";
+import { CollaborationComment } from "@/types/collaboration";
 
 export default function BusinessNotificationsPage() {
   const { orgId } = useAuth();

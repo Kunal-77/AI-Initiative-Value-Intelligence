@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from "@/compat/link";
+import { useRouter } from "@/compat/navigation";
 import { useAuth, useOrganizationList, useClerk } from "@clerk/nextjs";
 import {
   Sparkles,
@@ -28,7 +28,9 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { Button, ThemeToggle, LazyViewport, ScrollAnimate } from "../components/ui";
+import { Button, LazyViewport, ScrollAnimate } from "@/components/ui";
+import { HeroVisual } from "@/components/site/HeroVisual";
+
 
 const SectionPlaceholder = ({ height }: { height: string }) => (
   <div style={{ height }} className="w-full rounded-2xl border border-border/40 bg-card/20 animate-pulse backdrop-blur-xs flex items-center justify-center">
@@ -96,23 +98,7 @@ export default function LandingPage() {
     };
   }, []);
 
-  if (!authLoaded) {
-    return (
-      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 relative overflow-hidden transition-colors duration-300">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[150px] pointer-events-none" />
-        <div className="absolute top-[40%] right-[-10%] w-[50%] h-[50%] bg-indigo-950/20 rounded-full blur-[150px] pointer-events-none" />
-        <div className="flex flex-col items-center space-y-4 relative z-10 animate-in fade-in duration-200">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25 animate-pulse">
-            <span className="font-extrabold text-xl text-white">V</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground font-mono">
-            <div className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-            <span>Verifying session context...</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
 
   const handleBusinessWorkspaceClick = async () => {
     if (!authLoaded || !isSignedIn) {
@@ -413,60 +399,74 @@ export default function LandingPage() {
                 </Link>
               </>
             )}
-            <ThemeToggle />
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto text-center space-y-8 relative z-10">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-semibold text-blue-600 dark:text-blue-400 tracking-wide hero-entrance-badge">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" /> Built for enterprise AI governance teams
+      <section className="relative z-10 px-6 pt-32 pb-20">
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ background: "var(--gradient-hero)" }}
+        />
+        <div className="grid-bg pointer-events-none absolute inset-0 opacity-60" />
+
+        <div className="relative mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
+          <div className="text-left">
+            <div className="flex items-center gap-3 hero-entrance-badge">
+              <span className="h-px w-12 bg-primary/60" />
+              <span className="eyebrow">Enterprise AI value intelligence</span>
+            </div>
+
+            <h1 className="mt-8 max-w-xl font-display text-5xl leading-[1.05] font-semibold tracking-tight lg:text-[4.2rem] hero-entrance-title">
+              Transform AI Investments Into Measurable Business Value
+            </h1>
+
+            <p className="mt-7 max-w-lg text-base leading-relaxed text-muted-foreground hero-entrance-desc">
+              The world's first unified public decision intelligence system. Model ROIs, review governance gates, monitor multi-provider models, and manage personal productivity.
+            </p>
+
+            <div className="mt-10 flex flex-wrap items-center gap-3.5 hero-entrance-ctas">
+              {isSignedIn ? (
+                <>
+                  <Button
+                    variant="primary"
+                    onClick={handleBusinessWorkspaceClick}
+                    disabled={loadingBusiness}
+                    className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all cta-button-hover"
+                  >
+                    {loadingBusiness ? "Loading..." : "Business Workspace"} <ArrowRight className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={handlePersonalWorkspaceClick}
+                    className="px-5 py-2.5 text-xs font-bold active:scale-[0.98] transition-all cta-button-hover"
+                  >
+                    Personal Workspace <ArrowRight className="w-3.5 h-3.5" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/sign-up">
+                    <Button variant="primary" className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all cta-button-hover">
+                      Get Started
+                    </Button>
+                  </Link>
+                  <a href="#tour">
+                    <Button variant="secondary" className="px-5 py-2.5 text-xs font-bold active:scale-[0.98] transition-all cta-button-hover">
+                      Explore Guided Tour
+                    </Button>
+                  </a>
+                </>
+              )}
+            </div>
+          </div>
+
+          <HeroVisual />
         </div>
- 
-        <div className="space-y-4 max-w-4xl mx-auto">
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.1] text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground hero-entrance-title">
-            Transform AI Investments Into Measurable Business Value
-          </h1>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed hero-entrance-desc">
-            The world's first unified public decision intelligence system. Model ROIs, review governance gates, monitor multi-provider models, and manage personal productivity.
-          </p>
-        </div>
- 
-        <div className="flex items-center justify-center gap-3.5 hero-entrance-ctas">
-          {isSignedIn ? (
-            <>
-              <Button
-                variant="primary"
-                onClick={handleBusinessWorkspaceClick}
-                disabled={loadingBusiness}
-                className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all cta-button-hover"
-              >
-                {loadingBusiness ? "Loading..." : "Business Workspace"} <ArrowRight className="w-3.5 h-3.5" />
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handlePersonalWorkspaceClick}
-                className="px-5 py-2.5 text-xs font-bold active:scale-[0.98] transition-all cta-button-hover"
-              >
-                Personal Workspace <ArrowRight className="w-3.5 h-3.5" />
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link href="/sign-up">
-                <Button variant="primary" className="px-5 py-2.5 text-xs font-bold shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all cta-button-hover">
-                  Get Started
-                </Button>
-              </Link>
-              <a href="#tour">
-                <Button variant="secondary" className="px-5 py-2.5 text-xs font-bold active:scale-[0.98] transition-all cta-button-hover">
-                  Explore Guided Tour
-                </Button>
-              </a>
-            </>
-          )}
-        </div>
+
+        <div className="relative mx-auto mt-20 max-w-7xl text-center space-y-8">
+
  
         {/* Dashboard Preview Frame */}
         <div className="pt-12 max-w-5xl mx-auto relative group hero-scroll-wrapper">
@@ -546,10 +546,12 @@ export default function LandingPage() {
           </div>
         </div>
       </div>
+        </div>
       </section>
 
+
       {/* Business Problems Section */}
-      <LazyViewport placeholder={<SectionPlaceholder height="350px" />} minHeight="350px">
+      <LazyViewport name="Business Problems" placeholder={<SectionPlaceholder height="350px" />} minHeight="350px">
         <section id="problems" className="py-24 border-t border-border/80 bg-secondary/35 dark:bg-secondary/20 relative z-10 transition-colors duration-300 overflow-hidden">
         {/* Subtle Ambient Backlight */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
@@ -601,7 +603,7 @@ export default function LandingPage() {
     </LazyViewport>
 
     {/* Platform Overview Workflow */}
-    <LazyViewport placeholder={<SectionPlaceholder height="400px" />} minHeight="400px">
+    <LazyViewport name="Unified Platform Overview" placeholder={<SectionPlaceholder height="400px" />} minHeight="400px">
       <section id="overview" className="py-24 border-t border-border/80 bg-background relative z-10 overflow-hidden">
         {/* Subtle Grid Texture & Ambient Glow */}
         <div className="absolute inset-0 bg-grid-subtle opacity-[0.035] pointer-events-none" />
@@ -655,7 +657,7 @@ export default function LandingPage() {
     </LazyViewport>
 
     {/* Guided Scroll Tour */}
-    <LazyViewport placeholder={<SectionPlaceholder height="500px" />} minHeight="500px">
+    <LazyViewport name="Executive Features Grid" placeholder={<SectionPlaceholder height="500px" />} minHeight="500px">
       <section id="tour" className="py-24 border-t border-border/80 bg-secondary/30 dark:bg-secondary/25 relative z-10 transition-colors duration-300 overflow-hidden">
         {/* Ambient Halo behind Showcase */}
         <div className="absolute top-1/2 right-12 -translate-y-1/2 w-[550px] h-[450px] bg-gradient-to-tr from-blue-600/10 via-cyan-500/6 to-transparent rounded-full blur-[140px] pointer-events-none" />
@@ -721,7 +723,7 @@ export default function LandingPage() {
     </LazyViewport>
 
     {/* Dual Workspace Sections */}
-    <LazyViewport placeholder={<SectionPlaceholder height="800px" />} minHeight="800px">
+    <LazyViewport name="Interactive Guided Tour" placeholder={<SectionPlaceholder height="800px" />} minHeight="800px">
       <section id="features" className="py-24 border-t border-border/80 bg-background relative z-10 transition-colors duration-300 overflow-hidden">
         {/* Subtle Ambient Workspace Halos */}
         <div className="absolute top-1/4 left-[-8%] w-[500px] h-[400px] bg-blue-600/5 rounded-full blur-[150px] pointer-events-none" />
@@ -926,7 +928,7 @@ export default function LandingPage() {
     </LazyViewport>
 
     {/* Pricing Section */}
-    <LazyViewport placeholder={<SectionPlaceholder height="550px" />} minHeight="550px">
+    <LazyViewport name="Enterprise Pricing Matrix" placeholder={<SectionPlaceholder height="550px" />} minHeight="550px">
       <section id="pricing" className="py-24 border-t border-border/80 bg-secondary/35 dark:bg-secondary/20 relative z-10 transition-colors duration-300 overflow-hidden">
         {/* Centered Soft Blue Backlight */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-blue-600/6 rounded-full blur-[140px] pointer-events-none" />
@@ -1035,7 +1037,7 @@ export default function LandingPage() {
     </LazyViewport>
 
     {/* FAQ Section */}
-    <LazyViewport placeholder={<SectionPlaceholder height="400px" />} minHeight="400px">
+    <LazyViewport name="Frequently Asked Questions" placeholder={<SectionPlaceholder height="400px" />} minHeight="400px">
       <section id="faq" className="py-24 border-t border-border/80 bg-background relative z-10 transition-colors duration-300">
         <div className="max-w-3xl mx-auto px-6 space-y-12">
           <div className="text-center space-y-3">

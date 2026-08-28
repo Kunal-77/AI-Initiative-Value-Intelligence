@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
-import dynamic from "next/dynamic";
+import dynamic from "@/compat/dynamic";
 import {
   AppHeader,
   CommandCenterHeader,
@@ -14,38 +14,39 @@ import {
   SkeletonTimeline,
   SkeletonTable,
   SkeletonCard,
-} from "../../../components/ui";
+  LazyViewport,
+} from "@/components/ui";
 
 const PortfolioVisualizations = dynamic(
-  () => import("../../../components/portfolio/PortfolioVisualizations").then(mod => mod.PortfolioVisualizations),
+  () => import("@/components/portfolio/PortfolioVisualizations").then(mod => mod.PortfolioVisualizations),
   { loading: () => <SkeletonChart /> }
 );
 const PortfolioDrillDown = dynamic(
-  () => import("../../../components/portfolio/PortfolioDrillDown").then(mod => mod.PortfolioDrillDown),
+  () => import("@/components/portfolio/PortfolioDrillDown").then(mod => mod.PortfolioDrillDown),
   { loading: () => <SkeletonTable rows={4} /> }
 );
 const ExecutiveAlertCenter = dynamic(
-  () => import("../../../components/portfolio/ExecutiveAlertCenter").then(mod => mod.ExecutiveAlertCenter),
+  () => import("@/components/portfolio/ExecutiveAlertCenter").then(mod => mod.ExecutiveAlertCenter),
   { loading: () => <SkeletonCard /> }
 );
 const BenchmarkingCard = dynamic(
-  () => import("../../../components/portfolio/BenchmarkingCard").then(mod => mod.BenchmarkingCard),
+  () => import("@/components/portfolio/BenchmarkingCard").then(mod => mod.BenchmarkingCard),
   { loading: () => <SkeletonCard /> }
 );
 const PredictiveAnalyticsCard = dynamic(
-  () => import("../../../components/portfolio/PredictiveAnalyticsCard").then(mod => mod.PredictiveAnalyticsCard),
+  () => import("@/components/portfolio/PredictiveAnalyticsCard").then(mod => mod.PredictiveAnalyticsCard),
   { loading: () => <SkeletonCard /> }
 );
 const ExecutiveReportsModule = dynamic(
-  () => import("../../../components/portfolio/ExecutiveReportsModule").then(mod => mod.ExecutiveReportsModule),
+  () => import("@/components/portfolio/ExecutiveReportsModule").then(mod => mod.ExecutiveReportsModule),
   { loading: () => <SkeletonCard /> }
 );
 const UnifiedExecutiveTimeline = dynamic(
-  () => import("../../../components/integration/UnifiedExecutiveTimeline").then(mod => mod.UnifiedExecutiveTimeline),
+  () => import("@/components/integration/UnifiedExecutiveTimeline").then(mod => mod.UnifiedExecutiveTimeline),
   { loading: () => <SkeletonTimeline /> }
 );
 const GlobalActivityCenter = dynamic(
-  () => import("../../../components/integration/GlobalActivityCenter").then(mod => mod.GlobalActivityCenter),
+  () => import("@/components/integration/GlobalActivityCenter").then(mod => mod.GlobalActivityCenter),
   { loading: () => <SkeletonTimeline /> }
 );
 
@@ -54,18 +55,18 @@ import {
   getExecutiveAlerts,
   getDepartmentBenchmarks,
   getPredictiveAnalysis,
-} from "../../../services/portfolio/portfolioService";
+} from "@/services/portfolio/portfolioService";
 import {
   getUnifiedTimelineEvents,
-} from "../../../services/integration/integrationService";
+} from "@/services/integration/integrationService";
 import {
   ExecutiveCommandCenterMetrics,
   PortfolioAlert,
   DepartmentBenchmark,
   PredictiveInsight,
   GlobalPortfolioFilters,
-} from "../../../types/portfolio";
-import { UnifiedTimelineEvent } from "../../../types/integration";
+} from "@/types/portfolio";
+import { UnifiedTimelineEvent } from "@/types/integration";
 
 export default function BusinessPortfolioPage() {
   const { orgId } = useAuth();
@@ -154,30 +155,46 @@ export default function BusinessPortfolioPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           <div className="lg:col-span-8 space-y-6">
             {/* Advanced Visualization Charts Suite */}
-            <PortfolioVisualizations />
-
+            <LazyViewport name="Portfolio Analytics Charts" placeholder={<SkeletonChart />} minHeight="350px">
+              {() => <PortfolioVisualizations />}
+            </LazyViewport>
+ 
             {/* Phase 7: Unified Executive Chronological Timeline */}
-            <UnifiedExecutiveTimeline events={timelineEvents} />
-
+            <LazyViewport name="Executive Chronological Timeline" placeholder={<SkeletonTimeline />} minHeight="300px">
+              {() => <UnifiedExecutiveTimeline events={timelineEvents} />}
+            </LazyViewport>
+ 
             {/* Hierarchical Portfolio Drill-Down Explorer */}
-            <PortfolioDrillDown />
-
+            <LazyViewport name="Hierarchical Portfolio Directory" placeholder={<SkeletonTable rows={4} />} minHeight="250px">
+              {() => <PortfolioDrillDown />}
+            </LazyViewport>
+ 
             {/* C-Suite Executive Board Report Generator */}
-            <ExecutiveReportsModule />
+            <LazyViewport name="C-Suite Executive Board Reports" placeholder={<SkeletonCard />} minHeight="150px">
+              {() => <ExecutiveReportsModule />}
+            </LazyViewport>
           </div>
-
+ 
           <div className="lg:col-span-4 space-y-6">
             {/* Phase 7: Global Enterprise Activity Stream */}
-            <GlobalActivityCenter events={timelineEvents} />
-
+            <LazyViewport name="Enterprise Activity Stream" placeholder={<SkeletonTimeline />} minHeight="300px">
+              {() => <GlobalActivityCenter events={timelineEvents} />}
+            </LazyViewport>
+ 
             {/* Live Executive Priority Notification Alerts Stream */}
-            <ExecutiveAlertCenter alerts={alerts} />
-
+            <LazyViewport name="Priority Notifications Center" placeholder={<SkeletonCard />} minHeight="200px">
+              {() => <ExecutiveAlertCenter alerts={alerts} />}
+            </LazyViewport>
+ 
             {/* Predictive Portfolio Risk Forecasting */}
-            <PredictiveAnalyticsCard insights={insights} />
-
+            <LazyViewport name="Predictive Risk Insights" placeholder={<SkeletonCard />} minHeight="150px">
+              {() => <PredictiveAnalyticsCard insights={insights} />}
+            </LazyViewport>
+ 
             {/* Cross-Departmental Benchmarking */}
-            <BenchmarkingCard benchmarks={benchmarks} />
+            <LazyViewport name="Department Benchmarking Dashboard" placeholder={<SkeletonCard />} minHeight="150px">
+              {() => <BenchmarkingCard benchmarks={benchmarks} />}
+            </LazyViewport>
           </div>
         </div>
       </main>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import Link from "@/compat/link";
 import { Search, ArrowRight, X, Command } from "lucide-react";
 import { Dialog, DialogHeader, DialogTitle, DialogContent, Input } from "../ui";
 import { GlobalSearchResult } from "../../types/integration";

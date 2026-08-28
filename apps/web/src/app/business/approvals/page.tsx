@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
-import dynamic from "next/dynamic";
+import dynamic from "@/compat/dynamic";
 import {
   AppHeader,
   GovernanceDashboard,
@@ -12,26 +12,27 @@ import {
   SkeletonTable,
   SkeletonCard,
   SkeletonTimeline,
-} from "../../../components/ui";
+  LazyViewport,
+} from "@/components/ui";
 
 const ApprovalQueue = dynamic(
-  () => import("../../../components/workflow/ApprovalQueue").then(mod => mod.ApprovalQueue),
+  () => import("@/components/workflow/ApprovalQueue").then(mod => mod.ApprovalQueue),
   { loading: () => <SkeletonTable rows={4} /> }
 );
 const TaskManagementCard = dynamic(
-  () => import("../../../components/workflow/TaskManagementCard").then(mod => mod.TaskManagementCard),
+  () => import("@/components/workflow/TaskManagementCard").then(mod => mod.TaskManagementCard),
   { loading: () => <SkeletonCard /> }
 );
 const CommentThread = dynamic(
-  () => import("../../../components/workflow/CommentThread").then(mod => mod.CommentThread),
+  () => import("@/components/workflow/CommentThread").then(mod => mod.CommentThread),
   { loading: () => <SkeletonCard /> }
 );
 const AuditLogStream = dynamic(
-  () => import("../../../components/workflow/AuditLogStream").then(mod => mod.AuditLogStream),
+  () => import("@/components/workflow/AuditLogStream").then(mod => mod.AuditLogStream),
   { loading: () => <SkeletonTimeline /> }
 );
 const ApprovalDetailModal = dynamic(
-  () => import("../../../components/workflow/ApprovalDetailModal").then(mod => mod.ApprovalDetailModal),
+  () => import("@/components/workflow/ApprovalDetailModal").then(mod => mod.ApprovalDetailModal),
   { ssr: false }
 );
 
@@ -43,7 +44,7 @@ import {
   getGovernanceMetrics,
   executeApprovalAction,
   addWorkflowComment,
-} from "../../../services/workflow/workflowService";
+} from "@/services/workflow/workflowService";
 import {
   ApprovalItem,
   WorkflowTask,
@@ -51,7 +52,7 @@ import {
   WorkflowAuditLog,
   GovernanceMetrics,
   ApprovalAction,
-} from "../../../types/workflow";
+} from "@/types/workflow";
 
 export default function BusinessApprovalsPage() {
   const { orgId, getToken } = useAuth();
@@ -184,17 +185,23 @@ export default function BusinessApprovalsPage() {
               loading={loading}
               onSelectApproval={(item) => setSelectedApproval(item)}
             />
-
+ 
             {/* Workflow Task & SLA Management */}
-            <TaskManagementCard tasks={tasks} />
+            <LazyViewport name="Governance SLA Task Manager" placeholder={<SkeletonCard />} minHeight="250px">
+              {() => <TaskManagementCard tasks={tasks} />}
+            </LazyViewport>
           </div>
-
+ 
           <div className="lg:col-span-4 space-y-6">
             {/* Discussion Thread */}
-            <CommentThread comments={comments} onAddComment={handleAddComment} />
-
+            <LazyViewport name="Interactive Comment Threads" placeholder={<SkeletonCard />} minHeight="300px">
+              {() => <CommentThread comments={comments} onAddComment={handleAddComment} />}
+            </LazyViewport>
+ 
             {/* Workflow Audit Trail */}
-            <AuditLogStream auditLogs={auditLogs} />
+            <LazyViewport name="Cryptographic Audit Logs Trail" placeholder={<SkeletonTimeline />} minHeight="350px">
+              {() => <AuditLogStream auditLogs={auditLogs} />}
+            </LazyViewport>
           </div>
         </div>
       </main>

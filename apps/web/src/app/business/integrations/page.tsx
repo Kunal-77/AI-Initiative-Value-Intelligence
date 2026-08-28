@@ -13,7 +13,10 @@ import {
   UnifiedLifecycleBar,
   CrossModuleNav,
   SkeletonMetricsRow,
-} from "../../../components/ui";
+  LazyViewport,
+  SkeletonCard,
+  SkeletonTable,
+} from "@/components/ui";
 import {
   getConnectors,
   getWebhooks,
@@ -22,7 +25,7 @@ import {
   getFieldMappings,
   toggleConnectorConnection,
   triggerConnectorSync,
-} from "../../../services/integrations/integrationCenterService";
+} from "@/services/integrations/integrationCenterService";
 import {
   ConnectorDefinition,
   WebhookDefinition,
@@ -30,7 +33,7 @@ import {
   SyncLogEntry,
   FieldMappingRule,
   ConnectorId,
-} from "../../../types/integration-center";
+} from "@/types/integration-center";
 
 export default function BusinessIntegrationsPage() {
   const { orgId } = useAuth();
@@ -115,15 +118,23 @@ export default function BusinessIntegrationsPage() {
 
         {/* 3. Main Grid: Webhooks & API Keys (Left 6 / Right 6) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          <WebhookManagementCard webhooks={webhooks} />
-          <ApiKeyManagementCard apiKeys={apiKeys} />
+          <LazyViewport name="Webhook Endpoints Registry" placeholder={<SkeletonCard />} minHeight="250px">
+            {() => <WebhookManagementCard webhooks={webhooks} />}
+          </LazyViewport>
+          <LazyViewport name="API Access Keys Vault" placeholder={<SkeletonCard />} minHeight="250px">
+            {() => <ApiKeyManagementCard apiKeys={apiKeys} />}
+          </LazyViewport>
         </div>
-
+ 
         {/* 4. Payload Field Mapping Table */}
-        <DataMappingTable mappings={mappings} />
-
+        <LazyViewport name="Payload Field Mapper" placeholder={<SkeletonTable rows={4} />} minHeight="200px">
+          {() => <DataMappingTable mappings={mappings} />}
+        </LazyViewport>
+ 
         {/* 5. Synchronization Audit & Latency Logs */}
-        <SyncLogsTable logs={syncLogs} />
+        <LazyViewport name="Connector Synchronizations Log" placeholder={<SkeletonTable rows={4} />} minHeight="200px">
+          {() => <SyncLogsTable logs={syncLogs} />}
+        </LazyViewport>
       </main>
     </div>
   );

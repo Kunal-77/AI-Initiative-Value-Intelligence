@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect, useId } from "react";
 import { useUser, useOrganizationList, useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/compat/navigation";
 import { Building2, User, Check, ChevronsUpDown } from "lucide-react";
 import { useWorkspaceTransition } from "./WorkspaceTransitionContext";
 import { cn } from "./cn";

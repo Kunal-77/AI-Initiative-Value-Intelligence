@@ -2,8 +2,8 @@
 
 import { useState, useEffect, use, Suspense, useRef } from "react";
 import { useAuth, useOrganization } from "@clerk/nextjs";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Link from "@/compat/link";
+import { useRouter } from "@/compat/navigation";
 import {
   Button,
   Badge,
@@ -21,14 +21,14 @@ import {
   UnifiedLifecycleBar,
   CrossModuleNav,
   ContextSidebarPanel,
-} from "../../../../components/ui";
-import { MOCK_AUDIT_EVENTS, MOCK_MILESTONES, MOCK_AI_RECOMMENDATIONS } from "../../../../lib/mockData";
+} from "@/components/ui";
+import { MOCK_AUDIT_EVENTS, MOCK_MILESTONES, MOCK_AI_RECOMMENDATIONS } from "@/lib/mockData";
 import {
   InitiativeModel,
   getInitiativeById,
   updateCanonicalInitiative,
   addInvestmentCostItem,
-} from "../../../../lib/initiativeStore";
+} from "@/lib/initiativeStore";
 import { ShieldCheck, Target, Calendar, Users, FileText, Sparkles, ArrowLeft, DollarSign } from "lucide-react";
 
 interface PageProps {

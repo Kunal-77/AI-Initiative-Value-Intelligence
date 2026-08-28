@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
-import dynamic from "next/dynamic";
+import dynamic from "@/compat/dynamic";
 import {
   AppHeader,
   ExecutiveFinancialSummary,
@@ -14,42 +14,43 @@ import {
   SkeletonChart,
   SkeletonTable,
   SkeletonCard,
-} from "../../../components/ui";
+  LazyViewport,
+} from "@/components/ui";
 
 const FinancialForecastsCard = dynamic(
-  () => import("../../../components/financial/FinancialForecastsCard").then(mod => mod.FinancialForecastsCard),
+  () => import("@/components/financial/FinancialForecastsCard").then(mod => mod.FinancialForecastsCard),
   { loading: () => <SkeletonCard /> }
 );
 const BenefitsRealization = dynamic(
-  () => import("../../../components/financial/BenefitsRealization").then(mod => mod.BenefitsRealization),
+  () => import("@/components/financial/BenefitsRealization").then(mod => mod.BenefitsRealization),
   { loading: () => <SkeletonChart /> }
 );
 const CostManagementCard = dynamic(
-  () => import("../../../components/financial/CostManagementCard").then(mod => mod.CostManagementCard),
+  () => import("@/components/financial/CostManagementCard").then(mod => mod.CostManagementCard),
   { loading: () => <SkeletonCard /> }
 );
 const BenefitsRegister = dynamic(
-  () => import("../../../components/financial/BenefitsRegister").then(mod => mod.BenefitsRegister),
+  () => import("@/components/financial/BenefitsRegister").then(mod => mod.BenefitsRegister),
   { loading: () => <SkeletonTable rows={4} /> }
 );
 const CostRegister = dynamic(
-  () => import("../../../components/financial/CostRegister").then(mod => mod.CostRegister),
+  () => import("@/components/financial/CostRegister").then(mod => mod.CostRegister),
   { loading: () => <SkeletonTable rows={4} /> }
 );
 const CashFlowCharts = dynamic(
-  () => import("../../../components/financial/CashFlowCharts").then(mod => mod.CashFlowCharts),
+  () => import("@/components/financial/CashFlowCharts").then(mod => mod.CashFlowCharts),
   { loading: () => <SkeletonChart /> }
 );
 import {
   getExecutiveFinancialMetrics,
   getBenefitsRegister,
   getCostsLedger,
-} from "../../../services/financial/financialService";
+} from "@/services/financial/financialService";
 import {
   ExecutiveFinancialMetrics,
   BenefitItem,
   CostItemLedger,
-} from "../../../types/financial";
+} from "@/types/financial";
 
 export default function BusinessFinancialsPage() {
   const { orgId, getToken } = useAuth();
@@ -115,33 +116,51 @@ export default function BusinessFinancialsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           <div className="lg:col-span-8 space-y-6">
             {/* Benefits Realization Trend */}
-            <BenefitsRealization
-              expectedBenefit={metrics?.totalExpectedBenefit}
-              realizedBenefit={metrics?.totalRealizedBenefit}
-            />
-
+            <LazyViewport name="Benefits Realization Trend" placeholder={<SkeletonChart />} minHeight="300px">
+              {() => (
+                <BenefitsRealization
+                  expectedBenefit={metrics?.totalExpectedBenefit}
+                  realizedBenefit={metrics?.totalRealizedBenefit}
+                />
+              )}
+            </LazyViewport>
+ 
             {/* CAPEX vs OPEX Cost Management */}
-            <CostManagementCard />
-
+            <LazyViewport name="CAPEX vs OPEX Cost Matrix" placeholder={<SkeletonCard />} minHeight="250px">
+              {() => <CostManagementCard />}
+            </LazyViewport>
+ 
             {/* Enterprise Benefits Register */}
-            <BenefitsRegister benefits={benefits} />
-
+            <LazyViewport name="Enterprise Benefits Register" placeholder={<SkeletonTable rows={4} />} minHeight="250px">
+              {() => <BenefitsRegister benefits={benefits} />}
+            </LazyViewport>
+ 
             {/* Enterprise Cost Ledger */}
-            <CostRegister costs={costs} />
-
+            <LazyViewport name="Enterprise Cost Ledger" placeholder={<SkeletonTable rows={4} />} minHeight="250px">
+              {() => <CostRegister costs={costs} />}
+            </LazyViewport>
+ 
             {/* Financial Export */}
-            <FinancialExport />
+            <LazyViewport name="Export Financial Projections" placeholder={<SkeletonCard />} minHeight="120px">
+              {() => <FinancialExport />}
+            </LazyViewport>
           </div>
-
+ 
           <div className="lg:col-span-4 space-y-6">
             {/* Cumulative Cash Flow & Break-even Curve */}
-            <CashFlowCharts
-              actualSpend={metrics?.totalActualSpend}
-              realizedBenefit={metrics?.totalRealizedBenefit}
-            />
-
+            <LazyViewport name="Cumulative Cash Flow Charts" placeholder={<SkeletonChart />} minHeight="300px">
+              {() => (
+                <CashFlowCharts
+                  actualSpend={metrics?.totalActualSpend}
+                  realizedBenefit={metrics?.totalRealizedBenefit}
+                />
+              )}
+            </LazyViewport>
+ 
             {/* Strategic Value Drivers */}
-            <ValueDriversCard />
+            <LazyViewport name="Strategic Value Drivers" placeholder={<SkeletonCard />} minHeight="200px">
+              {() => <ValueDriversCard />}
+            </LazyViewport>
           </div>
         </div>
       </main>

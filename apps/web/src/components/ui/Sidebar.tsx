@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "@/compat/link";
+import { usePathname } from "@/compat/navigation";
 import { useAuth } from "@clerk/nextjs";
 import {
   FolderKanban,

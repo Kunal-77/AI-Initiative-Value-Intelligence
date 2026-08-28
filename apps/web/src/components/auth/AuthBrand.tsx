@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import Link from "@/compat/link";
 
 interface AuthBrandProps {
   title?: string;

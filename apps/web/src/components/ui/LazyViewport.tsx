@@ -3,20 +3,23 @@
 import React, { useState, useEffect, useRef } from "react";
 
 export interface LazyViewportProps {
-  children: React.ReactNode;
+  children: React.ReactNode | (() => React.ReactNode);
   placeholder: React.ReactNode;
   rootMargin?: string;
   minHeight?: string;
+  name?: string;
 }
 
 export function LazyViewport({
   children,
   placeholder,
-  rootMargin = "300px 0px",
+  rootMargin = "200px 0px",
   minHeight = "200px",
+  name = "Unnamed Section",
 }: LazyViewportProps) {
   const [hasBeenVisible, setHasBeenVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isDev = process.env.NODE_ENV === "development";
 
   useEffect(() => {
     if (hasBeenVisible) return;
@@ -25,6 +28,9 @@ export function LazyViewport({
       ([entry]) => {
         if (entry.isIntersecting) {
           setHasBeenVisible(true);
+          if (isDev) {
+            console.log(`[LazyViewport] Mounted: ${name}`);
+          }
         }
       },
       { rootMargin }
@@ -41,11 +47,16 @@ export function LazyViewport({
       }
       observer.disconnect();
     };
-  }, [hasBeenVisible, rootMargin]);
+  }, [hasBeenVisible, rootMargin, name, isDev]);
 
   return (
     <div ref={containerRef} style={{ minHeight: hasBeenVisible ? "auto" : minHeight }}>
-      {hasBeenVisible ? children : placeholder}
+      {hasBeenVisible
+        ? typeof children === "function"
+          ? (children as () => React.ReactNode)()
+          : children
+        : placeholder}
     </div>
   );
 }
+

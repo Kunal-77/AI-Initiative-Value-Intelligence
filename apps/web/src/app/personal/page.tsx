@@ -17,7 +17,7 @@ import {
   PlusCircle,
   HelpCircle,
 } from "lucide-react";
-import { AppHeader, Button, SkeletonMetricsRow, SkeletonCard, Skeleton } from "../../components/ui";
+import { AppHeader, Button, SkeletonMetricsRow, SkeletonCard, Skeleton, LazyViewport } from "@/components/ui";
 import {
   getPersonalDashboard,
   getSubscriptions,
@@ -27,13 +27,13 @@ import {
   deleteSubscription,
   addPaymentMethod,
   addUsage,
-} from "../../services/personal/personalService";
+} from "@/services/personal/personalService";
 import {
   PersonalDashboard,
   Subscription,
   PaymentMethod,
   SubscriptionCategory,
-} from "../../types/personal";
+} from "@/types/personal";
 
 export default function PersonalWorkspacePage() {
   const { user, isLoaded: userLoaded } = useUser();
@@ -472,29 +472,29 @@ export default function PersonalWorkspacePage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="border-b border-border bg-muted/40 font-semibold text-muted-foreground">
-                        <th className="p-3.5">Name</th>
-                        <th className="p-3.5">Type</th>
-                        <th className="p-3.5">Category</th>
-                        <th className="p-3.5">Billing</th>
-                        <th className="p-3.5">Details</th>
-                        <th className="p-3.5 text-right">Actions</th>
+                      <tr className="border-b border-border bg-muted/40 font-semibold text-muted-foreground whitespace-nowrap">
+                        <th className="p-3.5 w-[28%]">Name</th>
+                        <th className="p-3.5 w-[12%]">Type</th>
+                        <th className="p-3.5 w-[14%]">Category</th>
+                        <th className="p-3.5 w-[14%]">Billing</th>
+                        <th className="p-3.5 w-[24%]">Details</th>
+                        <th className="p-3.5 w-[8%] text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
                       {subscriptions.map((sub) => (
                         <tr key={sub.id} className="hover:bg-blue-500/5 transition-colors">
-                          <td className="p-3.5 font-bold text-foreground">{sub.name}</td>
+                          <td className="p-3.5 font-bold text-foreground max-w-0 truncate" title={sub.name}>{sub.name}</td>
                           <td className="p-3.5">{getSubBadge(sub.subscriptionType)}</td>
                           <td className="p-3.5">
-                            <span className="text-[10px] text-muted-foreground bg-secondary px-2 py-0.5 rounded border border-border">
+                            <span className="text-[10px] text-muted-foreground bg-secondary px-2 py-0.5 rounded border border-border whitespace-nowrap">
                               {sub.category?.name || "Generic"}
                             </span>
                           </td>
-                          <td className="p-3.5 font-mono text-foreground">
+                          <td className="p-3.5 font-mono text-foreground whitespace-nowrap">
                             ${sub.costAmount.toFixed(2)} / <span className="text-[10px] text-muted-foreground lowercase">{sub.billingCycle === "ANNUAL" ? "yr" : "mo"}</span>
                           </td>
-                          <td className="p-3.5 max-w-[200px] truncate text-muted-foreground">
+                          <td className="p-3.5 max-w-0 truncate text-muted-foreground">
                             {sub.subscriptionType === "cloud" && (
                               <span className="text-[10px]" title={`${sub.provider} (${sub.region || "No region"}) Account: ${sub.accountIdentifier}`}>
                                 {sub.provider}: {sub.projectIdentifier || sub.accountIdentifier}
@@ -546,35 +546,39 @@ export default function PersonalWorkspacePage() {
                 )}
               </div>
 
-              {loading && !dashboard ? (
-                <div className="p-5 space-y-3">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
-                </div>
-              ) : dashboard?.recentUsage.length === 0 ? (
-                <div className="p-8 text-center text-xs text-muted-foreground">
-                  No metered API consumption logged yet.
-                </div>
-              ) : (
-                <div className="p-5 space-y-4">
-                  {dashboard?.recentUsage.map((u) => {
-                    const sub = subscriptions.find(s => s.id === u.subscriptionId);
-                    return (
-                      <div key={u.id} className="flex items-center justify-between text-xs border-b border-border pb-3 last:border-0 last:pb-0">
-                        <div className="space-y-0.5">
-                          <span className="font-bold text-foreground">{sub?.name || "AI Subscription"}</span>
-                          <div className="flex gap-2 items-center text-[10px] text-muted-foreground">
-                            <span>{u.usageDate}</span>
-                            <span>•</span>
-                            <span>{u.quantity.toLocaleString()} {u.unit}</span>
+              <LazyViewport name="AI Token Consumption" placeholder={<div className="p-5 space-y-3"><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-5/6" /></div>} minHeight="120px" rootMargin="200px 0px">
+                {() => (
+                  loading && !dashboard ? (
+                    <div className="p-5 space-y-3">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-5/6" />
+                    </div>
+                  ) : dashboard?.recentUsage.length === 0 ? (
+                    <div className="p-8 text-center text-xs text-muted-foreground">
+                      No metered API consumption logged yet.
+                    </div>
+                  ) : (
+                    <div className="p-5 space-y-4">
+                      {dashboard?.recentUsage.map((u) => {
+                        const sub = subscriptions.find(s => s.id === u.subscriptionId);
+                        return (
+                          <div key={u.id} className="flex items-center justify-between text-xs border-b border-border pb-3 last:border-0 last:pb-0">
+                            <div className="space-y-0.5">
+                              <span className="font-bold text-foreground">{sub?.name || "AI Subscription"}</span>
+                              <div className="flex gap-2 items-center text-[10px] text-muted-foreground">
+                                <span>{u.usageDate}</span>
+                                <span>•</span>
+                                <span>{u.quantity.toLocaleString()} {u.unit}</span>
+                              </div>
+                            </div>
+                            <span className="font-bold text-foreground font-mono">${u.cost.toFixed(2)}</span>
                           </div>
-                        </div>
-                        <span className="font-bold text-foreground font-mono">${u.cost.toFixed(2)}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                        );
+                      })}
+                    </div>
+                  )
+                )}
+              </LazyViewport>
             </div>
           </div>
 
@@ -624,37 +628,41 @@ export default function PersonalWorkspacePage() {
                 </h3>
               </div>
 
-              {loading && paymentMethods.length === 0 ? (
-                <div className="p-4 space-y-2">
-                  <Skeleton className="h-4 w-1/2" />
-                  <Skeleton className="h-4 w-1/3" />
-                </div>
-              ) : paymentMethods.length === 0 ? (
-                <div className="p-6 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
-                  <span>No payment methods registered yet.</span>
-                  <button
-                    onClick={() => setIsPmModalOpen(true)}
-                    className="text-[10px] text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer"
-                  >
-                    Add credit card
-                  </button>
-                </div>
-              ) : (
-                <div className="p-5 space-y-3.5">
-                  {paymentMethods.map((pm) => (
-                    <div key={pm.id} className="flex items-center justify-between text-xs border border-border p-3.5 rounded-lg bg-muted/20">
-                      <div className="flex items-center gap-2.5">
-                        <CreditCard className="w-4 h-4 text-muted-foreground" />
-                        <div>
-                          <span className="font-bold text-foreground">{pm.cardBrand || "Credit Card"}</span>
-                          <span className="block text-[10px] font-mono text-muted-foreground">•••• •••• •••• {pm.lastFour}</span>
-                        </div>
-                      </div>
-                      <span className="text-[10px] text-muted-foreground">Expires: {pm.expiresAt?.substring(0, 7) || "N/A"}</span>
+              <LazyViewport name="Saved Payment Instruments" placeholder={<div className="p-4 space-y-2"><Skeleton className="h-4 w-1/2" /><Skeleton className="h-4 w-1/3" /></div>} minHeight="100px" rootMargin="200px 0px">
+                {() => (
+                  loading && paymentMethods.length === 0 ? (
+                    <div className="p-4 space-y-2">
+                      <Skeleton className="h-4 w-1/2" />
+                      <Skeleton className="h-4 w-1/3" />
                     </div>
-                  ))}
-                </div>
-              )}
+                  ) : paymentMethods.length === 0 ? (
+                    <div className="p-6 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
+                      <span>No payment methods registered yet.</span>
+                      <button
+                        onClick={() => setIsPmModalOpen(true)}
+                        className="text-[10px] text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer"
+                      >
+                        Add credit card
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="p-5 space-y-3.5">
+                      {paymentMethods.map((pm) => (
+                        <div key={pm.id} className="flex items-center justify-between text-xs border border-border p-3.5 rounded-lg bg-muted/20">
+                          <div className="flex items-center gap-2.5">
+                            <CreditCard className="w-4 h-4 text-muted-foreground" />
+                            <div>
+                              <span className="font-bold text-foreground">{pm.cardBrand || "Credit Card"}</span>
+                              <span className="block text-[10px] font-mono text-muted-foreground">•••• •••• •••• {pm.lastFour}</span>
+                            </div>
+                          </div>
+                          <span className="text-[10px] text-muted-foreground">Expires: {pm.expiresAt?.substring(0, 7) || "N/A"}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                )}
+              </LazyViewport>
             </div>
           </div>
         </div>

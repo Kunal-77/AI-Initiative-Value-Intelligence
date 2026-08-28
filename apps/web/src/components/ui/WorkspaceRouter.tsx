@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth, useOrganizationList } from "@clerk/nextjs";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "@/compat/navigation";
 import { useEffect } from "react";
 import { useWorkspaceTransition } from "./WorkspaceTransitionContext";
 

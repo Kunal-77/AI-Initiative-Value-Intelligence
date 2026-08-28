@@ -41,7 +41,7 @@ export function AiInsightsPanel({
   const visibleInsights = activeInsights.slice(0, 2);
 
   return (
-    <div className="p-5 rounded-xl border border-blue-500/30 bg-card text-card-foreground shadow-sm space-y-4 relative overflow-hidden motion-reveal motion-glow-cyan">
+    <div className="p-5 rounded-xl border border-blue-500/30 bg-card text-card-foreground shadow-sm space-y-4 relative overflow-hidden motion-glow-cyan">
       {/* Accent blue glow backdrop */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
 

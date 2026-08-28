@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { Bell, Bookmark, Check, ArrowRight, ShieldCheck, Sparkles, DollarSign, Layers } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import Link from "@/compat/link";
+import { Bell, Bookmark, Check, ArrowRight, ShieldCheck, Sparkles, DollarSign, Layers, Loader2 } from "lucide-react";
 import { NotificationItem, NotificationType } from "../../types/notification";
 import { Badge, Button } from "../ui";
+import { useInView } from "@/hooks/useInView";
 
 export interface NotificationCenterDrawerProps {
   notifications: NotificationItem[];
@@ -18,6 +19,7 @@ export function NotificationCenterDrawer({
   onTogglePin,
 }: NotificationCenterDrawerProps) {
   const [filterTab, setFilterTab] = useState<string>("ALL");
+  const [displayLimit, setDisplayLimit] = useState(10);
 
   const filtered = notifications.filter((item) => {
     if (filterTab === "UNREAD") return !item.read;
@@ -26,6 +28,24 @@ export function NotificationCenterDrawer({
     if (filterTab === "WORKFLOW") return item.type === "WORKFLOW";
     return true;
   });
+
+  // Reset limit when filters change
+  useEffect(() => {
+    setDisplayLimit(10);
+  }, [filterTab]);
+
+  const visibleNotifications = filtered.slice(0, displayLimit);
+
+  const [sentinelRef, inView] = useInView({
+    rootMargin: "100px",
+    triggerOnce: false,
+  });
+
+  useEffect(() => {
+    if (inView && visibleNotifications.length < filtered.length) {
+      setDisplayLimit((prev) => Math.min(prev + 10, filtered.length));
+    }
+  }, [inView, filtered.length, visibleNotifications.length]);
 
   return (
     <div className="p-5 rounded-xl border border-border bg-card text-card-foreground shadow-2xs space-y-4">
@@ -65,64 +85,73 @@ export function NotificationCenterDrawer({
 
       {/* Notification List */}
       <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1">
-        {filtered.length === 0 ? (
+        {visibleNotifications.length === 0 ? (
           <p className="text-xs text-muted-foreground py-4 text-center">No notifications found.</p>
         ) : (
-          filtered.map((item) => {
-            let badgeStyle = "bg-secondary text-secondary-foreground border-border";
-            if (item.type === "AI_RECOMMENDATION") badgeStyle = "bg-accent/15 text-accent border-accent/30";
-            if (item.type === "WORKFLOW") badgeStyle = "bg-indigo-500/10 text-indigo-600 border-indigo-500/20";
-            if (item.type === "FINANCIAL") badgeStyle = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
+          <>
+            {visibleNotifications.map((item) => {
+              let badgeStyle = "bg-secondary text-secondary-foreground border-border";
+              if (item.type === "AI_RECOMMENDATION") badgeStyle = "bg-accent/15 text-accent border-accent/30";
+              if (item.type === "WORKFLOW") badgeStyle = "bg-indigo-500/10 text-indigo-600 border-indigo-500/20";
+              if (item.type === "FINANCIAL") badgeStyle = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
 
-            return (
-              <div
-                key={item.id}
-                className={`p-3.5 rounded-lg border transition-all text-xs space-y-1.5 ${
-                  !item.read ? "bg-accent/5 border-accent/30" : "bg-secondary/20 border-border opacity-90"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <span className={`text-[9px] font-bold uppercase px-1.5 py-0.2 rounded border shrink-0 ${badgeStyle}`}>
-                      {item.type.replace("_", " ")}
-                    </span>
-                    <span className="font-bold text-foreground truncate">{item.title}</span>
+              return (
+                <div
+                  key={item.id}
+                  className={`p-3.5 rounded-lg border transition-all text-xs space-y-1.5 ${
+                    !item.read ? "bg-accent/5 border-accent/30" : "bg-secondary/20 border-border opacity-90"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className={`text-[9px] font-bold uppercase px-1.5 py-0.2 rounded border shrink-0 ${badgeStyle}`}>
+                        {item.type.replace("_", " ")}
+                      </span>
+                      <span className="font-bold text-foreground truncate">{item.title}</span>
+                    </div>
+                    <span className="text-[9px] font-mono text-muted-foreground shrink-0">{item.timestamp}</span>
                   </div>
-                  <span className="text-[9px] font-mono text-muted-foreground shrink-0">{item.timestamp}</span>
-                </div>
 
-                <p className="text-[11px] text-muted-foreground leading-relaxed">{item.message}</p>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">{item.message}</p>
 
-                <div className="pt-1 flex items-center justify-between border-t border-border/40 text-[10px]">
-                  {item.actionHref ? (
-                    <Link href={item.actionHref} className="text-accent hover:underline font-bold flex items-center">
-                      Open Module <ArrowRight className="w-3 h-3 ml-0.5" />
-                    </Link>
-                  ) : <span />}
+                  <div className="pt-1 flex items-center justify-between border-t border-border/40 text-[10px]">
+                    {item.actionHref ? (
+                      <Link href={item.actionHref} className="text-accent hover:underline font-bold flex items-center">
+                        Open Module <ArrowRight className="w-3 h-3 ml-0.5" />
+                      </Link>
+                    ) : <span />}
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => onTogglePin(item.id)}
-                      className={`p-1 rounded hover:bg-secondary ${item.pinned ? "text-accent font-bold" : "text-muted-foreground"}`}
-                      title="Pin Notification"
-                    >
-                      <Bookmark className="w-3.5 h-3.5" />
-                    </button>
-                    {!item.read && (
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => onMarkRead(item.id)}
-                        className="text-muted-foreground hover:text-foreground font-semibold flex items-center gap-0.5"
+                        onClick={() => onTogglePin(item.id)}
+                        className={`p-1 rounded hover:bg-secondary ${item.pinned ? "text-accent font-bold" : "text-muted-foreground"}`}
+                        title="Pin Notification"
                       >
-                        <Check className="w-3 h-3" /> Mark Read
+                        <Bookmark className="w-3.5 h-3.5" />
                       </button>
-                    )}
+                      {!item.read && (
+                        <button
+                          type="button"
+                          onClick={() => onMarkRead(item.id)}
+                          className="text-muted-foreground hover:text-foreground font-semibold flex items-center gap-0.5"
+                        >
+                          <Check className="w-3 h-3" /> Mark Read
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
+              );
+            })}
+
+            {visibleNotifications.length < filtered.length && (
+              <div ref={sentinelRef} className="py-2.5 flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground font-mono">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-accent" />
+                <span>Loading more signals...</span>
               </div>
-            );
-          })
+            )}
+          </>
         )}
       </div>
     </div>

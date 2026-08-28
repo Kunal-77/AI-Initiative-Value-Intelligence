@@ -32,6 +32,16 @@ export function WorkspaceTransitionProvider({ children }: { children: React.Reac
     setTargetName(null);
   }, []);
 
+  // Safety net: never let the workspace-switch overlay hang forever
+  useEffect(() => {
+    if (!isTransitioning) return;
+    const timer = setTimeout(() => {
+      setIsTransitioning(false);
+      setTargetName(null);
+    }, 8000);
+    return () => clearTimeout(timer);
+  }, [isTransitioning]);
+
   // Auto-dismiss toast error after 4s
   useEffect(() => {
     if (toastError) {

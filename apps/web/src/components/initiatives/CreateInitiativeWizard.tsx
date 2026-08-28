@@ -29,16 +29,16 @@ export interface CreateInitiativeWizardProps {
 const INITIAL_FORM: CreateInitiativeFormData = {
   name: "",
   businessArea: "Operations & Care",
-  owner: "Sarah Jenkins (CFO)",
+  owner: "",
   problemStatement: "",
   proposedIntervention: "",
   expectedOutcome: "",
-  plannedBudget: "500000",
+  plannedBudget: "",
   currency: "USD",
-  targetMetricName: "Ticket Resolution Velocity",
-  targetMetricValue: "35%",
-  executiveSponsor: "Marcus Vance (CTO)",
-  projectLead: "David Miller (PM)",
+  targetMetricName: "",
+  targetMetricValue: "",
+  executiveSponsor: "",
+  projectLead: "",
   plannedStartDate: new Date().toISOString().split("T")[0],
 };
 
@@ -234,7 +234,7 @@ export function CreateInitiativeWizard({
                   type="number"
                   value={form.plannedBudget}
                   onChange={(e) => updateField("plannedBudget", e.target.value)}
-                  placeholder="500000"
+                  placeholder="e.g. 500000"
                 />
               </div>
 
@@ -278,7 +278,7 @@ export function CreateInitiativeWizard({
                 <Input
                   value={form.targetMetricValue}
                   onChange={(e) => updateField("targetMetricValue", e.target.value)}
-                  placeholder="e.g. 35% reduction"
+                  placeholder="e.g. 35%"
                 />
               </div>
             </div>

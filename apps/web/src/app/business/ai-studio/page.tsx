@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
-import dynamic from "next/dynamic";
+import dynamic from "@/compat/dynamic";
 import {
   AppHeader,
   AiStudioHeader,
@@ -18,31 +18,32 @@ import {
   SkeletonChart,
   SkeletonTable,
   SkeletonCard,
-} from "../../../components/ui";
+  LazyViewport,
+} from "@/components/ui";
 
 const RecommendationFeed = dynamic(
-  () => import("../../../components/ai/RecommendationFeed").then(mod => mod.RecommendationFeed),
+  () => import("@/components/ai/RecommendationFeed").then(mod => mod.RecommendationFeed),
   { loading: () => <SkeletonTable rows={3} /> }
 );
 const RoiTrendChart = dynamic(
-  () => import("../../../components/ai/AiCharts").then(mod => mod.RoiTrendChart),
+  () => import("@/components/ai/AiCharts").then(mod => mod.RoiTrendChart),
   { loading: () => <SkeletonChart /> }
 );
 const CostVsBenefitChart = dynamic(
-  () => import("../../../components/ai/AiCharts").then(mod => mod.CostVsBenefitChart),
+  () => import("@/components/ai/AiCharts").then(mod => mod.CostVsBenefitChart),
   { loading: () => <SkeletonChart /> }
 );
 const ScenarioComparison = dynamic(
-  () => import("../../../components/ai/ScenarioComparison").then(mod => mod.ScenarioComparison),
+  () => import("@/components/ai/ScenarioComparison").then(mod => mod.ScenarioComparison),
   { loading: () => <SkeletonCard /> }
 );
 const ExplainabilityPanel = dynamic(
-  () => import("../../../components/ai/ExplainabilityPanel").then(mod => mod.ExplainabilityPanel),
+  () => import("@/components/ai/ExplainabilityPanel").then(mod => mod.ExplainabilityPanel),
   { ssr: false }
 );
-import { defaultAiEngine } from "../../../services/ai/aiEngine";
-import { AiAnalysisResult, AiRecommendation, RecommendationStatus } from "../../../types/ai";
-import { getStoredInitiatives } from "../../../lib/initiativeStore";
+import { defaultAiEngine } from "@/services/ai/aiEngine";
+import { AiAnalysisResult, AiRecommendation, RecommendationStatus } from "@/types/ai";
+import { getStoredInitiatives } from "@/lib/initiativeStore";
 
 export default function BusinessAiStudioPage() {
   const { getToken, orgId } = useAuth();
@@ -158,34 +159,50 @@ export default function BusinessAiStudioPage() {
           <div className="lg:col-span-8 space-y-6">
             {/* ROI & Financial Projections */}
             <FinancialProjections financials={analysis?.financials} />
-
+ 
             {/* AI Executive Recommendations Feed & Interactive Decision Center */}
-            <RecommendationFeed
-              recommendations={recommendations}
-              loading={loading}
-              onSelectExplainability={(rec) => setSelectedExplainability(rec)}
-              onAccept={(rec) => handleStatusChange(rec, "ACCEPTED")}
-              onReject={(rec) => handleStatusChange(rec, "REJECTED")}
-              onStatusChange={handleStatusChange}
-            />
-
+            <LazyViewport name="AI Executive Decisions Recommendations" placeholder={<SkeletonTable rows={3} />} minHeight="250px">
+              {() => (
+                <RecommendationFeed
+                  recommendations={recommendations}
+                  loading={loading}
+                  onSelectExplainability={(rec) => setSelectedExplainability(rec)}
+                  onAccept={(rec) => handleStatusChange(rec, "ACCEPTED")}
+                  onReject={(rec) => handleStatusChange(rec, "REJECTED")}
+                  onStatusChange={handleStatusChange}
+                />
+              )}
+            </LazyViewport>
+ 
             {/* 4-Scenario What-If Executive Comparison */}
-            <ScenarioComparison />
-
+            <LazyViewport name="What-If Scenarios Comparisons" placeholder={<SkeletonCard />} minHeight="200px">
+              {() => <ScenarioComparison />}
+            </LazyViewport>
+ 
             {/* Executive AI Report Export Triggers */}
-            <AiStudioExport />
+            <LazyViewport name="Projections Export Module" placeholder={<SkeletonCard />} minHeight="120px">
+              {() => <AiStudioExport />}
+            </LazyViewport>
           </div>
-
+ 
           <div className="lg:col-span-4 space-y-6">
             {/* Reusable Visual Charts */}
-            <RoiTrendChart />
-            <CostVsBenefitChart />
-
+            <LazyViewport name="ROI Performance Trends" placeholder={<SkeletonChart />} minHeight="250px">
+              {() => <RoiTrendChart />}
+            </LazyViewport>
+            <LazyViewport name="Cost vs Benefit Models" placeholder={<SkeletonChart />} minHeight="250px">
+              {() => <CostVsBenefitChart />}
+            </LazyViewport>
+ 
             {/* Portfolio Risk Engine Overview */}
-            <PortfolioRiskOverview risks={analysis?.risks} />
-
+            <LazyViewport name="Risk Metrics Overview" placeholder={<SkeletonCard />} minHeight="200px">
+              {() => <PortfolioRiskOverview risks={analysis?.risks} />}
+            </LazyViewport>
+ 
             {/* AI Recommendation Decision Stream */}
-            <RecommendationHistory history={recommendations} />
+            <LazyViewport name="Recommendations Audit Logs" placeholder={<SkeletonCard />} minHeight="200px">
+              {() => <RecommendationHistory history={recommendations} />}
+            </LazyViewport>
           </div>
         </div>
       </main>

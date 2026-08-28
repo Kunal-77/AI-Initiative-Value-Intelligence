@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Search, Command, X, ArrowRight, FolderKanban, BarChart3, User, Sparkles } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/compat/navigation";
 import { cn } from "./cn";
 
 export interface SearchBarProps extends React.HTMLAttributes<HTMLDivElement> {}

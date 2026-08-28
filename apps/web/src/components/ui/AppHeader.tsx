@@ -1,14 +1,13 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "@/compat/link";
+import { usePathname } from "@/compat/navigation";
 import { PanelLeft } from "lucide-react";
 import { cn } from "./cn";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { SearchBar } from "./SearchBar";
 import { NotificationButton } from "./NotificationButton";
-import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./UserMenu";
 import { WorkspaceSelector } from "./WorkspaceSelector";
 
@@ -112,7 +111,6 @@ export const AppHeader = React.forwardRef<HTMLElement, AppHeaderProps>(
                   </div>
                 )}
                 <NotificationButton />
-                <ThemeToggle />
                 {showUserButton && <UserMenu />}
               </>
             )}

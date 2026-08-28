@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import Link from "@/compat/link";
 import { Sparkles, DollarSign, ShieldCheck, ArrowRight, Layers } from "lucide-react";
 
 export function ContextSidebarPanel() {

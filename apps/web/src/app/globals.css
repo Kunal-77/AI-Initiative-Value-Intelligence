@@ -1,151 +1,282 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * CyberCrest-inspired dark compliance design system.
+ * Mono uppercase eyebrows + geometric sans headings, teal/orange accents.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ember: var(--ember);
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  /*
+   * Brand retint: the ported AIVI screens use blue/indigo utility ramps.
+   * Remapping those ramps onto the teal/ember brand keeps every legacy screen
+   * on the new design language without touching component logic.
+   */
+  --color-blue-50: oklch(0.97 0.02 190);
+  --color-blue-100: oklch(0.94 0.04 190);
+  --color-blue-200: oklch(0.9 0.06 190);
+  --color-blue-300: oklch(0.86 0.09 190);
+  --color-blue-400: oklch(0.82 0.11 190);
+  --color-blue-500: oklch(0.78 0.13 190);
+  --color-blue-600: oklch(0.7 0.12 190);
+  --color-blue-700: oklch(0.58 0.1 192);
+  --color-blue-800: oklch(0.42 0.075 195);
+  --color-blue-900: oklch(0.3 0.05 200);
+  --color-blue-950: oklch(0.22 0.035 210);
+
+  --color-indigo-50: oklch(0.97 0.02 190);
+  --color-indigo-100: oklch(0.94 0.04 190);
+  --color-indigo-200: oklch(0.9 0.06 192);
+  --color-indigo-300: oklch(0.86 0.09 194);
+  --color-indigo-400: oklch(0.81 0.11 196);
+  --color-indigo-500: oklch(0.75 0.12 198);
+  --color-indigo-600: oklch(0.66 0.11 200);
+  --color-indigo-700: oklch(0.54 0.09 202);
+  --color-indigo-800: oklch(0.4 0.07 208);
+  --color-indigo-900: oklch(0.29 0.05 215);
+  --color-indigo-950: oklch(0.21 0.035 220);
+
+  --color-sky-400: oklch(0.84 0.1 200);
+  --color-sky-500: oklch(0.79 0.12 200);
+  --color-sky-600: oklch(0.7 0.11 200);
+
+  --color-violet-400: oklch(0.8 0.13 60);
+  --color-violet-500: oklch(0.74 0.15 52);
+  --color-violet-600: oklch(0.68 0.16 48);
+  --color-purple-400: oklch(0.8 0.13 60);
+  --color-purple-500: oklch(0.74 0.15 52);
+  --color-purple-600: oklch(0.68 0.16 48);
+
+}
 
 :root {
-  /* Brand Core - Clean Cool-Slate Enterprise Base */
-  --background: 220 20% 98%;      /* #f8fafc */
-  --foreground: 222 47% 11%;      /* #0f172a */
-  --card: 0 0% 100%;             /* #ffffff */
-  --card-foreground: 222 47% 11%;
-  
-  /* Borders & Grids */
-  --border: 220 13% 91%;         /* #e2e8f0 */
-  --input: 220 13% 91%;          /* #e2e8f0 */
-  --ring: 217 91% 60%;           /* Electric Blue #3b82f6 */
-  
-  /* Interactive Accents */
-  --primary: 217 91% 60%;        /* Electric Blue #3b82f6 */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 220 14% 96%;      /* #f1f5f9 */
-  --secondary-foreground: 222 47% 11%;
-  --accent: 221.2 83.2% 53.3%;   /* Vivid Blue #2563eb */
-  --accent-foreground: 0 0% 100%;
-  
-  /* Status Color Palette */
-  --success: 142.1 76.2% 36.3%;  /* Emerald-600 */
-  --success-foreground: 0 0% 100%;
-  --warning: 37.9 90.2% 49.8%;   /* Amber-600 */
-  --warning-foreground: 0 0% 100%;
-  --destructive: 346.8 77.2% 49.8%; /* Rose-600 */
-  --destructive-foreground: 0 0% 100%;
-  
-  /* AI Insights Accent */
-  --ai-glow: 217 91% 60%;        /* Electric Blue-500 */
-  --ai-bg: 214 100% 97%;         /* Pastel Cyan/Blue */
-  --ai-border: 217 80% 85%;
+  --radius: 0.5rem;
+  --background: oklch(0.16 0.02 265);
+  --foreground: oklch(0.97 0.005 250);
+  --card: oklch(0.2 0.022 265);
+  --card-foreground: oklch(0.97 0.005 250);
+  --popover: oklch(0.2 0.022 265);
+  --popover-foreground: oklch(0.97 0.005 250);
+  --primary: oklch(0.78 0.13 190);
+  --primary-foreground: oklch(0.16 0.02 265);
+  --secondary: oklch(0.26 0.025 265);
+  --secondary-foreground: oklch(0.97 0.005 250);
+  --muted: oklch(0.24 0.02 265);
+  --muted-foreground: oklch(0.72 0.015 258);
+  --accent: oklch(0.7 0.17 45);
+  --accent-foreground: oklch(0.16 0.02 265);
+  --destructive: oklch(0.63 0.22 27);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.78 0.13 190 / 60%);
+  --surface: oklch(0.19 0.022 265);
+  --surface-2: oklch(0.23 0.025 265);
+  --teal: oklch(0.78 0.13 190);
+  --ember: oklch(0.72 0.17 48);
 
-  --muted-foreground: 215 16% 47%; /* #64748b */
+  --gradient-hero: radial-gradient(
+      70% 90% at 72% 40%,
+      color-mix(in oklab, var(--teal) 16%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(60% 70% at 10% 10%, color-mix(in oklab, var(--ember) 8%, transparent), transparent 70%);
+  --gradient-line: linear-gradient(90deg, transparent, var(--teal), transparent);
+  --gradient-card: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--surface-2) 85%, transparent),
+    color-mix(in oklab, var(--surface) 95%, transparent)
+  );
+  --shadow-glow: 0 0 40px -10px color-mix(in oklab, var(--teal) 55%, transparent);
+  --shadow-card: 0 24px 60px -30px oklch(0 0 0 / 0.9);
 }
 
 .dark {
-  /* Brand Core - Deep Dark Navy / Near-Black (#060814 & #0a0f1f) */
-  --background: 222 47% 4%;      /* #060814 - Deep Dark Navy */
-  --foreground: 210 40% 98%;     /* #f8fafc - Crisp White */
-  --card: 222 47% 7.5%;          /* #0a0f1f - Card Surface */
-  --card-foreground: 210 40% 98%;
-  
-  /* Borders & Grids */
-  --border: 222 35% 15%;         /* #16203b - Subtle Blue-Gray Border */
-  --input: 222 35% 15%;          /* #16203b */
-  --ring: 217 91% 60%;           /* #3b82f6 - Electric Blue Focus Ring */
-  
-  /* Interactive Accents */
-  --primary: 217 91% 60%;        /* #3b82f6 - Electric Blue */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 222 40% 13%;      /* #101930 - Secondary Surface / Hover */
-  --secondary-foreground: 210 40% 98%;
-  --accent: 217 91% 60%;         /* #3b82f6 - Electric Blue Accent */
-  --accent-foreground: 0 0% 100%;
-  
-  /* Status Color Palette */
-  --success: 142.1 70.6% 45.3%;  /* Emerald-500 #10b981 */
-  --success-foreground: 144 61% 95%;
-  --warning: 47.9 95.8% 53.1%;   /* Amber-500 #f59e0b */
-  --warning-foreground: 48 96% 96%;
-  --destructive: 346.8 77.2% 49.8%; /* Rose-500 #f43f5e */
-  --destructive-foreground: 0 0% 100%;
-  
-  /* AI Insights Accent - Electric Cyan/Blue */
-  --ai-glow: 217 91% 60%;        /* #3b82f6 - Electric Blue */
-  --ai-bg: 222 47% 9%;           /* #0c1428 - Deep Navy Glow Surface */
-  --ai-border: 217 60% 25%;      /* #1e3a68 */
-
-  --card-elevated: 222 45% 10%;  /* #0e162c - Elevated Navy Surface */
-  --muted-foreground: 215 20.2% 65.1%; /* #94a3b8 - Cool Slate Gray */
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--card));
-  --color-popover-foreground: hsl(var(--card-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--secondary));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--teal) 35%, transparent);
+  }
 }
 
-body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-  transition: background-color 0.15s ease, color 0.15s ease;
+@utility eyebrow {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+  color: var(--teal);
 }
 
+@utility grid-bg {
+  background-image: linear-gradient(color-mix(in oklab, var(--teal) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--teal) 7%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(70% 60% at 50% 30%, black, transparent 85%);
+}
+
+@utility glass-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(6px);
+}
+
+@utility btn-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+@utility hover-lift {
+  transition:
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+  &:hover {
+    transform: translateY(-6px);
+    border-color: color-mix(in oklab, var(--teal) 45%, transparent);
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+@utility marquee-track {
+  animation: marquee 32s linear infinite;
+}
+
+@utility float-slow {
+  animation: floaty 7s ease-in-out infinite;
+}
+
+@utility spin-slow {
+  animation: spin 26s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(-14px);
+  }
+  50% {
+    transform: translateY(14px);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    opacity: 0.25;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.25;
+    transform: scale(0.92);
+  }
+}
+
+@utility pulse-ring {
+  animation: pulse-ring 5s ease-in-out infinite;
+}
+
+/* ===== AIVI application utilities (ported, retinted to the Beta AIVI palette) ===== */
 /* Subtle enterprise glowing effects & elevated surfaces */
 .glow-blue-sm {
-  box-shadow: 0 0 15px -3px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 15px -3px rgba(45, 212, 191, 0.15);
 }
 
 .glow-blue-md {
-  box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 0 25px -5px rgba(45, 212, 191, 0.25);
 }
 
 .border-glow-blue {
-  border-color: rgba(59, 130, 246, 0.35);
-  box-shadow: 0 0 12px -2px rgba(59, 130, 246, 0.2);
+  border-color: rgba(45, 212, 191, 0.35);
+  box-shadow: 0 0 12px -2px rgba(45, 212, 191, 0.2);
 }
 
 .glass-panel {
   backdrop-filter: blur(12px);
-  background-color: hsla(var(--card) / 0.85);
-  border: 1px solid hsla(var(--border) / 0.8);
+  background-color: color-mix(in oklab, var(--card) calc(0.85 * 100%), transparent);
+  border: 1px solid color-mix(in oklab, var(--border) calc(0.8 * 100%), transparent);
 }
 
 .bg-radial-navy {
-  background-image: radial-gradient(circle at top, rgba(30, 58, 138, 0.12) 0%, transparent 70%);
+  background-image: radial-gradient(circle at top, rgba(20, 83, 96, 0.12) 0%, transparent 70%);
 }
 
 /* Ambient Dot Pattern & Subtle Grid */
 .bg-dot-pattern {
-  background-image: radial-gradient(rgba(59, 130, 246, 0.15) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(45, 212, 191, 0.15) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
 .bg-grid-subtle {
   background-image: 
-    linear-gradient(to right, rgba(59, 130, 246, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(45, 212, 191, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(45, 212, 191, 0.04) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 
 /* Single Signature Hero Gradient Mesh (Violet -> Indigo -> Electric Blue -> Navy) */
 .hero-gradient-mesh {
-  background: radial-gradient(ellipse 70% 60% at 45% 35%, rgba(139, 92, 246, 0.09) 0%, rgba(99, 102, 241, 0.07) 35%, rgba(59, 130, 246, 0.05) 65%, transparent 85%);
+  background: radial-gradient(ellipse 70% 60% at 45% 35%, rgba(45, 212, 191, 0.09) 0%, rgba(56, 189, 248, 0.07) 35%, rgba(45, 212, 191, 0.05) 65%, transparent 85%);
   filter: blur(120px);
 }
 
@@ -197,8 +328,8 @@ body {
     0 1px 2px rgba(0, 0, 0, 0.3),
     0 4px 12px rgba(0, 0, 0, 0.4),
     0 16px 32px rgba(0, 0, 0, 0.5),
-    0 0 50px -10px rgba(59, 130, 246, 0.12),
-    0 0 80px -30px rgba(139, 92, 246, 0.12);
+    0 0 50px -10px rgba(45, 212, 191, 0.12),
+    0 0 80px -30px rgba(45, 212, 191, 0.12);
 }
 
 /* Dashboard Hover Parallax-like CSS Effect (pushed back up to prevent animation overwrite conflicts) */
@@ -208,12 +339,12 @@ body {
 .dashboard-hover-state:hover {
   animation-play-state: paused !important;
   transform: translateY(-8px) scale(1.005) !important;
-  border-color: rgba(59, 130, 246, 0.4) !important;
+  border-color: rgba(45, 212, 191, 0.4) !important;
   box-shadow: 
     0 0 0 1px rgba(255, 255, 255, 0.08),
     0 24px 48px -8px rgba(0, 0, 0, 0.6),
-    0 0 60px -5px rgba(59, 130, 246, 0.18),
-    0 0 90px -15px rgba(139, 92, 246, 0.18) !important;
+    0 0 60px -5px rgba(45, 212, 191, 0.18),
+    0 0 90px -15px rgba(45, 212, 191, 0.18) !important;
 }
 
 /* Hero Entrance Animations */
@@ -345,12 +476,12 @@ div[data-nextjs-dialog-overlay] {
 /* 3. Motion Glow - Breathing ambient drop shadow or background pulse */
 @keyframes motionGlowPulse {
   0%, 100% {
-    box-shadow: 0 0 15px -5px rgba(59, 130, 246, 0.15);
-    border-color: rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 15px -5px rgba(45, 212, 191, 0.15);
+    border-color: rgba(45, 212, 191, 0.2);
   }
   50% {
-    box-shadow: 0 0 25px 0px rgba(59, 130, 246, 0.3);
-    border-color: rgba(59, 130, 246, 0.45);
+    box-shadow: 0 0 25px 0px rgba(45, 212, 191, 0.3);
+    border-color: rgba(45, 212, 191, 0.45);
   }
 }
 .motion-glow {
@@ -421,8 +552,8 @@ div[data-nextjs-dialog-overlay] {
 }
 .motion-hover-lift:hover {
   transform: translateY(-2px);
-  border-color: rgba(59, 130, 246, 0.4) !important;
-  box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.15);
+  border-color: rgba(45, 212, 191, 0.4) !important;
+  box-shadow: 0 10px 20px -10px rgba(45, 212, 191, 0.15);
 }
 
 /* 8. SVG Sparkline Draw Animation */

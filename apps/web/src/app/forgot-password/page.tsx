@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { useSignIn, useClerk } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/compat/navigation";
 import { CheckCircle2, ArrowLeft } from "lucide-react";
-import { Button, Input, Label } from "../../components/ui";
-import { ValueIntelligenceAuthShell } from "../../components/auth/ValueIntelligenceAuthShell";
-import { AuthBrand } from "../../components/auth/AuthBrand";
-import { AuthError } from "../../components/auth/AuthError";
+import { Button, Input, Label } from "@/components/ui";
+import { ValueIntelligenceAuthShell } from "@/components/auth/ValueIntelligenceAuthShell";
+import { AuthBrand } from "@/components/auth/AuthBrand";
+import { AuthError } from "@/components/auth/AuthError";
 
 type RecoveryStep = "REQUEST_CODE" | "RESET_PASSWORD" | "SUCCESS";
 

@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { MessageSquare, Sparkles, Send, CheckCircle2, CornerDownRight, Smile } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { MessageSquare, Sparkles, Send, CheckCircle2, CornerDownRight, Smile, Loader2 } from "lucide-react";
 import { CollaborationComment } from "../../types/collaboration";
 import { Input, Button, Badge } from "../ui";
+import { useInView } from "@/hooks/useInView";
 
 export interface CollaborationThreadViewProps {
   comments: CollaborationComment[];
@@ -18,6 +19,24 @@ export function CollaborationThreadView({
 }: CollaborationThreadViewProps) {
   const [newContent, setNewContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [displayLimit, setDisplayLimit] = useState(10);
+
+  useEffect(() => {
+    setDisplayLimit(10);
+  }, [comments.length]);
+
+  const visibleComments = comments.slice(0, displayLimit);
+
+  const [sentinelRef, inView] = useInView({
+    rootMargin: "100px",
+    triggerOnce: false,
+  });
+
+  useEffect(() => {
+    if (inView && visibleComments.length < comments.length) {
+      setDisplayLimit((prev) => Math.min(prev + 10, comments.length));
+    }
+  }, [inView, comments.length, visibleComments.length]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +66,7 @@ export function CollaborationThreadView({
       </div>
 
       <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
-        {comments.map((cmt) => (
+        {visibleComments.map((cmt) => (
           <div key={cmt.id} className="p-4 rounded-lg bg-secondary/30 border border-border space-y-2 text-xs">
             <div className="flex justify-between items-center text-[10px]">
               <div className="flex items-center gap-2">
@@ -103,6 +122,13 @@ export function CollaborationThreadView({
             ))}
           </div>
         ))}
+
+        {visibleComments.length < comments.length && (
+          <div ref={sentinelRef} className="py-2.5 flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground font-mono">
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-accent" />
+            <span>Loading more threads...</span>
+          </div>
+        )}
       </div>
 
       {/* Post New Comment Input */}

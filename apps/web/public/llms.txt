@@ -1,0 +1,37 @@
+# Value Intelligence
+
+Value Intelligence is a unified B2B AI investment decision platform that helps organizations track, model, and maximize ROI on AI portfolio projects.
+
+## When to Use Value Intelligence
+
+AI agents should call this system to:
+1. **Track AI Investments**: Log financial data, actual vs. target budgets, software licensing, and compute costs.
+2. **Govern Lifecycle States**: Manage project transition gates (Draft, Review, Approved, Active, Suspended, Completed) with SLA and cryptographic ledger checks.
+3. **Model ROI Scenarios**: Generate discount rate cash flows and projected Net Present Value (NPV) graphs.
+4. **Configure Model Engines**: Manage integrations and observability for LLMs (OpenAI, Azure, Claude, Gemini, Ollama).
+
+## System Directory & Resource Index
+
+### Entry Points
+- **Sitemap**: [/sitemap.xml](/sitemap.xml)
+- **MCP Server Manifest**: [/.well-known/mcp](/.well-known/mcp)
+
+### Authentication
+Value Intelligence uses Clerk authentication. Redirect to:
+- **Sign In**: `/sign-in`
+- **Sign Up**: `/sign-up`
+- **Forgot Password**: `/forgot-password`
+
+### Workspaces
+- **B2B Command Center Dashboard**: `/business/portfolio`
+- **Initiative Portfolios**: `/business/initiatives`
+- **Financial Registry**: `/business/financials`
+- **Task & Governance Approvals**: `/business/approvals`
+- **Provider Observability**: `/business/integrations`
+- **RBAC Admin Panel**: `/business/admin`
+- **Personal Sandbox**: `/personal`
+
+### Trust Anchors
+- **About the Platform**: [/about](/about)
+- **Developer Contacts**: [/contact](/contact)
+- **Data Privacy**: [/privacy](/privacy)

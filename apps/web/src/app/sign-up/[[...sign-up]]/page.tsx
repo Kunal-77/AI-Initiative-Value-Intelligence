@@ -2,14 +2,14 @@
 
 import React, { useState, Suspense } from "react";
 import { useSignUp } from "@clerk/nextjs";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useRouter, useSearchParams } from "@/compat/navigation";
+import Link from "@/compat/link";
 import { Eye, EyeOff, UserPlus, ArrowLeft } from "lucide-react";
-import { Button, Input, Label, SkeletonMetricsRow } from "../../../components/ui";
-import { ValueIntelligenceAuthShell } from "../../../components/auth/ValueIntelligenceAuthShell";
-import { AuthBrand } from "../../../components/auth/AuthBrand";
-import { AuthDivider } from "../../../components/auth/AuthDivider";
-import { AuthError } from "../../../components/auth/AuthError";
+import { Button, Input, Label, SkeletonMetricsRow } from "@/components/ui";
+import { ValueIntelligenceAuthShell } from "@/components/auth/ValueIntelligenceAuthShell";
+import { AuthBrand } from "@/components/auth/AuthBrand";
+import { AuthDivider } from "@/components/auth/AuthDivider";
+import { AuthError } from "@/components/auth/AuthError";
 
 function SignUpContent() {
   const { signUp } = useSignUp();

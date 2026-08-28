@@ -2,25 +2,25 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useAuth, useOrganization } from "@clerk/nextjs";
-import dynamic from "next/dynamic";
+import dynamic from "@/compat/dynamic";
 import {
   AppHeader,
   ExecutiveDashboard,
   InitiativesTable,
   SkeletonMetricsRow,
   CreateInitiativeFormData,
-} from "../../../components/ui";
+} from "@/components/ui";
 
 const CreateInitiativeWizard = dynamic(
-  () => import("../../../components/initiatives/CreateInitiativeWizard").then(mod => mod.CreateInitiativeWizard),
+  () => import("@/components/initiatives/CreateInitiativeWizard").then(mod => mod.CreateInitiativeWizard),
   { ssr: false }
 );
 const EditInitiativeModal = dynamic(
-  () => import("../../../components/initiatives/EditInitiativeModal").then(mod => mod.EditInitiativeModal),
+  () => import("@/components/initiatives/EditInitiativeModal").then(mod => mod.EditInitiativeModal),
   { ssr: false }
 );
 const DeleteInitiativeDialog = dynamic(
-  () => import("../../../components/initiatives/DeleteInitiativeDialog").then(mod => mod.DeleteInitiativeDialog),
+  () => import("@/components/initiatives/DeleteInitiativeDialog").then(mod => mod.DeleteInitiativeDialog),
   { ssr: false }
 );
 import {
@@ -29,7 +29,7 @@ import {
   createCanonicalInitiative,
   updateCanonicalInitiative,
   deleteCanonicalInitiative,
-} from "../../../lib/initiativeStore";
+} from "@/lib/initiativeStore";
 
 export default function BusinessInitiativesPage() {
   const { getToken, orgId } = useAuth();

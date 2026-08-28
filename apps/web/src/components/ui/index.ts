@@ -14,7 +14,6 @@ export * from "./Table";
 export * from "./AppHeader";
 export * from "./WorkspaceSelector";
 export * from "./WorkspaceRouter";
-export * from "./ThemeToggle";
 export * from "./Breadcrumbs";
 export * from "./NotificationButton";
 export * from "./UserMenu";

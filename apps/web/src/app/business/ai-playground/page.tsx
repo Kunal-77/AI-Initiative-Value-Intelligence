@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
-import dynamic from "next/dynamic";
+import dynamic from "@/compat/dynamic";
 import {
   AppHeader,
   ProviderSelectorCard,
@@ -12,31 +12,32 @@ import {
   SkeletonConsole,
   SkeletonCard,
   SkeletonTable,
-} from "../../../components/ui";
+  LazyViewport,
+} from "@/components/ui";
 
 const StreamingConsole = dynamic(
-  () => import("../../../components/ai-platform/StreamingConsole").then(mod => mod.StreamingConsole),
+  () => import("@/components/ai-platform/StreamingConsole").then(mod => mod.StreamingConsole),
   { loading: () => <SkeletonConsole /> }
 );
 const PromptLibraryManager = dynamic(
-  () => import("../../../components/ai-platform/PromptLibraryManager").then(mod => mod.PromptLibraryManager),
+  () => import("@/components/ai-platform/PromptLibraryManager").then(mod => mod.PromptLibraryManager),
   { loading: () => <SkeletonCard /> }
 );
 const AgentRegistryCard = dynamic(
-  () => import("../../../components/ai-platform/AgentRegistryCard").then(mod => mod.AgentRegistryCard),
+  () => import("@/components/ai-platform/AgentRegistryCard").then(mod => mod.AgentRegistryCard),
   { loading: () => <SkeletonCard /> }
 );
 const AiObservabilityDashboard = dynamic(
-  () => import("../../../components/ai-platform/AiObservabilityDashboard").then(mod => mod.AiObservabilityDashboard),
+  () => import("@/components/ai-platform/AiObservabilityDashboard").then(mod => mod.AiObservabilityDashboard),
   { loading: () => <SkeletonTable rows={3} /> }
 );
 import {
   LlmModelConfig,
   LlmCompletionResponse,
   AiObservabilityLog,
-} from "../../../types/ai-platform";
-import { providerRegistry } from "../../../services/ai/providers/providerRegistry";
-import { getObservabilityLogs, logAiExecution } from "../../../services/ai/observabilityService";
+} from "@/types/ai-platform";
+import { providerRegistry } from "@/services/ai/providers/providerRegistry";
+import { getObservabilityLogs, logAiExecution } from "@/services/ai/observabilityService";
 
 export default function BusinessAiPlaygroundPage() {
   const { orgId } = useAuth();
@@ -144,19 +145,25 @@ export default function BusinessAiPlaygroundPage() {
               onRunStream={handleRunStream}
               onCancelStream={handleCancelStream}
             />
-
+ 
             {/* Versioned Central Prompt Library */}
-            <PromptLibraryManager />
+            <LazyViewport name="Prompt Templates Vault" placeholder={<SkeletonCard />} minHeight="250px">
+              {() => <PromptLibraryManager />}
+            </LazyViewport>
           </div>
-
+ 
           <div className="lg:col-span-4 space-y-6">
             {/* Agentic AI Framework & Specs */}
-            <AgentRegistryCard />
+            <LazyViewport name="Agent Framework Registry" placeholder={<SkeletonCard />} minHeight="300px">
+              {() => <AgentRegistryCard />}
+            </LazyViewport>
           </div>
         </div>
-
+ 
         {/* 3. AI Telemetry & Observability Stream Table */}
-        <AiObservabilityDashboard logs={logs} />
+        <LazyViewport name="AI Telemetry Logs Stream" placeholder={<SkeletonTable rows={3} />} minHeight="200px">
+          {() => <AiObservabilityDashboard logs={logs} />}
+        </LazyViewport>
       </main>
     </div>
   );

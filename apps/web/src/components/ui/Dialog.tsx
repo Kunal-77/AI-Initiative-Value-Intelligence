@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "./cn";
 
 export interface DialogProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -8,6 +9,13 @@ export interface DialogProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
   ({ className, isOpen, onClose, children, ...props }, ref) => {
+    const [mounted, setMounted] = useState(false);
+
+    // Mount guard to prevent SSR hydration mismatch
+    useEffect(() => {
+      setMounted(true);
+    }, []);
+
     // Escape key handling
     useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
@@ -19,9 +27,9 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
       return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isOpen, onClose]);
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
-    return (
+    return createPortal(
       <div
         ref={ref}
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150"
@@ -35,7 +43,8 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
         <div className={cn("bg-card text-card-foreground border border-border/80 rounded-2xl p-6 max-w-md w-full flex flex-col gap-4 shadow-2xl shadow-black/50 animate-in fade-in zoom-in-95 duration-150", className)}>
           {children}
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 );
