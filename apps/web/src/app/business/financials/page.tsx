@@ -61,6 +61,7 @@ export default function BusinessFinancialsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "Financial Metrics Ledger | AIVI";
     if (orgId) {
       setLoading(true);
       getToken().then((token) => {
@@ -85,7 +86,7 @@ export default function BusinessFinancialsPage() {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
         <AppHeader badge="Financial Intelligence" />
-        <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <main className="flex-1 max-w-fluid w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-8 space-y-6">
           <SkeletonMetricsRow />
         </main>
       </div>
@@ -96,7 +97,7 @@ export default function BusinessFinancialsPage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors animate-page-entrance">
       <AppHeader badge="Financial Intelligence" />
 
-      <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <main className="flex-1 max-w-fluid w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-8 space-y-8">
         {/* Phase 7: Unified Lifecycle Navigation Bar */}
         <UnifiedLifecycleBar activeStep="financials" />
 

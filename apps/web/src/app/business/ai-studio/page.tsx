@@ -74,6 +74,7 @@ export default function BusinessAiStudioPage() {
   };
 
   useEffect(() => {
+    document.title = "AI Value Studio | AIVI";
     if (orgId) {
       loadAiData();
     }
@@ -123,7 +124,7 @@ export default function BusinessAiStudioPage() {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
         <AppHeader badge="AI Value Studio" />
-        <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <main className="flex-1 max-w-fluid w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-8 space-y-6">
           <SkeletonMetricsRow />
         </main>
       </div>
@@ -134,7 +135,7 @@ export default function BusinessAiStudioPage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors animate-page-entrance">
       <AppHeader badge="AI Value Studio" />
 
-      <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <main className="flex-1 max-w-fluid w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-8 space-y-8">
         {/* Phase 7: Unified Lifecycle Navigation Bar */}
         <UnifiedLifecycleBar activeStep="ai" />
 

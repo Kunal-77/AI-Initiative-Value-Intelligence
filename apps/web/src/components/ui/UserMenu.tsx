@@ -83,7 +83,7 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-semibold text-xs shadow-md shadow-blue-500/20 hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-ring/50 cursor-pointer"
+        className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-[#7DA7D9] to-[#4F759B] text-[#0B0D11] font-semibold text-xs shadow-md shadow-[#7DA7D9]/20 hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-[#7DA7D9]/50 cursor-pointer"
         aria-label="User menu"
       >
         {user.imageUrl ? (
@@ -102,7 +102,7 @@ export function UserMenu({ className, ...props }: UserMenuProps) {
           {/* Header info */}
           <div className="p-3 border-b border-border bg-secondary/30">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shrink-0 overflow-hidden">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#7DA7D9] to-[#4F759B] flex items-center justify-center text-[#0B0D11] font-bold text-xs shrink-0 overflow-hidden">
                 {user.imageUrl ? (
                   <img src={user.imageUrl} alt={fullName} className="w-full h-full object-cover" />
                 ) : (

@@ -64,13 +64,12 @@ export function UpcomingMilestonesCard({
             </div>
 
             <span
-              className={`text-[10px] font-semibold px-2 py-0.5 rounded border shrink-0 ${
-                ms.status === "Due Today"
+              className={`text-[10px] font-semibold px-2 py-0.5 rounded border shrink-0 ${ms.status === "Due Today"
                   ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
                   : ms.status === "In Review"
-                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-                  : "bg-secondary text-secondary-foreground border-border"
-              }`}
+                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                    : "bg-secondary text-secondary-foreground border-border"
+                }`}
             >
               {ms.status}
             </span>

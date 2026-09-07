@@ -51,7 +51,7 @@ export function BenchmarkingCard({ benchmarks }: BenchmarkingCardProps) {
               </div>
               <div>
                 <span>AI Adoption:</span>
-                <span className="font-mono font-bold text-cyan-500 dark:text-cyan-400 block">{bm.aiAdoptionPercentage}% Rate</span>
+                <span className="font-mono font-bold text-[#7DA7D9] block">{bm.aiAdoptionPercentage}% Rate</span>
               </div>
             </div>
           </div>

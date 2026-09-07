@@ -73,9 +73,9 @@ export function ApprovalDetailModal({
             <span className="text-[10px] uppercase font-bold text-muted-foreground block">Requested Capital Spend</span>
             <span className="text-lg font-extrabold font-mono text-foreground">${(approval.requestedBudget / 1000).toFixed(0)}k USD</span>
           </div>
-          <div className="p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/25 space-y-1">
-            <span className="text-[10px] uppercase font-bold text-cyan-500 dark:text-cyan-400 block">AI Confidence Score</span>
-            <span className="text-lg font-extrabold font-mono text-cyan-500 dark:text-cyan-400">{approval.aiConfidenceScore}% Score</span>
+          <div className="p-3 rounded-lg bg-[#7DA7D9]/10 border border-[#7DA7D9]/25 space-y-1">
+            <span className="text-[10px] uppercase font-bold text-[#7DA7D9] block">AI Confidence Score</span>
+            <span className="text-lg font-extrabold font-mono text-[#7DA7D9]">{approval.aiConfidenceScore}% Score</span>
           </div>
           <div className="p-3 rounded-lg bg-secondary/20 border border-border/80 space-y-1">
             <span className="text-[10px] uppercase font-bold text-muted-foreground block">Evaluated Risk Level</span>

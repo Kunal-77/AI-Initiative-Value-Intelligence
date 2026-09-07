@@ -6,6 +6,10 @@ import { Sparkles, ArrowLeft, Shield } from "lucide-react";
 import { Button } from "@/components/ui";
 
 export default function PrivacyPage() {
+  React.useEffect(() => {
+    document.title = "Privacy & Data Security Policy | AIVI";
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans flex flex-col relative overflow-hidden">
       <div className="absolute inset-0 bg-dot-pattern opacity-[0.035] pointer-events-none z-0" />
@@ -15,8 +19,8 @@ export default function PrivacyPage() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-md border-b border-border/40">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
-              <span className="font-extrabold text-sm text-white">V</span>
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#7DA7D9] to-[#4F759B] flex items-center justify-center shadow-lg">
+              <span className="font-extrabold text-sm text-[#0B0D11]">V</span>
             </div>
             <span className="font-bold tracking-tight text-sm text-foreground">Value Intelligence</span>
           </Link>
@@ -32,7 +36,7 @@ export default function PrivacyPage() {
       {/* Content */}
       <main className="flex-1 max-w-3xl mx-auto px-6 pt-32 pb-20 relative z-10 space-y-12">
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-primary">
+          <div className="flex items-center gap-2 text-[#7DA7D9]">
             <Sparkles className="w-4 h-4" />
             <span className="text-xs font-mono tracking-widest uppercase">Compliance & Privacy</span>
           </div>
@@ -49,7 +53,7 @@ export default function PrivacyPage() {
         <div className="space-y-6 text-xs text-muted-foreground leading-relaxed">
           <div className="space-y-2">
             <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
-              <Shield className="w-4 h-4 text-blue-500" />
+              <Shield className="w-4 h-4 text-[#7DA7D9]" />
               1. Row Level Security & Multi-Tenancy
             </h2>
             <p>
@@ -69,7 +73,7 @@ export default function PrivacyPage() {
 
           <div className="space-y-2">
             <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
-              <Shield className="w-4 h-4 text-indigo-500" />
+              <Shield className="w-4 h-4 text-[#C9A86A]" />
               3. Compliance Audits
             </h2>
             <p>

@@ -38,6 +38,7 @@ export default function BusinessInitiativesPage() {
 
   useEffect(() => {
     isMountedRef.current = true;
+    document.title = "Initiatives Portfolio | AIVI";
     return () => {
       isMountedRef.current = false;
     };
@@ -131,7 +132,7 @@ export default function BusinessInitiativesPage() {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
         <AppHeader badge="Executive Portfolio" />
-        <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <main className="flex-1 max-w-fluid w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-8 space-y-6">
           <SkeletonMetricsRow />
         </main>
       </div>
@@ -142,7 +143,7 @@ export default function BusinessInitiativesPage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors animate-page-entrance">
       <AppHeader badge="Executive Portfolio" />
 
-      <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <main className="flex-1 max-w-fluid w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-8 space-y-8">
         {/* Executive Master Dashboard */}
         <ExecutiveDashboard
           orgName={organization?.name || "Executive Enterprise Workspace"}

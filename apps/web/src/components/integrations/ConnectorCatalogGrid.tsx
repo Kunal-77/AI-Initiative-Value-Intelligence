@@ -1,53 +1,77 @@
 "use client";
 
 import React, { useState } from "react";
-import { Layers, RefreshCw, CheckCircle2, AlertTriangle, Plug, Power } from "lucide-react";
+import { Layers, RefreshCw, CheckCircle2, AlertTriangle, Plug, Power, Activity, Sparkles, Server } from "lucide-react";
 import { ConnectorDefinition, ConnectorCategory, ConnectorId } from "../../types/integration-center";
-import { Badge, Button, Input } from "../ui";
+import { Badge, Button, Input, SpotlightCard } from "../ui";
 
 export interface ConnectorCatalogGridProps {
   connectors: ConnectorDefinition[];
   onToggleConnect: (id: ConnectorId) => Promise<void>;
-  onTriggerSync: (id: ConnectorId) => Promise<void>;
+  onSyncNow?: (id: string) => Promise<void>;
+  onTriggerSync?: (id: ConnectorId) => Promise<void>;
 }
 
 export function ConnectorCatalogGrid({
   connectors,
   onToggleConnect,
+  onSyncNow,
   onTriggerSync,
 }: ConnectorCatalogGridProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [syncingId, setSyncingId] = useState<string | null>(null);
 
-  const categories: string[] = ["ALL", "Analytics & BI", "Collaboration", "Project & DevOps", "Cloud Data Warehouse", "CRM & Enterprise"];
+  const categories: ("ALL" | ConnectorCategory)[] = [
+    "ALL",
+    "Analytics & BI",
+    "Collaboration",
+    "Project & DevOps",
+    "CRM & Enterprise",
+    "Cloud Data Warehouse",
+    "Developer APIs",
+  ];
 
   const filtered = connectors.filter((c) => {
-    if (selectedCategory !== "ALL" && c.category !== selectedCategory) return false;
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      if (!c.name.toLowerCase().includes(q) && !c.description.toLowerCase().includes(q)) return false;
-    }
-    return true;
+    const matchesCat = selectedCategory === "ALL" || c.category === selectedCategory;
+    const matchesSearch =
+      c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.provider.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCat && matchesSearch;
   });
 
-  const handleSync = async (id: ConnectorId) => {
-    setSyncingId(id);
+  const handleSync = async (id: string) => {
     try {
-      await onTriggerSync(id);
+      setSyncingId(id);
+      if (onSyncNow) {
+        await onSyncNow(id);
+      } else if (onTriggerSync) {
+        await onTriggerSync(id as ConnectorId);
+      }
     } finally {
       setSyncingId(null);
     }
   };
 
   return (
-    <div className="p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-4 motion-reveal motion-hover-lift">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border/60 pb-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
-            <Layers className="w-4 h-4" />
+    <div className="p-6 rounded-2xl border border-[#202630] bg-[#11151C]/95 text-[#F4F1EA] shadow-lg space-y-5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#202630] pb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-[#7DA7D9]/10 border border-[#7DA7D9]/25 text-[#7DA7D9] shadow-xs">
+            <Layers className="w-5 h-5" />
           </div>
-          <h3 className="text-sm font-bold text-foreground">Enterprise Connectors & Ecosystem Catalog</h3>
+          <div>
+            <h3 className="text-base font-bold text-[#F4F1EA] flex items-center gap-2">
+              Enterprise Connectors & Ecosystem Catalog
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#7DA7D9]/15 text-[#7DA7D9] border border-[#7DA7D9]/30">
+                {filtered.length} Available
+              </span>
+            </h3>
+            <p className="text-xs text-[#8F98A8]">
+              Direct telemetry feeds, cloud warehouse syncs, and webhook ingestion endpoints.
+            </p>
+          </div>
         </div>
 
         <div className="flex gap-2">
@@ -55,83 +79,139 @@ export function ConnectorCatalogGrid({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search connectors (Power BI, Jira, Snowflake...)"
-            className="text-xs h-8 py-1 w-64"
+            className="text-xs h-9 py-1 w-full sm:w-72 bg-[#171C24] border-[#202630] focus:border-[#7DA7D9]/50 text-[#F4F1EA]"
           />
         </div>
       </div>
 
       {/* Category Tabs */}
-      <div className="flex gap-1 overflow-x-auto py-1 text-[10px]">
-        {categories.map((cat, idx) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-2.5 py-1 rounded-md border font-semibold transition-all duration-200 active:scale-95 shrink-0 ${
-              selectedCategory === cat
-                ? "bg-blue-500/15 text-blue-500 dark:text-blue-400 border-blue-500/30 font-bold"
-                : "bg-secondary text-muted-foreground border-border hover:bg-secondary/80"
-            }`}
-            style={{ animationDelay: `${idx * 40}ms` }}
-          >
-            {cat}
-          </button>
-        ))}
+      <div className="flex gap-1.5 overflow-x-auto py-1 scrollbar-none text-xs">
+        {categories.map((cat) => {
+          const isSelected = selectedCategory === cat;
+          return (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all duration-200 active:scale-95 shrink-0 flex items-center gap-1.5 cursor-pointer ${isSelected
+                  ? "bg-[#7DA7D9]/15 text-[#7DA7D9] border-[#7DA7D9]/40 shadow-xs font-bold"
+                  : "bg-[#171C24] text-[#8F98A8] border-[#202630] hover:bg-[#202630] hover:text-[#F4F1EA]"
+                }`}
+            >
+              {cat}
+            </button>
+          );
+        })}
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-        {filtered.map((c, idx) => (
-          <div
-            key={c.id}
-            className="p-4 rounded-xl bg-secondary/30 border border-border/80 space-y-3 flex flex-col justify-between hover:border-blue-500/40 hover:shadow-xs transition-all duration-200 motion-reveal motion-hover-lift"
-            style={{ animationDelay: `${idx * 60}ms` }}
-          >
-            <div className="space-y-2">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <span className="font-bold text-foreground block text-sm">{c.name}</span>
-                  <span className="text-[10px] text-muted-foreground font-mono">{c.provider} • v{c.version}</span>
+        {filtered.map((c) => {
+          const isConnected = c.status === "CONNECTED";
+          const isWarning = c.status === "WARNING";
+
+          return (
+            <SpotlightCard
+              key={c.id}
+              tiltEnabled={true}
+              spotlightColor={isConnected ? "rgba(125, 167, 217, 0.12)" : "rgba(201, 168, 106, 0.10)"}
+              className={`p-5 rounded-xl border space-y-4 flex flex-col justify-between transition-all duration-200 group relative overflow-hidden ${isConnected
+                  ? "bg-[#11151C]/95 border-[#7DA7D9]/30 hover:border-[#7DA7D9]/60"
+                  : isWarning
+                    ? "bg-[#11151C]/95 border-amber-500/30 hover:border-amber-500/60"
+                    : "bg-[#11151C]/95 border-[#202630] hover:border-[#7DA7D9]/30"
+                }`}
+            >
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-[#171C24] border border-[#202630] flex items-center justify-center text-xs font-bold font-mono text-[#7DA7D9] shrink-0 shadow-xs">
+                      {c.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <span className="font-bold text-[#F4F1EA] block text-sm group-hover:text-[#7DA7D9] transition-colors">
+                        {c.name}
+                      </span>
+                      <span className="text-[10px] text-[#8F98A8] font-mono">
+                        {c.provider} • v{c.version}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {isConnected && (
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                      </span>
+                    )}
+                    <Badge
+                      variant={isConnected ? "ACTIVE" : isWarning ? "warning" : "SUBMITTED"}
+                      className="text-[10px] font-mono tracking-wider"
+                    >
+                      {c.status}
+                    </Badge>
+                  </div>
                 </div>
-                <Badge variant={c.status === "CONNECTED" ? "ACTIVE" : c.status === "WARNING" ? "warning" : "SUBMITTED"} className={c.status === "CONNECTED" ? "animate-pulse" : ""}>
-                  {c.status}
-                </Badge>
+
+                <p className="text-[11px] text-[#8F98A8] leading-relaxed">
+                  {c.description}
+                </p>
+
+                {/* Health Meter */}
+                <div className="p-2.5 rounded-lg bg-[#0E1116] border border-[#202630] space-y-1.5">
+                  <div className="flex justify-between items-center text-[10px] font-mono">
+                    <span className="text-[#8F98A8] flex items-center gap-1">
+                      <Activity className="w-3 h-3 text-[#7DA7D9]" /> Health Sync
+                    </span>
+                    <span className={c.syncHealth >= 95 ? "text-emerald-400 font-bold" : "text-amber-400 font-bold"}>
+                      {c.syncHealth}%
+                    </span>
+                  </div>
+                  <div className="w-full h-1 bg-[#171C24] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${c.syncHealth >= 95 ? "bg-emerald-500" : "bg-amber-500"
+                        }`}
+                      style={{ width: `${c.syncHealth}%` }}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <p className="text-[11px] text-muted-foreground leading-relaxed">{c.description}</p>
-            </div>
+              <div className="pt-3 border-t border-[#202630] space-y-2.5">
+                <div className="flex justify-between items-center text-[10px] font-mono text-[#8F98A8]">
+                  <span>Category: {c.category}</span>
+                  <span>Synced: {c.lastSync}</span>
+                </div>
 
-            <div className="pt-2 border-t border-border/50 space-y-2">
-              <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground">
-                <span>Health: <strong className="text-emerald-500">{c.syncHealth}%</strong></span>
-                <span>Last Sync: {c.lastSync}</span>
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <Button
-                  onClick={() => onToggleConnect(c.id)}
-                  variant={c.status === "CONNECTED" ? "secondary" : "primary"}
-                  className="text-[10px] h-7 py-0 px-2.5 flex-1 cta-button-hover"
-                >
-                  <Power className="w-3 h-3 mr-1" />
-                  {c.status === "CONNECTED" ? "Disconnect" : "Connect"}
-                </Button>
-
-                {c.status === "CONNECTED" && (
+                <div className="flex items-center gap-2 pt-1">
                   <Button
-                    onClick={() => handleSync(c.id)}
-                    loading={syncingId === c.id}
-                    variant="secondary"
-                    className="text-[10px] h-7 py-0 px-2 text-accent font-bold cta-button-hover"
-                    title="Manual Trigger Incremental Sync"
+                    onClick={() => onToggleConnect(c.id)}
+                    variant={isConnected ? "secondary" : "primary"}
+                    className={`text-[11px] h-8 py-0 px-3 flex-1 font-semibold transition-all cursor-pointer ${
+                      !isConnected ? "bg-[#7DA7D9] text-[#0B0D11] hover:bg-[#A5C3E8]" : "bg-[#171C24] text-[#F4F1EA] border border-[#202630]"
+                    }`}
                   >
-                    <RefreshCw className="w-3 h-3 mr-1" /> Sync Now
+                    <Power className={`w-3.5 h-3.5 mr-1.5 ${isConnected ? "text-rose-400" : "text-[#0B0D11]"}`} />
+                    {isConnected ? "Disconnect" : "Connect"}
                   </Button>
-                )}
+
+                  {isConnected && (
+                    <Button
+                      onClick={() => handleSync(c.id)}
+                      loading={syncingId === c.id}
+                      variant="secondary"
+                      className="text-[11px] h-8 py-0 px-3 text-[#7DA7D9] font-bold hover:bg-[#7DA7D9]/10 border-[#7DA7D9]/30 bg-[#171C24] cursor-pointer"
+                      title="Manual Trigger Incremental Sync"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5 mr-1 text-[#7DA7D9]" /> Sync
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
+            </SpotlightCard>
+          );
+        })}
       </div>
     </div>
   );

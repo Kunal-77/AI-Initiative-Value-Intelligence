@@ -15,7 +15,7 @@ export function AiScorecard({ scorecard }: AiScorecardProps) {
       value: `${scorecard.portfolioAiScore}/100`,
       icon: Sparkles,
       subtext: "Algorithmic alignment index",
-      color: "text-cyan-500 dark:text-cyan-400",
+      color: "text-[#7DA7D9]",
     },
     {
       label: "Average Confidence",
@@ -43,7 +43,7 @@ export function AiScorecard({ scorecard }: AiScorecardProps) {
       value: `${scorecard.averageRoi}%`,
       icon: TrendingUp,
       subtext: "Target baseline return",
-      color: "text-blue-500 dark:text-blue-400",
+      color: "text-[#C9A86A]",
     },
     {
       label: "Average Payback",

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { TrendingUp, DollarSign, FolderKanban, PieChart, ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { Skeleton, EmptyState, ErrorBanner } from "../ui";
+import { Skeleton, EmptyState, ErrorBanner, SpotlightCard } from "../ui";
 import { cn } from "../ui/cn";
 
 export interface KpiCardItem {
@@ -80,7 +80,7 @@ function Sparkline({ data, isPositive }: { data: number[]; isPositive: boolean }
     })
     .join(" ");
 
-  const strokeColor = isPositive ? "#10b981" : "#f43f5e";
+  const strokeColor = isPositive ? "#7DA7D9" : "#f43f5e";
 
   return (
     <svg width={width} height={height} className="overflow-visible">
@@ -111,7 +111,7 @@ export function PortfolioKpiCards({
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {Array.from({ length: 4 }).map((_, idx) => (
-          <div key={idx} className="p-5 rounded-xl border border-border bg-card space-y-3 shadow-2xs">
+          <div key={idx} className="p-5 rounded-xl border border-[#202630] bg-[#11151C] space-y-3 shadow-2xs">
             <Skeleton className="h-4 w-28" />
             <Skeleton className="h-8 w-36" />
             <Skeleton className="h-3 w-44" />
@@ -130,36 +130,35 @@ export function PortfolioKpiCards({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
       {data.map((kpi, idx) => {
         const Icon = kpi.icon;
-        const delayClass = 
-          idx === 0 ? "delay-100" :
-          idx === 1 ? "delay-200" :
-          idx === 2 ? "delay-300" :
-          "delay-400";
+        const isGold = idx % 2 === 1;
         return (
-          <div
+          <SpotlightCard
             key={kpi.id}
-            className={cn(
-              "group relative p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-2xs flex flex-col justify-between gap-3 motion-reveal motion-hover-lift",
-              delayClass
-            )}
+            tiltEnabled={true}
+            spotlightColor={isGold ? "rgba(201, 168, 106, 0.14)" : "rgba(125, 167, 217, 0.14)"}
+            className="p-5 rounded-xl border-[#202630] bg-[#11151C]/95 flex flex-col justify-between gap-3 group hover:border-[#7DA7D9]/40 transition-colors"
           >
             {/* Top row: Title + Icon */}
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#8F98A8]">
                 {kpi.title}
               </span>
-              <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400 group-hover:bg-blue-500/15 transition-colors">
-                <Icon className="w-4 h-4 text-blue-500" />
+              <div className={`p-2 rounded-lg border group-hover:scale-110 transition-transform ${
+                isGold 
+                  ? "bg-[#C9A86A]/10 border-[#C9A86A]/20 text-[#C9A86A]" 
+                  : "bg-[#7DA7D9]/10 border-[#7DA7D9]/20 text-[#7DA7D9]"
+              }`}>
+                <Icon className="w-4 h-4" />
               </div>
             </div>
 
             {/* Middle row: Big Value + Sparkline + Trend Badge */}
             <div className="flex items-end justify-between gap-2 pt-1">
               <div>
-                <span className="text-2xl sm:text-3xl font-extrabold font-mono text-foreground tracking-tight block motion-number-reveal">
+                <span className="text-2xl sm:text-3xl font-extrabold font-mono text-[#F4F1EA] tracking-tight block">
                   {kpi.value}
                 </span>
               </div>
@@ -170,10 +169,10 @@ export function PortfolioKpiCards({
                 )}
                 <span
                   className={cn(
-                    "inline-flex items-center text-[10px] font-bold px-1.5 py-0.5 rounded border",
+                    "inline-flex items-center text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border",
                     kpi.isPositive
-                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                      : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                      : "bg-rose-500/10 text-rose-400 border-rose-500/20"
                   )}
                 >
                   {kpi.isPositive ? <ArrowUpRight className="w-3 h-3 mr-0.5 shrink-0" /> : <ArrowDownRight className="w-3 h-3 mr-0.5 shrink-0" />}
@@ -183,10 +182,10 @@ export function PortfolioKpiCards({
             </div>
 
             {/* Bottom row: Subtext */}
-            <p className="text-[11px] text-muted-foreground/80 truncate border-t border-border/50 pt-2 mt-1">
+            <p className="text-[11px] text-[#8F98A8] truncate border-t border-[#202630] pt-2 mt-1 font-medium">
               {kpi.subtext}
             </p>
-          </div>
+          </SpotlightCard>
         );
       })}
     </div>

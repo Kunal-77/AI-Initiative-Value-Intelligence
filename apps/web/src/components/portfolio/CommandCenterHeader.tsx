@@ -37,7 +37,7 @@ export function CommandCenterHeader({ metrics, loading = false }: CommandCenterH
     { label: "Budget Utilization", value: `${metrics.budgetUtilizationPercentage}%`, icon: PieChart, color: "text-foreground", subtext: "Of allocated funds" },
     { label: "Value Delivered", value: `$${(metrics.valueDeliveredAmount / 1000000).toFixed(2)}M`, icon: Sparkles, color: "text-emerald-500 dark:text-emerald-400", subtext: "Realized benefit total" },
     { label: "Value at Risk", value: `$${(metrics.valueAtRiskAmount / 1000).toFixed(0)}k`, icon: AlertTriangle, color: "text-rose-500 dark:text-rose-400", subtext: "Identified exposure" },
-    { label: "AI Portfolio Score", value: `${metrics.aiPortfolioScore}/100`, icon: Layers, color: "text-cyan-500 dark:text-cyan-400", subtext: "Maturity & adoption" },
+    { label: "AI Portfolio Score", value: `${metrics.aiPortfolioScore}/100`, icon: Layers, color: "text-[#7DA7D9]", subtext: "Maturity & adoption" },
     { label: "Open Decisions", value: `${metrics.openExecutiveDecisionsCount} Pending`, icon: Clock, color: "text-amber-500 dark:text-amber-400", subtext: "Action items" },
   ];
 

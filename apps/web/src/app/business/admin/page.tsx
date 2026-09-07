@@ -72,6 +72,7 @@ export default function BusinessAdminPage() {
   };
 
   useEffect(() => {
+    document.title = "Enterprise Administration | AIVI";
     if (orgId) {
       loadAdminData();
     }
@@ -93,7 +94,7 @@ export default function BusinessAdminPage() {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
         <AppHeader badge="Enterprise Administration" />
-        <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <main className="flex-1 max-w-fluid w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-8 space-y-6">
           <SkeletonMetricsRow />
         </main>
       </div>
@@ -104,7 +105,7 @@ export default function BusinessAdminPage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors">
       <AppHeader badge="Enterprise Administration" />
 
-      <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <main className="flex-1 max-w-fluid w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-8 space-y-8">
         {/* 1. Admin Header Scorecard Banner */}
         <AdminHeaderBanner userCount={users.length} security={security} billing={billing} />
 

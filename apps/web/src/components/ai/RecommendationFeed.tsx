@@ -71,15 +71,15 @@ export function RecommendationFeed({
 
   return (
     <div className="p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm space-y-4">
-      <div className="p-4 border-b border-border/60 bg-secondary/30 rounded-xl space-y-3">
+      <div className="p-4 border-b border-[#202630] bg-[#171C24]/50 rounded-xl space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 dark:text-cyan-400">
+            <div className="p-1.5 rounded-lg bg-[#7DA7D9]/10 border border-[#7DA7D9]/20 text-[#7DA7D9]">
               <Sparkles className="w-4 h-4" />
             </div>
-            <h3 className="text-sm font-bold text-foreground">AI Intelligence & Recommendations Feed</h3>
+            <h3 className="text-sm font-bold text-[#F4F1EA]">AI Intelligence & Recommendations Feed</h3>
           </div>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary text-muted-foreground border border-border">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#171C24] text-[#8F98A8] border border-[#202630]">
             {filtered.length} Filtered
           </span>
         </div>
@@ -89,13 +89,13 @@ export function RecommendationFeed({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search recommendations..."
-            className="text-xs h-8 py-1"
+            className="text-xs h-8 py-1 bg-[#171C24] border-[#202630] text-[#F4F1EA] placeholder:text-[#8F98A8] focus:border-[#7DA7D9]/50"
           />
 
           <Select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs h-8 py-1"
+            className="text-xs h-8 py-1 bg-[#171C24] border-[#202630] text-[#F4F1EA]"
           >
             <option value="ALL">All Statuses</option>
             <option value="PENDING">PENDING</option>
@@ -108,7 +108,7 @@ export function RecommendationFeed({
           <Select
             value={confidenceFilter}
             onChange={(e) => setConfidenceFilter(e.target.value)}
-            className="text-xs h-8 py-1"
+            className="text-xs h-8 py-1 bg-[#171C24] border-[#202630] text-[#F4F1EA]"
           >
             <option value="ALL">All Confidence Scores</option>
             <option value="90">90%+ High Confidence</option>
@@ -122,25 +122,25 @@ export function RecommendationFeed({
         {filtered.map((rec) => {
           const isExpanded = expandedIds.includes(rec.id);
 
-          let statusBadge = "bg-secondary text-secondary-foreground border-border";
-          if (rec.status === "ACCEPTED") statusBadge = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
-          if (rec.status === "REJECTED") statusBadge = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20";
-          if (rec.status === "SAVED") statusBadge = "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20";
+          let statusBadge = "bg-[#171C24] text-[#8F98A8] border-[#202630]";
+          if (rec.status === "ACCEPTED") statusBadge = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+          if (rec.status === "REJECTED") statusBadge = "bg-rose-500/10 text-rose-400 border-rose-500/20";
+          if (rec.status === "SAVED") statusBadge = "bg-[#C9A86A]/10 text-[#C9A86A] border-[#C9A86A]/20";
 
           return (
             <div
               key={rec.id}
-              className="p-5 rounded-xl border border-border/80 bg-card text-card-foreground shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-cyan-500/40 transition-all flex flex-col justify-between gap-3 relative overflow-hidden"
+              className="p-5 rounded-xl border border-[#202630] bg-[#11151C]/95 text-[#F4F1EA] shadow-2xs hover:shadow-lg hover:border-[#7DA7D9]/40 transition-all flex flex-col justify-between gap-3 relative overflow-hidden"
             >
               <div className="space-y-2">
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-0.5 min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-500 dark:text-cyan-400 block">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#7DA7D9] block">
                       {rec.category}
                     </span>
-                    <h4 className="text-sm font-bold text-foreground leading-snug">{rec.title}</h4>
+                    <h4 className="text-sm font-bold text-[#F4F1EA] leading-snug">{rec.title}</h4>
                   </div>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
                     +${rec.annualSavings.toLocaleString()}/yr
                   </span>
                 </div>

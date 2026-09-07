@@ -15,11 +15,15 @@ from src.personal.models import (
     RenewalSchedule,
     Receipt,
     UsageRecord,
+    BankConnection,
+    BankTransaction,
+    SubscriptionCandidate,
 )
 from src.personal.schemas import (
     SubscriptionCreate,
     PaymentMethodCreate,
     UsageRecordCreate,
+    BankConnectionCreate,
 )
 
 
@@ -34,6 +38,8 @@ class PersonalService:
             ("CLOUD_SERVICE", "Cloud platform services and project sandboxes"),
             ("PRODUCTIVITY", "Productivity and collaboration tools"),
             ("ENTERTAINMENT", "Streaming, newsletters, and media"),
+            ("MUSIC", "Music and audio streaming services"),
+            ("OTHER", "Other miscellaneous subscription services"),
         ]
         
         categories = []
@@ -304,3 +310,91 @@ class PersonalService:
             "upcoming_renewals": renewals,
             "recent_usage": usage,
         }
+
+    @staticmethod
+    def get_bank_connections(db: Session, user_id: uuid.UUID) -> List[BankConnection]:
+        """
+        List active bank/financial connections for the user.
+        """
+        stmt = select(BankConnection).where(
+            and_(BankConnection.user_id == user_id, BankConnection.status != "REVOKED")
+        ).order_by(BankConnection.created_at.desc())
+        return list(db.scalars(stmt).all())
+
+    @staticmethod
+    def create_bank_connection(db: Session, user_id: uuid.UUID, data: BankConnectionCreate) -> BankConnection:
+        """
+        Register a new financial institution connection.
+        """
+        conn = BankConnection(
+            user_id=user_id,
+            provider=data.provider,
+            institution_name=data.institution_name,
+            account_mask=data.account_mask,
+            account_type=data.account_type,
+            status="CONNECTED",
+            consent_status="ACTIVE",
+        )
+        db.add(conn)
+        db.commit()
+        return conn
+
+    @staticmethod
+    def delete_bank_connection(db: Session, user_id: uuid.UUID, connection_id: uuid.UUID) -> bool:
+        """
+        Disconnect and remove a bank connection strictly scoped to user.
+        Cascades deletion of associated transactions and cleans up pending candidates.
+        """
+        stmt = select(BankConnection).where(
+            and_(BankConnection.id == connection_id, BankConnection.user_id == user_id)
+        )
+        conn = db.scalars(stmt).first()
+        if not conn:
+            return False
+
+        db.delete(conn)
+        db.flush()
+
+        # Clean up any unconfirmed (PENDING) candidates detected from simulated feeds
+        stmt_other = select(BankConnection).where(BankConnection.user_id == user_id)
+        if not db.scalars(stmt_other).first():
+            stmt_del_cands = delete(SubscriptionCandidate).where(
+                and_(SubscriptionCandidate.user_id == user_id, SubscriptionCandidate.status == "PENDING")
+            )
+            db.execute(stmt_del_cands)
+
+        db.commit()
+        return True
+
+    @staticmethod
+    def get_bank_transactions(
+        db: Session,
+        user_id: uuid.UUID,
+        limit: int = 100,
+        offset: int = 0
+    ) -> List[BankTransaction]:
+        """
+        Fetch ingested bank transactions for the user, sorted newest first.
+        """
+        stmt = (
+            select(BankTransaction)
+            .where(BankTransaction.user_id == user_id)
+            .order_by(BankTransaction.transaction_date.desc(), BankTransaction.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        return list(db.scalars(stmt).all())
+
+    @staticmethod
+    def get_candidates(db: Session, user_id: uuid.UUID) -> List[SubscriptionCandidate]:
+        """
+        List pending detected subscription candidates for user review.
+        """
+        stmt = select(SubscriptionCandidate).where(
+            and_(
+                SubscriptionCandidate.user_id == user_id,
+                SubscriptionCandidate.status == "PENDING"
+            )
+        ).order_by(SubscriptionCandidate.confidence_score.desc(), SubscriptionCandidate.created_at.desc())
+        return list(db.scalars(stmt).all())
+

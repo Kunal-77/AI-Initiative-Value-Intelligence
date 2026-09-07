@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -15,25 +15,57 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0B0D11",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata: Metadata = {
-  title: "AI Initiative Value Intelligence",
-  description: "B2B AI investment decision intelligence platform",
+  metadataBase: new URL("https://ai-initiative-value-intelligence-we.vercel.app/"),
+  title: {
+    default: "AIVI — AI Initiative Value Intelligence",
+    template: "%s | AIVI",
+  },
+  description: "Institutional AI investment decision intelligence platform to model ROIs, review governance stage-gates, and manage personal & enterprise workspaces.",
+  keywords: [
+    "AI Investment",
+    "Value Intelligence",
+    "ROI Modeling",
+    "Stage-Gate Governance",
+    "AI Financial Analytics",
+    "Subscription Intelligence",
+  ],
+  authors: [{ name: "AIVI Team" }],
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
   alternates: {
-    canonical: "https://ai-initiative-value-intelligence-we.vercel.app/",
+    canonical: "/",
   },
   openGraph: {
-    title: "AI Initiative Value Intelligence",
-    description: "B2B AI investment decision intelligence platform",
+    title: "AIVI — AI Initiative Value Intelligence",
+    description: "Institutional AI investment decision intelligence platform to model ROIs, review governance stage-gates, and audit value realization.",
     url: "https://ai-initiative-value-intelligence-we.vercel.app/",
+    siteName: "AIVI",
     type: "website",
+    locale: "en_US",
     images: [
       {
-        url: "https://ai-initiative-value-intelligence-we.vercel.app/hero-shield.png",
-        width: 1024,
-        height: 1024,
-        alt: "AI Initiative Value Intelligence Logo",
+        url: "/favicon.ico",
+        width: 512,
+        height: 512,
+        alt: "AIVI — AI Initiative Value Intelligence",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AIVI — AI Initiative Value Intelligence",
+    description: "Institutional AI investment decision intelligence platform.",
   },
 };
 

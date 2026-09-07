@@ -2,19 +2,19 @@ import React from "react";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?:
-    | "ACTIVE"
-    | "SUBMITTED"
-    | "COMPLETED"
-    | "DRAFT"
-    | "PAUSED"
-    | "CANCELLED"
-    | "ARCHIVED"
-    | "ABANDONED"
-    | "NEUTRAL"
-    | "success"
-    | "info"
-    | "warning"
-    | "error";
+  | "ACTIVE"
+  | "SUBMITTED"
+  | "COMPLETED"
+  | "DRAFT"
+  | "PAUSED"
+  | "CANCELLED"
+  | "ARCHIVED"
+  | "ABANDONED"
+  | "NEUTRAL"
+  | "success"
+  | "info"
+  | "warning"
+  | "error";
 }
 
 export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
@@ -31,7 +31,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
         variantStyles = "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20";
         break;
       case "COMPLETED":
-        variantStyles = "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20";
+        variantStyles = "bg-[#7DA7D9]/10 text-[#7DA7D9] border-[#7DA7D9]/25";
         break;
       case "PAUSED":
       case "warning":

@@ -117,7 +117,7 @@ export function UserDirectoryTable({
             {filtered.map((user) => (
               <TableRow key={user.id} className="hover:bg-blue-500/5 transition-colors text-xs">
                 <TableCell className="py-3.5 px-4 font-semibold text-foreground flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-[10px] shrink-0 shadow-2xs">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#7DA7D9] to-[#4F759B] flex items-center justify-center text-[#0B0D11] font-bold text-[10px] shrink-0 shadow-2xs">
                     {user.avatarInitials || user.name.charAt(0)}
                   </div>
                   <div>

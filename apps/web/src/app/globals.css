@@ -1,21 +1,80 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
-/*
- * CyberCrest-inspired dark compliance design system.
- * Mono uppercase eyebrows + geometric sans headings, teal/orange accents.
- */
+:root {
+  /* Institutional Fintech Dark Architecture (Default Theme) */
+  --background: #0B0D11;
+  --foreground: #F4F1EA;
+  
+  --card: #11151C;
+  --card-foreground: #F4F1EA;
+  
+  --popover: #11151C;
+  --popover-foreground: #F4F1EA;
+  
+  --primary: #7DA7D9;
+  --primary-foreground: #0B0D11;
+  
+  --secondary: #171C24;
+  --secondary-foreground: #D9DEE7;
+  
+  --muted: #171C24;
+  --muted-foreground: #8F98A8;
+  
+  --accent: #202630;
+  --accent-foreground: #F4F1EA;
+  
+  --destructive: #EF4444;
+  --destructive-foreground: #F4F1EA;
+  
+  --border: #202630;
+  --input: #202630;
+  --ring: #7DA7D9;
+  --radius: 0.5rem;
+
+  /* Institutional Accent Tokens */
+  --steel: #7DA7D9;
+  --steel-muted: #537399;
+  --champagne: #C9A86A;
+  --champagne-muted: #8E774A;
+  --surface-core: #0E1116;
+  --surface-raised: #171C24;
+  --surface-border: #262E3B;
+
+  /* Gradients */
+  --gradient-card: linear-gradient(165deg, rgba(23, 28, 36, 0.95), rgba(17, 21, 28, 0.98));
+  --gradient-line: linear-gradient(90deg, transparent, rgba(125, 167, 217, 0.4), transparent);
+  --gradient-champagne-line: linear-gradient(90deg, transparent, rgba(201, 168, 106, 0.4), transparent);
+  --shadow-card: 0 12px 36px -12px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 30px -10px rgba(125, 167, 217, 0.25);
+  --shadow-champagne-glow: 0 0 30px -10px rgba(201, 168, 106, 0.25);
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #0B0D11;
+  --foreground: #F4F1EA;
+  --card: #11151C;
+  --card-foreground: #F4F1EA;
+  --popover: #11151C;
+  --popover-foreground: #F4F1EA;
+  --primary: #7DA7D9;
+  --primary-foreground: #0B0D11;
+  --secondary: #171C24;
+  --secondary-foreground: #D9DEE7;
+  --muted: #171C24;
+  --muted-foreground: #8F98A8;
+  --accent: #202630;
+  --accent-foreground: #F4F1EA;
+  --destructive: #EF4444;
+  --destructive-foreground: #F4F1EA;
+  --border: #202630;
+  --input: #202630;
+  --ring: #7DA7D9;
+}
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -35,260 +94,76 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-ring-offset-background: var(--background);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-ember: var(--ember);
-  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
-
-  /*
-   * Brand retint: the ported AIVI screens use blue/indigo utility ramps.
-   * Remapping those ramps onto the teal/ember brand keeps every legacy screen
-   * on the new design language without touching component logic.
-   */
-  --color-blue-50: oklch(0.97 0.02 190);
-  --color-blue-100: oklch(0.94 0.04 190);
-  --color-blue-200: oklch(0.9 0.06 190);
-  --color-blue-300: oklch(0.86 0.09 190);
-  --color-blue-400: oklch(0.82 0.11 190);
-  --color-blue-500: oklch(0.78 0.13 190);
-  --color-blue-600: oklch(0.7 0.12 190);
-  --color-blue-700: oklch(0.58 0.1 192);
-  --color-blue-800: oklch(0.42 0.075 195);
-  --color-blue-900: oklch(0.3 0.05 200);
-  --color-blue-950: oklch(0.22 0.035 210);
-
-  --color-indigo-50: oklch(0.97 0.02 190);
-  --color-indigo-100: oklch(0.94 0.04 190);
-  --color-indigo-200: oklch(0.9 0.06 192);
-  --color-indigo-300: oklch(0.86 0.09 194);
-  --color-indigo-400: oklch(0.81 0.11 196);
-  --color-indigo-500: oklch(0.75 0.12 198);
-  --color-indigo-600: oklch(0.66 0.11 200);
-  --color-indigo-700: oklch(0.54 0.09 202);
-  --color-indigo-800: oklch(0.4 0.07 208);
-  --color-indigo-900: oklch(0.29 0.05 215);
-  --color-indigo-950: oklch(0.21 0.035 220);
-
-  --color-sky-400: oklch(0.84 0.1 200);
-  --color-sky-500: oklch(0.79 0.12 200);
-  --color-sky-600: oklch(0.7 0.11 200);
-
-  --color-violet-400: oklch(0.8 0.13 60);
-  --color-violet-500: oklch(0.74 0.15 52);
-  --color-violet-600: oklch(0.68 0.16 48);
-  --color-purple-400: oklch(0.8 0.13 60);
-  --color-purple-500: oklch(0.74 0.15 52);
-  --color-purple-600: oklch(0.68 0.16 48);
-
+  --color-steel: var(--steel);
+  --color-champagne: var(--champagne);
+  --font-sans: var(--font-poppins);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
-:root {
-  --radius: 0.5rem;
-  --background: oklch(0.16 0.02 265);
-  --foreground: oklch(0.97 0.005 250);
-  --card: oklch(0.2 0.022 265);
-  --card-foreground: oklch(0.97 0.005 250);
-  --popover: oklch(0.2 0.022 265);
-  --popover-foreground: oklch(0.97 0.005 250);
-  --primary: oklch(0.78 0.13 190);
-  --primary-foreground: oklch(0.16 0.02 265);
-  --secondary: oklch(0.26 0.025 265);
-  --secondary-foreground: oklch(0.97 0.005 250);
-  --muted: oklch(0.24 0.02 265);
-  --muted-foreground: oklch(0.72 0.015 258);
-  --accent: oklch(0.7 0.17 45);
-  --accent-foreground: oklch(0.16 0.02 265);
-  --destructive: oklch(0.63 0.22 27);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.78 0.13 190 / 60%);
-  --surface: oklch(0.19 0.022 265);
-  --surface-2: oklch(0.23 0.025 265);
-  --teal: oklch(0.78 0.13 190);
-  --ember: oklch(0.72 0.17 48);
-
-  --gradient-hero: radial-gradient(
-      70% 90% at 72% 40%,
-      color-mix(in oklab, var(--teal) 16%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(60% 70% at 10% 10%, color-mix(in oklab, var(--ember) 8%, transparent), transparent 70%);
-  --gradient-line: linear-gradient(90deg, transparent, var(--teal), transparent);
-  --gradient-card: linear-gradient(
-    160deg,
-    color-mix(in oklab, var(--surface-2) 85%, transparent),
-    color-mix(in oklab, var(--surface) 95%, transparent)
-  );
-  --shadow-glow: 0 0 40px -10px color-mix(in oklab, var(--teal) 55%, transparent);
-  --shadow-card: 0 24px 60px -30px oklch(0 0 0 / 0.9);
+/* Global Typography & Base Body */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
 }
 
-.dark {
-  color-scheme: dark;
-}
-
-@layer base {
-  * {
-    border-color: var(--color-border);
-  }
-
-  body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-display);
-    -webkit-font-smoothing: antialiased;
-  }
-
-  ::selection {
-    background: color-mix(in oklab, var(--teal) 35%, transparent);
+/* 21st.dev Border Beam Animation */
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
   }
 }
 
-@utility eyebrow {
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.75rem;
-  color: var(--teal);
+.animate-border-beam {
+  animation: border-beam calc(var(--duration)*1s) infinite linear;
 }
 
-@utility grid-bg {
-  background-image: linear-gradient(color-mix(in oklab, var(--teal) 7%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in oklab, var(--teal) 7%, transparent) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(70% 60% at 50% 30%, black, transparent 85%);
-}
-
-@utility glass-card {
-  background: var(--gradient-card);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-card);
-  backdrop-filter: blur(6px);
-}
-
-@utility btn-glow {
-  box-shadow: var(--shadow-glow);
-}
-
-@utility hover-lift {
-  transition:
-    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.35s ease,
-    box-shadow 0.35s ease;
-  &:hover {
-    transform: translateY(-6px);
-    border-color: color-mix(in oklab, var(--teal) 45%, transparent);
-    box-shadow: var(--shadow-glow);
+/* Gyroscopic 3D Perspective Rotations */
+@keyframes gyroRotateX {
+  0%, 100% {
+    transform: rotateX(68deg) rotateZ(0deg);
+  }
+  50% {
+    transform: rotateX(68deg) rotateZ(180deg);
   }
 }
 
-@utility marquee-track {
-  animation: marquee 32s linear infinite;
+@keyframes gyroRotateY {
+  0%, 100% {
+    transform: rotateY(65deg) rotateZ(0deg);
+  }
+  50% {
+    transform: rotateY(65deg) rotateZ(-180deg);
+  }
 }
 
-@utility float-slow {
-  animation: floaty 7s ease-in-out infinite;
-}
-
-@utility spin-slow {
-  animation: spin 26s linear infinite;
-}
-
-@keyframes marquee {
+@keyframes spinSlow {
   from {
-    transform: translateX(0);
+    transform: rotate(0deg);
   }
   to {
-    transform: translateX(-50%);
+    transform: rotate(360deg);
   }
 }
 
-@keyframes floaty {
-  0%,
-  100% {
-    transform: translateY(-14px);
-  }
-  50% {
-    transform: translateY(14px);
-  }
-}
-
-@keyframes pulse-ring {
+@keyframes radarSweep {
   0% {
-    opacity: 0.25;
-    transform: scale(0.92);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1);
+    transform: rotate(0deg);
   }
   100% {
-    opacity: 0.25;
-    transform: scale(0.92);
+    transform: rotate(360deg);
   }
 }
 
-@utility pulse-ring {
-  animation: pulse-ring 5s ease-in-out infinite;
-}
-
-/* ===== AIVI application utilities (ported, retinted to the Beta AIVI palette) ===== */
-/* Subtle enterprise glowing effects & elevated surfaces */
-.glow-blue-sm {
-  box-shadow: 0 0 15px -3px rgba(45, 212, 191, 0.15);
-}
-
-.glow-blue-md {
-  box-shadow: 0 0 25px -5px rgba(45, 212, 191, 0.25);
-}
-
-.border-glow-blue {
-  border-color: rgba(45, 212, 191, 0.35);
-  box-shadow: 0 0 12px -2px rgba(45, 212, 191, 0.2);
-}
-
-.glass-panel {
-  backdrop-filter: blur(12px);
-  background-color: color-mix(in oklab, var(--card) calc(0.85 * 100%), transparent);
-  border: 1px solid color-mix(in oklab, var(--border) calc(0.8 * 100%), transparent);
-}
-
-.bg-radial-navy {
-  background-image: radial-gradient(circle at top, rgba(20, 83, 96, 0.12) 0%, transparent 70%);
-}
-
-/* Ambient Dot Pattern & Subtle Grid */
-.bg-dot-pattern {
-  background-image: radial-gradient(rgba(45, 212, 191, 0.15) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-
-.bg-grid-subtle {
-  background-image: 
-    linear-gradient(to right, rgba(45, 212, 191, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(45, 212, 191, 0.04) 1px, transparent 1px);
-  background-size: 48px 48px;
-}
-
-/* Single Signature Hero Gradient Mesh (Violet -> Indigo -> Electric Blue -> Navy) */
-.hero-gradient-mesh {
-  background: radial-gradient(ellipse 70% 60% at 45% 35%, rgba(45, 212, 191, 0.09) 0%, rgba(56, 189, 248, 0.07) 35%, rgba(45, 212, 191, 0.05) 65%, transparent 85%);
-  filter: blur(120px);
-}
-
-/* Keyframe Animations */
-@keyframes meshSlowShift {
+@keyframes pulseSlow {
   0%, 100% {
-    transform: scale(1) translate(0px, 0px);
-    opacity: 0.8;
+    opacity: 0.35;
+    transform: scale(0.98);
   }
   50% {
-    transform: scale(1.06) translate(15px, -10px);
-    opacity: 0.95;
+    opacity: 0.85;
+    transform: scale(1.02);
   }
 }
 
@@ -297,361 +172,114 @@
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
   }
 }
 
-@keyframes beamSlide {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes pulseSlow {
-  0%, 100% {
-    opacity: 0.35;
-    transform: scale(0.95);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.08);
-  }
-}
-
-/* Premium Dashboard Shadow & Soft Rim Glow */
-.dashboard-rim-glow {
-  box-shadow: 
-    0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 4px 12px rgba(0, 0, 0, 0.4),
-    0 16px 32px rgba(0, 0, 0, 0.5),
-    0 0 50px -10px rgba(45, 212, 191, 0.12),
-    0 0 80px -30px rgba(45, 212, 191, 0.12);
-}
-
-/* Dashboard Hover Parallax-like CSS Effect (pushed back up to prevent animation overwrite conflicts) */
-.dashboard-hover-state {
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.8s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.dashboard-hover-state:hover {
-  animation-play-state: paused !important;
-  transform: translateY(-8px) scale(1.005) !important;
-  border-color: rgba(45, 212, 191, 0.4) !important;
-  box-shadow: 
-    0 0 0 1px rgba(255, 255, 255, 0.08),
-    0 24px 48px -8px rgba(0, 0, 0, 0.6),
-    0 0 60px -5px rgba(45, 212, 191, 0.18),
-    0 0 90px -15px rgba(45, 212, 191, 0.18) !important;
-}
-
-/* Hero Entrance Animations */
-@keyframes heroFadeInUp {
+@keyframes accordion-down {
   from {
-    opacity: 0;
-    transform: translateY(8px);
+    height: 0;
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    height: var(--radix-accordion-content-height);
   }
 }
 
-.hero-entrance-badge {
-  opacity: 0;
-  animation: heroFadeInUp 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 100ms;
-}
-.hero-entrance-title {
-  opacity: 0;
-  animation: heroFadeInUp 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 200ms;
-}
-.hero-entrance-desc {
-  opacity: 0;
-  animation: heroFadeInUp 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 350ms;
-}
-.hero-entrance-ctas {
-  opacity: 0;
-  animation: heroFadeInUp 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 500ms;
-}
-.hero-entrance-dashboard {
-  opacity: 0;
-  animation: heroFadeInUp 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 650ms;
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }
 
-/* Button micro-interactions */
-.cta-button-hover {
-  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), filter 200ms ease, box-shadow 200ms ease !important;
-}
-.cta-button-hover:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-}
-.cta-button-hover:active {
-  transform: translateY(0) scale(0.98) !important;
+@keyframes caret-blink {
+  0%, 70%, 100% {
+    opacity: 1;
+  }
+  20%, 50% {
+    opacity: 0;
+  }
 }
 
-.animate-hero-mesh {
-  animation: meshSlowShift 80s ease-in-out infinite;
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 30s linear infinite;
+}
+
+.animate-radar-sweep {
+  animation: radarSweep 4s linear infinite;
 }
 
 .animate-product-float {
-  animation: productFloat 10s ease-in-out infinite;
-}
-
-.animate-beam-slide {
-  animation: beamSlide 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: productFloat 8s ease-in-out infinite;
 }
 
 .animate-pulse-slow {
-  animation: pulseSlow 6s ease-in-out infinite;
+  animation: pulseSlow 5s ease-in-out infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .animate-hero-mesh,
-  .animate-product-float,
-  .animate-beam-slide,
-  .animate-pulse-slow,
-  .hero-entrance-badge,
-  .hero-entrance-title,
-  .hero-entrance-desc,
-  .hero-entrance-ctas,
-  .hero-entrance-dashboard,
-  .dashboard-hover-state,
-  .cta-button-hover {
-    animation: none !important;
-    transform: none !important;
-    transition: none !important;
-    opacity: 1 !important;
-  }
+.animate-accordion-down {
+  animation: accordion-down 0.2s ease-out;
 }
 
-/* Suppress development overlay indicator badges */
-nextjs-portal,
-[data-nextjs-dev-tools],
-[data-nextjs-toast],
-#__next-build-watcher,
-div[data-nextjs-dialog-overlay] {
-  display: none !important;
+.animate-accordion-up {
+  animation: accordion-up 0.2s ease-out;
 }
 
-/* ==================================================
-   REUSABLE LIVING UI MOTION UTILITIES (PHASE 2)
-   ================================================== */
-
-/* 1. Motion Reveal - Generic Fade + Slide Up */
-@keyframes motionRevealKeyframe {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.motion-reveal {
-  opacity: 0;
-  animation: motionRevealKeyframe 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.animate-caret-blink {
+  animation: caret-blink 1.25s ease-out infinite;
 }
 
-/* Staggered utility delays */
-.delay-100 { animation-delay: 100ms; }
-.delay-200 { animation-delay: 200ms; }
-.delay-300 { animation-delay: 300ms; }
-.delay-400 { animation-delay: 400ms; }
-.delay-500 { animation-delay: 500ms; }
-
-/* 2. Motion Float - Gentle floating animation */
-.motion-float {
-  animation: productFloat 12s ease-in-out infinite;
+/* Reusable Glass & Utility Classes */
+.glass-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(10px);
 }
 
-/* 3. Motion Glow - Breathing ambient drop shadow or background pulse */
-@keyframes motionGlowPulse {
-  0%, 100% {
-    box-shadow: 0 0 15px -5px rgba(45, 212, 191, 0.15);
-    border-color: rgba(45, 212, 191, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 25px 0px rgba(45, 212, 191, 0.3);
-    border-color: rgba(45, 212, 191, 0.45);
-  }
+.hover-lift {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, box-shadow 0.35s ease;
 }
-.motion-glow {
-  animation: motionGlowPulse 4s ease-in-out infinite;
+.hover-lift:hover {
+  transform: translateY(-3px);
+  border-color: rgba(125, 167, 217, 0.4);
+  box-shadow: var(--shadow-glow);
 }
 
-.motion-glow-cyan {
-  animation: motionGlowPulseCyan 4s ease-in-out infinite;
-}
-@keyframes motionGlowPulseCyan {
-  0%, 100% {
-    box-shadow: 0 0 15px -5px rgba(6, 182, 212, 0.15);
-    border-color: rgba(6, 182, 212, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 25px 0px rgba(6, 182, 212, 0.3);
-    border-color: rgba(6, 182, 212, 0.45);
-  }
+.eyebrow {
+  font-family: var(--font-jetbrains-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  color: var(--steel);
 }
 
-/* 4. Motion Pulse Soft - Quiet opacity breathing */
-@keyframes motionPulseSoftKeyframe {
-  0%, 100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.95;
-  }
-}
-.motion-pulse-soft {
-  animation: motionPulseSoftKeyframe 3s ease-in-out infinite;
+/* Custom Scrollbar for Institutional Precision */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-/* 5. Motion Draw - SVG path/bar growth animation */
-@keyframes motionDrawKeyframe {
-  from {
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-  to {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
-}
-.motion-draw {
-  animation: motionDrawKeyframe 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+::-webkit-scrollbar-track {
+  background: #0B0D11;
 }
 
-/* 6. Motion Number Reveal - Subtle font slide or scale */
-@keyframes motionNumberRevealKeyframe {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-.motion-number-reveal {
-  opacity: 0;
-  animation: motionNumberRevealKeyframe 500ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+::-webkit-scrollbar-thumb {
+  background: #202630;
+  border-radius: 3px;
 }
 
-/* 7. Motion Hover Lift - lift by 1-2px and softly illuminate border */
-.motion-hover-lift {
-  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), border-color 250ms ease, box-shadow 250ms ease;
+::-webkit-scrollbar-thumb:hover {
+  background: #7DA7D9;
 }
-.motion-hover-lift:hover {
-  transform: translateY(-2px);
-  border-color: rgba(45, 212, 191, 0.4) !important;
-  box-shadow: 0 10px 20px -10px rgba(45, 212, 191, 0.15);
-}
-
-/* 8. SVG Sparkline Draw Animation */
-@keyframes svgDraw {
-  from {
-    stroke-dashoffset: 100;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* 9. Vertical Bar Chart Growth Animation */
-@keyframes drawVertical {
-  from {
-    transform: scaleY(0);
-    transform-origin: bottom;
-  }
-  to {
-    transform: scaleY(1);
-    transform-origin: bottom;
-  }
-}
-.motion-draw-vertical {
-  animation: drawVertical 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* 10. Native Smooth Scroll on Anchors */
-html {
-  scroll-behavior: smooth;
-}
-
-/* 11. Reusable Scroll Entrance Animation */
-.scroll-trigger {
-  opacity: 0;
-  transform: translateY(24px) scale(0.985);
-  transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1), transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform, opacity;
-}
-
-.scroll-trigger.active {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-/* 12. Route Page Entrance Transition */
-@keyframes pageFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.animate-page-entrance {
-  animation: pageFadeIn 350ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-/* 13. Hero Scroll-driven Animation (progressive enhancement) */
-@keyframes heroScrollAway {
-  from {
-    transform: scale(1);
-    opacity: 1;
-  }
-  to {
-    transform: scale(0.97);
-    opacity: 0.85;
-  }
-}
-@supports (animation-timeline: scroll()) {
-  .hero-scroll-wrapper {
-    animation: heroScrollAway linear both;
-    animation-timeline: scroll();
-    animation-range: exit 0% exit 80%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .motion-reveal,
-  .motion-float,
-  .motion-glow,
-  .motion-glow-cyan,
-  .motion-pulse-soft,
-  .motion-draw,
-  .motion-draw-vertical,
-  .motion-number-reveal,
-  .motion-hover-lift,
-  .scroll-trigger,
-  .animate-page-entrance,
-  .hero-entrance-dashboard,
-  .hero-scroll-wrapper {
-    animation: none !important;
-    transform: none !important;
-    transition: none !important;
-    opacity: 1 !important;
-    box-shadow: none !important;
-  }
-}
-

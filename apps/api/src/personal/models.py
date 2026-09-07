@@ -15,7 +15,7 @@ There are no shared organizational boundaries or multi-user roles in this scope.
 
 import uuid
 from datetime import datetime, timezone, date
-from sqlalchemy import String, DateTime, Date, Numeric, ForeignKey, Text, Boolean
+from sqlalchemy import String, DateTime, Date, Numeric, ForeignKey, Text, Boolean, Integer, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.core.database import Base
 
@@ -287,3 +287,114 @@ class UsageRecord(Base):
     )
 
     subscription: Mapped[Subscription] = relationship(back_populates="usage_records")
+
+
+class BankConnection(Base):
+    """
+    Represents a linked financial institution account or simulated sandbox feed.
+    """
+    __tablename__ = "bank_connections"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    provider: Mapped[str] = mapped_column(String(50), default="SIMULATED", nullable=False)
+    institution_name: Mapped[str] = mapped_column(String(100), default="Sandbox Demo Bank", nullable=False)
+    account_mask: Mapped[str] = mapped_column(String(4), default="4821", nullable=False)
+    account_type: Mapped[str] = mapped_column(String(50), default="CHECKING", nullable=False)
+    status: Mapped[str] = mapped_column(String(50), default="CONNECTED", nullable=False)  # NOT_CONNECTED, CONNECTED, SYNCING, SYNCED, ERROR, EXPIRED
+    consent_status: Mapped[str] = mapped_column(String(50), default="ACTIVE", nullable=False)  # ACTIVE, PENDING, EXPIRED, REVOKED
+    last_synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Lifecycle metadata
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+    transactions: Mapped[list["BankTransaction"]] = relationship(
+        back_populates="bank_connection", cascade="all, delete-orphan"
+    )
+
+    @property
+    def transaction_count(self) -> int:
+        return len(self.transactions) if self.transactions else 0
+
+
+class BankTransaction(Base):
+    """
+    Raw ingested financial transaction with SHA-256 fingerprint deduplication.
+    """
+    __tablename__ = "bank_transactions"
+    __table_args__ = (
+        UniqueConstraint("user_id", "fingerprint", name="uq_user_txn_fingerprint"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    bank_connection_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("bank_connections.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    transaction_date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
+    amount: Mapped[Numeric] = mapped_column(Numeric(12, 4), nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), default="USD", nullable=False)
+    raw_description: Mapped[str] = mapped_column(Text, nullable=False)
+    normalized_merchant: Mapped[str | None] = mapped_column(String(150), nullable=True, index=True)
+    transaction_type: Mapped[str] = mapped_column(String(50), default="DEBIT", nullable=False)
+    fingerprint: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+
+    # Lifecycle metadata
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+
+    bank_connection: Mapped["BankConnection"] = relationship(back_populates="transactions")
+
+
+class SubscriptionCandidate(Base):
+    """
+    Recurring payment detected by cadence engine, staged for explicit user confirmation.
+    """
+    __tablename__ = "subscription_candidates"
+    __table_args__ = (
+        UniqueConstraint("user_id", "merchant_name", "billing_frequency", name="uq_user_merchant_candidate"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    merchant_name: Mapped[str] = mapped_column(String(150), nullable=False)
+    category: Mapped[str] = mapped_column(String(100), default="OTHER", nullable=False)
+    amount: Mapped[Numeric] = mapped_column(Numeric(12, 4), nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), default="USD", nullable=False)
+    billing_frequency: Mapped[str] = mapped_column(String(50), default="MONTHLY", nullable=False)
+    confidence_score: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    detected_from: Mapped[str] = mapped_column(String(50), default="SIMULATED_FEED", nullable=False)
+    first_transaction_date: Mapped[date] = mapped_column(Date, nullable=False)
+    last_transaction_date: Mapped[date] = mapped_column(Date, nullable=False)
+    next_expected_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    status: Mapped[str] = mapped_column(String(50), default="PENDING", nullable=False, index=True)  # PENDING, CONFIRMED, DISMISSED
+    converted_subscription_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("subscriptions.id", ondelete="SET NULL"), nullable=True
+    )
+
+    # Lifecycle metadata
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+

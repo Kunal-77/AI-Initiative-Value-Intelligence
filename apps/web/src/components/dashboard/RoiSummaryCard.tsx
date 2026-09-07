@@ -73,7 +73,7 @@ export function RoiSummaryCard({ loading = false, error = null }: RoiSummaryCard
           <span className="text-foreground font-mono">135.2% achieved</span>
         </div>
         <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full w-[85%] motion-draw" />
+          <div className="h-full bg-gradient-to-r from-[#7DA7D9] to-[#C9A86A] rounded-full w-[85%] motion-draw" />
         </div>
       </div>
     </div>

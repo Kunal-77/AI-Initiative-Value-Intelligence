@@ -48,21 +48,21 @@ export function AiInsightsPanel({
       {/* Header */}
       <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border border-cyan-500/20 animate-pulse-slow">
+          <div className="p-1.5 rounded-lg bg-[#7DA7D9]/10 text-[#7DA7D9] border border-[#7DA7D9]/20 animate-pulse-slow">
             <Sparkles className="w-3.5 h-3.5" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-foreground">AI Value Studio Insights</h3>
-            <p className="text-[10px] text-muted-foreground">Top recommendations</p>
+            <h3 className="text-sm font-bold text-[#F4F1EA]">AI Value Studio Insights</h3>
+            <p className="text-[10px] text-[#8F98A8]">Top recommendations</p>
           </div>
         </div>
-        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 animate-pulse">
+        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#7DA7D9]/10 text-[#7DA7D9] border border-[#7DA7D9]/20 animate-pulse">
           AI Active
         </span>
       </div>
 
       {visibleInsights.length === 0 ? (
-        <div className="p-4 text-center text-xs text-muted-foreground bg-secondary/30 rounded-lg border border-border">
+        <div className="p-4 text-center text-xs text-[#8F98A8] bg-[#171C24] rounded-lg border border-[#202630]">
           All recommendations reviewed.
         </div>
       ) : (
@@ -70,30 +70,29 @@ export function AiInsightsPanel({
           {visibleInsights.map((item, index) => (
             <div
               key={item.id}
-              className={`p-3 rounded-xl border transition-colors space-y-2 motion-hover-lift-cyan ${
-                index === 0
-                  ? "bg-cyan-500/5 border-cyan-500/30 shadow-2xs"
-                  : "bg-secondary/35 border-border/70 hover:border-border"
-              }`}
+              className={`p-3 rounded-xl border transition-colors space-y-2 ${index === 0
+                  ? "bg-[#7DA7D9]/5 border-[#7DA7D9]/30 shadow-2xs"
+                  : "bg-[#171C24] border-[#202630] hover:border-[#7DA7D9]/30"
+                }`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-500 dark:text-cyan-400 shrink-0">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#7DA7D9] shrink-0">
                     {index === 0 ? "Primary" : "Secondary"}
                   </span>
-                  <h4 className="text-xs font-bold text-foreground leading-snug truncate">{item.title}</h4>
+                  <h4 className="text-xs font-bold text-[#F4F1EA] leading-snug truncate">{item.title}</h4>
                 </div>
-                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
                   {item.impact}
                 </span>
               </div>
 
-              <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">{item.description}</p>
+              <p className="text-[11px] text-[#8F98A8] leading-relaxed line-clamp-2">{item.description}</p>
 
               {/* Citation & Actions */}
               <div className="flex items-center justify-between pt-0.5 text-[10px]">
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <ShieldCheck className="w-3 h-3 text-cyan-500 dark:text-cyan-400" />
+                <div className="flex items-center gap-1 text-[#8F98A8]">
+                  <ShieldCheck className="w-3 h-3 text-[#7DA7D9]" />
                   <span className="motion-number-reveal">{item.confidence}% conf</span>
                 </div>
 

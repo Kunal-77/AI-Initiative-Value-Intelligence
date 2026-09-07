@@ -80,16 +80,16 @@ export function ExecutiveWelcome({
           <Button
             onClick={onRunAiStudio}
             variant="secondary"
-            className="border border-cyan-500/30 hover:border-cyan-500/60 text-xs h-9 px-3.5 cta-button-hover"
+            className="border border-[#7DA7D9]/30 hover:border-[#7DA7D9]/60 text-xs h-9 px-3.5 bg-[#171C24] text-[#F4F1EA] cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
+            <Sparkles className="w-3.5 h-3.5 text-[#7DA7D9]" />
             AI Value Studio
           </Button>
 
           <Button
             onClick={onNewInitiative}
             variant="primary"
-            className="text-xs h-9 px-3.5 cta-button-hover"
+            className="text-xs h-9 px-3.5 bg-[#7DA7D9] text-[#0B0D11] hover:bg-[#A5C3E8] font-semibold cursor-pointer shadow-md"
           >
             <Plus className="w-3.5 h-3.5" />
             New Initiative

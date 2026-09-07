@@ -69,3 +69,57 @@ export interface PersonalDashboard {
   upcomingRenewals: RenewalSchedule[];
   recentUsage: UsageRecord[];
 }
+
+export interface BankConnection {
+  id: string;
+  provider: string;
+  institutionName: string;
+  accountMask: string;
+  accountType: string;
+  status: string;
+  consentStatus: string;
+  lastSyncedAt?: string;
+  transactionCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BankTransaction {
+  id: string;
+  bankConnectionId: string;
+  transactionDate: string;
+  amount: number;
+  currency: string;
+  rawDescription: string;
+  normalizedMerchant?: string;
+  transactionType: string;
+  fingerprint: string;
+  createdAt: string;
+}
+
+export interface BankSyncResult {
+  status: string;
+  message: string;
+  newTransactions: number;
+  candidatesDetected: number;
+  connection: BankConnection;
+}
+
+export interface SubscriptionCandidate {
+  id: string;
+  merchantName: string;
+  category: string;
+  amount: number;
+  currency: string;
+  billingFrequency: string;
+  confidenceScore: number;
+  detectedFrom: string;
+  firstTransactionDate: string;
+  lastTransactionDate: string;
+  nextExpectedDate?: string;
+  status: string;
+  convertedSubscriptionId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+

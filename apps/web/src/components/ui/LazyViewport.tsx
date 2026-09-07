@@ -50,7 +50,7 @@ export function LazyViewport({
   }, [hasBeenVisible, rootMargin, name, isDev]);
 
   return (
-    <div ref={containerRef} style={{ minHeight: hasBeenVisible ? "auto" : minHeight }}>
+    <div ref={containerRef} style={{ minHeight: hasBeenVisible ? "auto" : minHeight }} className="relative">
       {hasBeenVisible
         ? typeof children === "function"
           ? (children as () => React.ReactNode)()

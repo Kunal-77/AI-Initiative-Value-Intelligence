@@ -62,7 +62,7 @@ export function BudgetUtilizationCard({ loading = false, error = null }: BudgetU
             </div>
             <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-300 motion-draw"
+                className="h-full bg-gradient-to-r from-[#7DA7D9] to-[#C9A86A] rounded-full transition-all duration-300 motion-draw"
                 style={{ width: `${cat.percentage}%` }}
               />
             </div>

@@ -40,7 +40,7 @@ const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
   },
 ];
 
-export interface NotificationButtonProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface NotificationButtonProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 export function NotificationButton({ className, ...props }: NotificationButtonProps) {
   const [open, setOpen] = useState(false);
@@ -112,7 +112,7 @@ export function NotificationButton({ className, ...props }: NotificationButtonPr
                 )}
               >
                 <div className="shrink-0 mt-0.5">
-                  {n.type === "ai" && <Sparkles className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />}
+                  {n.type === "ai" && <Sparkles className="w-4 h-4 text-[#7DA7D9]" />}
                   {n.type === "alert" && <AlertCircle className="w-4 h-4 text-rose-500" />}
                   {n.type === "success" && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
                 </div>

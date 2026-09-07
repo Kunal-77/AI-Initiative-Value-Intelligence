@@ -53,6 +53,7 @@ export default function BusinessNotificationsPage() {
   };
 
   useEffect(() => {
+    document.title = "Notifications & Alerts | AIVI";
     if (orgId) {
       loadData();
     }

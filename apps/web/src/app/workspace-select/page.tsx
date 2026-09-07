@@ -2,10 +2,18 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useAuth, useUser, useOrganizationList, useClerk } from "@clerk/nextjs";
-import { useRouter, useSearchParams } from "@/compat/navigation";
-import Link from "@/compat/link";
-import { Briefcase, User, ArrowRight, Plus } from "lucide-react";
-import { Button, SkeletonMetricsRow } from "@/components/ui";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { Briefcase, User, ArrowRight, Plus, HelpCircle, Shield, Sparkles } from "lucide-react";
+import {
+  Button,
+  SkeletonMetricsRow,
+  ThemeToggle,
+  TelemetryGridCanvas,
+  ScrollProgressBar,
+  SpotlightCard,
+  BorderBeam,
+} from "@/components/ui";
 
 function WorkspaceSelectContent() {
   const { isLoaded: authLoaded, isSignedIn } = useAuth();
@@ -16,12 +24,13 @@ function WorkspaceSelectContent() {
   const { openCreateOrganization } = useClerk();
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // Detect flow parameter
   const isBusinessOnly = searchParams.get("flow") === "business";
   const [loadingWorkspace, setLoadingWorkspace] = useState<string | null>(null);
 
   useEffect(() => {
+    document.title = "Select Workspace Context | AIVI";
     if (authLoaded && !isSignedIn) {
       router.replace("/sign-in?redirect_url=/workspace-select");
     }
@@ -77,7 +86,7 @@ function WorkspaceSelectContent() {
 
   if (!authLoaded || !userLoaded || !isSignedIn || !orgListLoaded || (isBusinessOnly && organizations.length === 1)) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 transition-colors duration-300">
+      <div className="min-h-screen bg-[#0B0D11] text-[#F4F1EA] flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-md space-y-6">
           <SkeletonMetricsRow />
         </div>
@@ -86,29 +95,29 @@ function WorkspaceSelectContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between font-sans relative overflow-hidden transition-colors duration-300">
-      {/* Background Decorative Gradients */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-900/5 dark:bg-blue-950/25 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-indigo-950/5 dark:bg-blue-900/15 rounded-full blur-[150px] pointer-events-none" />
+    <div className="min-h-screen bg-[#0B0D11] text-[#F4F1EA] flex flex-col justify-between font-sans relative overflow-hidden transition-colors selection:bg-[#7DA7D9]/30">
+      <ScrollProgressBar />
+      <TelemetryGridCanvas particleCount={30} connectionDistance={120} speed={0.3} />
 
       {/* Header */}
-      <header className="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between border-b border-border/40 relative z-10">
+      <header className="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between border-b border-[#171C24] relative z-10">
         <Link
           href="/"
-          className="flex items-center gap-2.5 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg"
+          className="flex items-center gap-2.5 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7DA7D9] rounded-lg"
           aria-label="Back to landing page"
         >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
-            <span className="font-extrabold text-sm text-white">V</span>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#7DA7D9] to-[#4F759B] flex items-center justify-center shadow-md shadow-[#7DA7D9]/20 group-hover:scale-105 transition-transform duration-300">
+            <span className="font-extrabold text-sm text-[#0B0D11]">V</span>
           </div>
-          <span className="font-bold tracking-tight text-sm text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+          <span className="font-bold tracking-tight text-sm text-[#F4F1EA] group-hover:text-[#7DA7D9] transition-colors">
             Value Intelligence
           </span>
         </Link>
         <div className="flex items-center gap-4">
-          <div className="hidden sm:block text-xs text-muted-foreground font-mono">
-            Logged in as: <span className="text-foreground font-semibold">{user?.primaryEmailAddress?.emailAddress}</span>
+          <div className="hidden sm:block text-xs text-[#8F98A8] font-mono">
+            Logged in as: <span className="text-[#F4F1EA] font-semibold">{user?.primaryEmailAddress?.emailAddress}</span>
           </div>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -117,12 +126,16 @@ function WorkspaceSelectContent() {
         <div className="w-full max-w-4xl space-y-12">
           {/* Welcome Text */}
           <div className="text-center space-y-3">
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-              {isBusinessOnly ? "Select Organization" : "Select Your Workspace"}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#202630] bg-[#11151C] text-[10px] font-mono text-[#7DA7D9] uppercase tracking-wider">
+              <Shield className="w-3 h-3 text-[#7DA7D9]" />
+              Enterprise Security Enclave
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#F4F1EA]">
+              {isBusinessOnly ? "Select Organization" : "Select Your Workspace Context"}
             </h1>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+            <p className="text-xs text-[#8F98A8] max-w-md mx-auto leading-relaxed">
               {isBusinessOnly
-                ? "Choose the organization workspace you'd like to configure or continue with."
+                ? "Choose the enterprise organization workspace you wish to analyze or govern."
                 : "Choose the environment configured for your workflow style. You can switch workspaces at any time."}
             </p>
           </div>
@@ -130,47 +143,36 @@ function WorkspaceSelectContent() {
           {/* Dual Cards Container */}
           <div className={isBusinessOnly ? "max-w-lg mx-auto w-full" : "grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch"}>
             {/* Card 1: Business Workspace */}
-            <div className="group relative rounded-2xl border border-border bg-card p-6 shadow-md transition-all duration-300 hover:border-blue-500/40 hover:shadow-lg hover:shadow-blue-950/20 flex flex-col justify-between">
+            <SpotlightCard
+              tiltEnabled={true}
+              spotlightColor="rgba(125, 167, 217, 0.14)"
+              className="p-7 flex flex-col justify-between border-[#202630] bg-[#11151C]/95 hover:border-[#7DA7D9]/40 relative group"
+            >
+              <BorderBeam size={180} duration={12} colorFrom="#7DA7D9" colorTo="#4F759B" />
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                    <Briefcase className="w-6 h-6" />
+                  <div className="w-12 h-12 rounded-xl bg-[#7DA7D9]/10 border border-[#7DA7D9]/20 flex items-center justify-center text-[#7DA7D9]">
+                    <Briefcase className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 dark:bg-blue-950/40 border border-blue-500/15">
-                    Enterprise
+                  <span className="text-[9px] font-mono uppercase tracking-[0.16em] bg-[#7DA7D9]/10 border border-[#7DA7D9]/25 text-[#7DA7D9] px-2.5 py-0.5 rounded-full font-bold">
+                    B2B Enterprise
                   </span>
                 </div>
 
-                <div className="space-y-2">
-                  <h2 className="text-xl font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <div className="space-y-2 text-xs">
+                  <h2 className="text-lg font-bold text-[#F4F1EA] flex items-center gap-1.5">
                     Business Workspace
                   </h2>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    AI initiative management, ROI calculations, executive portfolio tracking, and state-machine governance workflows for C-suite decision alignment.
+                  <p className="text-[#8F98A8] leading-relaxed text-[11px]">
+                    Access multi-initiative portfolios, run financial NPV/IRR calculations, review stage-gate approvals, and audit AI ROI.
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-border/40 space-y-3">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
-                    Ideal For
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {["CIO / CTO", "CFO", "Enterprise PMO", "AI Teams"].map((role, idx) => (
-                      <span key={idx} className="px-2 py-0.5 rounded bg-secondary border border-border/60 text-[10px] text-foreground font-medium">
-                        {role}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Business Organizations Sub-selection */}
-              <div className="mt-8 space-y-4">
                 {organizations.length > 0 ? (
-                  <div className="space-y-2">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
-                      Select Organization
-                    </span>
+                  <div className="space-y-3">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                      Available Organizations ({organizations.length})
+                    </div>
                     <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
                       {organizations.map((membership) => {
                         const org = membership.organization;
@@ -181,15 +183,15 @@ function WorkspaceSelectContent() {
                             type="button"
                             disabled={loadingWorkspace !== null}
                             onClick={() => handleSelectWorkspace(org.id)}
-                            className="w-full p-3 rounded-xl border border-border bg-background hover:bg-secondary hover:border-blue-500/30 text-left transition-all flex items-center justify-between text-xs group/item cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            className="w-full p-3 rounded-xl border border-[#202630] bg-[#171C24] hover:bg-[#202630] hover:border-[#7DA7D9]/40 text-left transition-all flex items-center justify-between text-xs group/item cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#7DA7D9]/30"
                           >
-                            <span className="font-semibold text-foreground group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
+                            <span className="font-semibold text-[#F4F1EA] group-hover/item:text-[#7DA7D9] transition-colors">
                               {org.name}
                             </span>
                             {isSelected ? (
-                              <span className="text-[10px] font-mono text-blue-600 dark:text-blue-400">Loading...</span>
+                              <span className="text-[10px] font-mono text-[#7DA7D9] animate-pulse">Loading...</span>
                             ) : (
-                              <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover/item:translate-x-0.5 transition-transform" />
+                              <ArrowRight className="w-3.5 h-3.5 text-[#8F98A8] group-hover/item:translate-x-0.5 transition-transform group-hover/item:text-[#7DA7D9]" />
                             )}
                           </button>
                         );
@@ -197,47 +199,63 @@ function WorkspaceSelectContent() {
                     </div>
                   </div>
                 ) : (
-                  <Button
-                    onClick={() => handleSelectWorkspace("new-org")}
-                    disabled={loadingWorkspace !== null}
-                    variant="primary"
-                    className="w-full text-xs h-10 py-0 flex items-center justify-center gap-1.5 shadow-lg shadow-blue-500/15"
-                  >
-                    <Plus className="w-4 h-4" /> Create or Join Organization
-                  </Button>
+                  <div className="p-4 rounded-xl border border-[#202630] bg-[#171C24]/50 text-center text-xs space-y-2">
+                    <HelpCircle className="w-6 h-6 text-[#8F98A8] mx-auto" />
+                    <p className="text-[11px] text-[#8F98A8]">
+                      You are not currently linked to an enterprise organization.
+                    </p>
+                  </div>
                 )}
               </div>
-            </div>
 
-            {/* Card 2: Personal Workspace - Rendered conditionally */}
+              <div className="mt-8">
+                <Button
+                  onClick={() => handleSelectWorkspace("new-org")}
+                  disabled={loadingWorkspace !== null}
+                  variant="secondary"
+                  className="w-full text-xs font-bold py-2.5 flex items-center justify-center gap-1.5 bg-[#171C24] text-[#F4F1EA] border border-[#202630] hover:border-[#7DA7D9]/40 hover:bg-[#202630] rounded-xl cursor-pointer"
+                >
+                  <Plus className="w-4 h-4 text-[#7DA7D9]" /> Register New Organization
+                </Button>
+              </div>
+            </SpotlightCard>
+
+            {/* Card 2: Personal Workspace */}
             {!isBusinessOnly && (
-              <div className="group relative rounded-2xl border border-border bg-card p-6 shadow-md transition-all duration-300 hover:border-sky-500/40 hover:shadow-lg hover:shadow-blue-950/20 flex flex-col justify-between">
+              <SpotlightCard
+                tiltEnabled={true}
+                spotlightColor="rgba(201, 168, 106, 0.14)"
+                className="p-7 flex flex-col justify-between border-[#202630] bg-[#11151C]/95 hover:border-[#C9A86A]/40 relative group"
+              >
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-600 dark:text-sky-400">
-                      <User className="w-6 h-6" />
+                    <div className="w-12 h-12 rounded-xl bg-[#C9A86A]/10 border border-[#C9A86A]/20 flex items-center justify-center text-[#C9A86A]">
+                      <User className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-sky-600 dark:text-sky-400 font-semibold px-2 py-0.5 rounded-full bg-sky-500/10 dark:bg-sky-950/40 border border-sky-500/15">
-                      Individual
+                    <span className="text-[9px] font-mono uppercase tracking-[0.16em] bg-[#C9A86A]/10 border border-[#C9A86A]/25 text-[#C9A86A] px-2.5 py-0.5 rounded-full font-bold">
+                      B2C Personal
                     </span>
                   </div>
 
-                  <div className="space-y-2">
-                    <h2 className="text-xl font-bold text-foreground group-hover:text-sky-400 transition-colors">
+                  <div className="space-y-2 text-xs">
+                    <h2 className="text-lg font-bold text-[#F4F1EA]">
                       Personal Workspace
                     </h2>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Improve individual productivity, structure everyday workflows, manage individual initiatives, and test backend API configurations inside your private sandbox.
+                    <p className="text-[#8F98A8] leading-relaxed text-[11px]">
+                      Manage recurring SaaS subscriptions, individual AI API keys, cloud computing sandboxes, and monthly billing cycles.
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-border/40 space-y-3">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
-                      Ideal For
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {["Founders", "Professionals", "Freelancers", "Developers"].map((role, idx) => (
-                        <span key={idx} className="px-2 py-0.5 rounded bg-secondary border border-border/60 text-[10px] text-foreground font-medium">
+                  <div className="space-y-3">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                      Designed For
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {["Engineers", "Founders", "Designers", "Researchers"].map((role, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2.5 py-1 rounded-md bg-[#171C24] border border-[#202630] text-[10px] text-[#D9DEE7] font-medium font-mono"
+                        >
                           {role}
                         </span>
                       ))}
@@ -248,23 +266,28 @@ function WorkspaceSelectContent() {
                 <div className="mt-8">
                   <Button
                     onClick={() => handleSelectWorkspace(null)}
-                    loading={loadingWorkspace === "personal"}
                     disabled={loadingWorkspace !== null}
-                    variant="secondary"
-                    className="w-full text-xs font-bold py-2.5 flex items-center justify-center gap-1.5 hover:border-sky-500/40 hover:text-sky-400"
+                    variant="primary"
+                    className="w-full text-xs font-bold py-2.5 flex items-center justify-center gap-1.5 bg-[#C9A86A] text-[#0B0D11] hover:bg-[#D4B87D] rounded-xl shadow-lg active:scale-[0.99] transition-all cursor-pointer"
                   >
-                    Enter Personal Workspace <ArrowRight className="w-4 h-4" />
+                    {loadingWorkspace === "personal" ? (
+                      <span className="animate-pulse font-mono">Entering Workspace...</span>
+                    ) : (
+                      <>
+                        Enter Personal Workspace <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
                   </Button>
                 </div>
-              </div>
+              </SpotlightCard>
             )}
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="w-full max-w-7xl mx-auto px-6 py-6 text-center text-[10px] text-muted-foreground border-t border-border/40 relative z-10">
-        © 2026 AI Initiative Value Intelligence. All rights reserved. Premium C-Suite Decision Intelligence.
+      <footer className="w-full max-w-7xl mx-auto px-6 py-6 text-center text-[11px] text-[#8F98A8] border-t border-[#171C24] relative z-10 font-mono">
+        © 2026 AI Initiative Value Intelligence. Institutional Decision Grade Platform.
       </footer>
     </div>
   );
@@ -272,13 +295,15 @@ function WorkspaceSelectContent() {
 
 export default function WorkspaceSelectPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6">
-        <div className="w-full max-w-md space-y-6">
-          <SkeletonMetricsRow />
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#0B0D11] text-[#F4F1EA] flex flex-col items-center justify-center p-6">
+          <div className="w-full max-w-md space-y-6">
+            <SkeletonMetricsRow />
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <WorkspaceSelectContent />
     </Suspense>
   );

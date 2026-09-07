@@ -59,6 +59,7 @@ export default function BusinessAiPlaygroundPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "AI Playground & LLM Observability | AIVI";
     if (orgId) {
       getObservabilityLogs().then((res) => {
         setLogs(res);

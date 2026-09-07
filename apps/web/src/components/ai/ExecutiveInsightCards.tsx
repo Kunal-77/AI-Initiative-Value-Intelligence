@@ -31,8 +31,8 @@ export function ExecutiveInsightCards({ recommendations }: ExecutiveInsightCards
       metric: `${highestConfidence?.confidenceScore || 94}% Confidence`,
       subtext: "Validated against GCP inference logs",
       icon: TrendingUp,
-      border: "border-cyan-500/30 bg-cyan-500/5",
-      metricColor: "text-cyan-500 dark:text-cyan-400",
+      border: "border-[#7DA7D9]/30 bg-[#7DA7D9]/5",
+      metricColor: "text-[#7DA7D9]",
     },
     {
       title: "Validation Needed (Low Confidence)",

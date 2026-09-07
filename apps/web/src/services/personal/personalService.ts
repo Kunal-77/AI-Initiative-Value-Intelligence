@@ -4,6 +4,10 @@ import {
   PaymentMethod,
   SubscriptionCategory,
   UsageRecord,
+  BankConnection,
+  BankTransaction,
+  BankSyncResult,
+  SubscriptionCandidate,
 } from "../../types/personal";
 
 import { API_BASE as BASE_URL } from "../../lib/apiConfig";
@@ -61,6 +65,57 @@ function mapUsageRecord(item: any): UsageRecord {
     unit: item.unit,
     cost: Number(item.cost),
     currencyCode: item.currency_code,
+  };
+}
+
+function mapBankConnection(item: any): BankConnection {
+  return {
+    id: item.id,
+    provider: item.provider,
+    institutionName: item.institution_name,
+    accountMask: item.account_mask,
+    accountType: item.account_type,
+    status: item.status,
+    consentStatus: item.consent_status,
+    lastSyncedAt: item.last_synced_at,
+    transactionCount: item.transaction_count ?? 0,
+    createdAt: item.created_at,
+    updatedAt: item.updated_at,
+  };
+}
+
+function mapBankTransaction(item: any): BankTransaction {
+  return {
+    id: item.id,
+    bankConnectionId: item.bank_connection_id,
+    transactionDate: item.transaction_date,
+    amount: Number(item.amount),
+    currency: item.currency,
+    rawDescription: item.raw_description,
+    normalizedMerchant: item.normalized_merchant,
+    transactionType: item.transaction_type,
+    fingerprint: item.fingerprint,
+    createdAt: item.created_at,
+  };
+}
+
+function mapCandidate(item: any): SubscriptionCandidate {
+  return {
+    id: item.id,
+    merchantName: item.merchant_name,
+    category: item.category,
+    amount: Number(item.amount),
+    currency: item.currency,
+    billingFrequency: item.billing_frequency,
+    confidenceScore: item.confidence_score,
+    detectedFrom: item.detected_from,
+    firstTransactionDate: item.first_transaction_date,
+    lastTransactionDate: item.last_transaction_date,
+    nextExpectedDate: item.next_expected_date,
+    status: item.status,
+    convertedSubscriptionId: item.converted_subscription_id,
+    createdAt: item.created_at,
+    updatedAt: item.updated_at,
   };
 }
 
@@ -246,4 +301,138 @@ export async function addUsage(
   });
   if (!res.ok) throw new Error("Failed to add usage entry");
   return mapUsageRecord(await res.json());
+}
+
+export async function getBankConnections(token: string): Promise<BankConnection[]> {
+  const res = await fetch(`${API_BASE}/personal/bank-connections`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch bank connections");
+  const data = await res.json();
+  return data.map(mapBankConnection);
+}
+
+export async function createBankConnection(
+  token: string,
+  data?: {
+    provider?: string;
+    institution_name?: string;
+    account_mask?: string;
+    account_type?: string;
+  }
+): Promise<BankConnection> {
+  const res = await fetch(`${API_BASE}/personal/bank-connections`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      provider: data?.provider || "SIMULATED",
+      institution_name: data?.institution_name || "Sandbox Demo Bank",
+      account_mask: data?.account_mask || "4821",
+      account_type: data?.account_type || "CHECKING",
+    }),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || "Failed to create bank connection");
+  }
+  return mapBankConnection(await res.json());
+}
+
+export async function syncBankConnection(token: string, connectionId: string): Promise<BankSyncResult> {
+  const res = await fetch(`${API_BASE}/personal/bank-connections/${connectionId}/sync`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || "Failed to sync transactions");
+  }
+  const data = await res.json();
+  return {
+    status: data.status,
+    message: data.message,
+    newTransactions: data.new_transactions,
+    candidatesDetected: data.candidates_detected,
+    connection: mapBankConnection(data.connection),
+  };
+}
+
+export async function deleteBankConnection(token: string, connectionId: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/personal/bank-connections/${connectionId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || "Failed to disconnect bank connection");
+  }
+}
+
+export async function getSubscriptionCandidates(token: string): Promise<SubscriptionCandidate[]> {
+  const res = await fetch(`${API_BASE}/personal/candidates`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch subscription candidates");
+  const data = await res.json();
+  return data.map(mapCandidate);
+}
+
+export async function confirmCandidate(token: string, candidateId: string): Promise<Subscription> {
+  const res = await fetch(`${API_BASE}/personal/candidates/${candidateId}/confirm`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || "Failed to confirm subscription candidate");
+  }
+  return mapSubscription(await res.json());
+}
+
+export async function dismissCandidate(token: string, candidateId: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/personal/candidates/${candidateId}/dismiss`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || "Failed to dismiss candidate");
+  }
+}
+
+export async function getBankTransactions(
+  token: string,
+  limit: number = 100,
+  offset: number = 0
+): Promise<BankTransaction[]> {
+  const res = await fetch(`${API_BASE}/personal/transactions?limit=${limit}&offset=${offset}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch bank transactions");
+  const data = await res.json();
+  return data.map(mapBankTransaction);
 }

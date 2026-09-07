@@ -54,13 +54,13 @@ export function RecentActivityTimeline({
         {events.map((event) => {
           let badgeColor = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
           if (event.type === "cost") badgeColor = "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20";
-          if (event.type === "ai") badgeColor = "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20";
+          if (event.type === "ai") badgeColor = "bg-[#7DA7D9]/10 text-[#7DA7D9] border-[#7DA7D9]/25";
           if (event.type === "milestone") badgeColor = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
 
           return (
             <div key={event.id} className="relative flex items-start gap-3 text-xs group">
               {/* User Avatar Circle on Timeline Connector */}
-              <div className="absolute -left-6 top-0 w-5 h-5 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-semibold text-[9px] flex items-center justify-center border border-border/60 shadow-xs shadow-blue-500/20 shrink-0">
+              <div className="absolute -left-6 top-0 w-5 h-5 rounded-full bg-gradient-to-tr from-[#7DA7D9] to-[#4F759B] text-[#0B0D11] font-semibold text-[9px] flex items-center justify-center border border-border/60 shadow-xs shadow-[#7DA7D9]/20 shrink-0">
                 {event.userInitials}
               </div>
 

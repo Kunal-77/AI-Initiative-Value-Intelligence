@@ -28,7 +28,7 @@ export function ExecutiveDashboard({
   onRunAiStudio,
 }: ExecutiveDashboardProps) {
   return (
-    <div className="space-y-6 max-w-[1536px] mx-auto w-full">
+    <div className="space-y-6 max-w-fluid mx-auto w-full">
       {/* 1. Executive Welcome Header */}
       <ExecutiveWelcome
         orgName={orgName}

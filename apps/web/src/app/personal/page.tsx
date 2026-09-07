@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import {
   Layers,
@@ -9,50 +9,97 @@ import {
   Cloud,
   CreditCard,
   Plus,
-  Trash2,
   Calendar,
   TrendingUp,
   AlertTriangle,
   X,
   PlusCircle,
-  HelpCircle,
+  Building2,
+  Receipt,
+  Sparkles,
+  ShieldCheck,
+  Zap,
+  ArrowLeft,
+  ArrowRight,
+  Wallet,
 } from "lucide-react";
-import { AppHeader, Button, SkeletonMetricsRow, SkeletonCard, Skeleton, LazyViewport } from "@/components/ui";
+import {
+  AppHeader,
+  Button,
+  SkeletonMetricsRow,
+  SkeletonCard,
+  Skeleton,
+  LazyViewport,
+  TelemetryGridCanvas,
+  ScrollProgressBar,
+  SpotlightCard,
+} from "@/components/ui";
+import { SubscriptionOrbit } from "@/components/personal/SubscriptionOrbit";
+import { ConnectAccountPanel } from "@/components/personal/ConnectAccountPanel";
+import { CandidateReviewPanel } from "@/components/personal/CandidateReviewPanel";
+import { TransactionExplorer } from "@/components/personal/TransactionExplorer";
+import { SubscriptionLedger } from "@/components/personal/SubscriptionLedger";
+import { RenewalTimelineCard } from "@/components/personal/RenewalTimelineCard";
+import { SpendingInsightsCard } from "@/components/personal/SpendingInsightsCard";
+import { AiUsageCard } from "@/components/personal/AiUsageCard";
+import { PaymentMethodsCard } from "@/components/personal/PaymentMethodsCard";
+
 import {
   getPersonalDashboard,
   getSubscriptions,
   getPaymentMethods,
   getCategories,
+  getBankConnections,
+  getSubscriptionCandidates,
+  getBankTransactions,
+  createBankConnection,
+  syncBankConnection,
+  deleteBankConnection,
+  confirmCandidate,
+  dismissCandidate,
   addSubscription,
   deleteSubscription,
   addPaymentMethod,
   addUsage,
 } from "@/services/personal/personalService";
+
 import {
   PersonalDashboard,
   Subscription,
   PaymentMethod,
   SubscriptionCategory,
+  BankConnection,
+  SubscriptionCandidate,
+  BankTransaction,
 } from "@/types/personal";
 
 export default function PersonalWorkspacePage() {
   const { user, isLoaded: userLoaded } = useUser();
   const { getToken } = useAuth();
 
-  // Data states
+  useEffect(() => {
+    document.title = "Personal Workspace | AIVI";
+  }, []);
+
+  // Core Data states
   const [dashboard, setDashboard] = useState<PersonalDashboard | null>(null);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [bankConnections, setBankConnections] = useState<BankConnection[]>([]);
+  const [candidates, setCandidates] = useState<SubscriptionCandidate[]>([]);
+  const [transactions, setTransactions] = useState<BankTransaction[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [categories, setCategories] = useState<SubscriptionCategory[]>([]);
-  
-  // Loading & Error states
+
+  // Loading & State flags
   const [loading, setLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Modals state
   const [isSubModalOpen, setIsSubModalOpen] = useState(false);
   const [isPmModalOpen, setIsPmModalOpen] = useState(false);
   const [isUsageModalOpen, setIsUsageModalOpen] = useState(false);
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
 
   // Add Subscription Form state
   const [subName, setSubName] = useState("");
@@ -76,53 +123,81 @@ export default function PersonalWorkspacePage() {
   const [aiSeatCount, setAiSeatCount] = useState("1");
 
   // Add Payment Method Form state
+  const [pmStep, setPmStep] = useState<1 | 2>(1);
   const [pmType, setPmType] = useState("CREDIT_CARD");
   const [pmBrand, setPmBrand] = useState("Visa");
   const [pmLastFour, setPmLastFour] = useState("");
   const [pmExpiration, setPmExpiration] = useState("");
+  const [pmBankName, setPmBankName] = useState("Chase Bank");
+  const [pmAccountType, setPmAccountType] = useState("CHECKING");
+  const [pmPaypalEmail, setPmPaypalEmail] = useState("");
   const [pmFormError, setPmFormError] = useState<string | null>(null);
   const [pmSubmitting, setPmSubmitting] = useState(false);
 
+  // Global Escape key dismiss listener for active modals
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (isPmModalOpen) {
+          setIsPmModalOpen(false);
+          setPmStep(1);
+        } else if (isSubModalOpen) {
+          setIsSubModalOpen(false);
+        } else if (isUsageModalOpen) {
+          setIsUsageModalOpen(false);
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isPmModalOpen, isSubModalOpen, isUsageModalOpen]);
+
   // Log Usage Form state
   const [usageSubId, setUsageSubId] = useState("");
-  const [usageDate, setUsageDate] = useState(new Date().toISOString().split("T")[0]);
   const [usageQuantity, setUsageQuantity] = useState("");
-  const [usageUnit, setUsageUnit] = useState("Tokens");
+  const [usageUnit, setUsageUnit] = useState("API_CALLS");
   const [usageCost, setUsageCost] = useState("");
+  const [usageDate, setUsageDate] = useState(new Date().toISOString().split("T")[0]);
   const [usageFormError, setUsageFormError] = useState<string | null>(null);
   const [usageSubmitting, setUsageSubmitting] = useState(false);
 
-  // Refresh page data
+  // Comprehensive Data Loader
   const loadData = async () => {
-    setLoading(true);
-    setError(null);
     try {
+      setLoading(true);
+      setError(null);
       const token = await getToken();
       if (!token) {
-        setLoading(false);
-        return;
+        throw new Error("Authentication token not available. Please sign in again.");
       }
 
-      const [dbData, subsData, pmData, catsData] = await Promise.all([
-        getPersonalDashboard(token),
-        getSubscriptions(token),
-        getPaymentMethods(token),
-        getCategories(token),
+      const [dashRes, subsRes, connsRes, candsRes, txnsRes, pmRes, catRes] = await Promise.all([
+        getPersonalDashboard(token).catch((err) => {
+          console.error("Dashboard load failed:", err);
+          return null;
+        }),
+        getSubscriptions(token).catch(() => []),
+        getBankConnections(token).catch(() => []),
+        getSubscriptionCandidates(token).catch(() => []),
+        getBankTransactions(token).catch(() => []),
+        getPaymentMethods(token).catch(() => []),
+        getCategories(token).catch(() => []),
       ]);
 
-      setDashboard(dbData);
-      setSubscriptions(subsData);
-      setPaymentMethods(pmData);
-      setCategories(catsData);
+      if (dashRes) setDashboard(dashRes);
+      setSubscriptions(subsRes);
+      setBankConnections(connsRes);
+      setCandidates(candsRes);
+      setTransactions(txnsRes);
+      setPaymentMethods(pmRes);
+      setCategories(catRes);
 
-      // Pre-select defaults for dropdowns
-      if (catsData.length > 0) setSubCategory(catsData[0].id);
-      if (pmData.length > 0) setSubPaymentMethod(pmData[0].id);
-      const aiSub = subsData.find(s => s.subscriptionType === "ai");
-      if (aiSub) setUsageSubId(aiSub.id);
+      if (catRes.length > 0 && !subCategory) {
+        setSubCategory(catRes[0].id);
+      }
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Failed to load Personal Workspace data from backend.");
+      console.error("Failed to load personal workspace:", err);
+      setError(err.message || "Failed to load personal workspace data.");
     } finally {
       setLoading(false);
     }
@@ -134,7 +209,100 @@ export default function PersonalWorkspacePage() {
     }
   }, [userLoaded]);
 
-  // Handle Subscription Submit
+  // Handle Connect Simulated Account
+  const handleConnectAccount = async () => {
+    try {
+      setIsSyncing(true);
+      const token = await getToken();
+      if (!token) throw new Error("Authentication failed.");
+
+      const newConn = await createBankConnection(token, {
+        provider: "SIMULATED",
+        institution_name: "Sandbox Demo Bank",
+        account_mask: "4821",
+        account_type: "CHECKING",
+      });
+
+      // Auto-sync after connection
+      await syncBankConnection(token, newConn.id);
+      await loadData();
+    } catch (err: any) {
+      alert(err.message || "Failed to create simulated connection.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Handle Sync Account
+  const handleSyncAccount = async () => {
+    const activeConn = bankConnections.find((c) => c.status !== "REVOKED");
+    if (!activeConn) {
+      handleConnectAccount();
+      return;
+    }
+
+    try {
+      setIsSyncing(true);
+      const token = await getToken();
+      if (!token) throw new Error("Authentication failed.");
+
+      await syncBankConnection(token, activeConn.id);
+      await loadData();
+    } catch (err: any) {
+      alert(err.message || "Failed to sync connection feed.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Handle Disconnect Account
+  const handleDisconnectAccount = async (connectionId: string) => {
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Authentication failed.");
+
+      await deleteBankConnection(token, connectionId);
+      await loadData();
+    } catch (err: any) {
+      alert(err.message || "Failed to disconnect account.");
+    }
+  };
+
+  // Handle Confirm Candidate
+  const handleConfirmCandidate = async (candidateId: string) => {
+    const token = await getToken();
+    if (!token) throw new Error("Authentication failed.");
+
+    await confirmCandidate(token, candidateId);
+    await loadData();
+  };
+
+  // Handle Dismiss Candidate
+  const handleDismissCandidate = async (candidateId: string) => {
+    const token = await getToken();
+    if (!token) throw new Error("Authentication failed.");
+
+    await dismissCandidate(token, candidateId);
+    setCandidates((prev) => prev.filter((c) => c.id !== candidateId));
+  };
+
+  // Handle Delete Subscription
+  const handleDeleteSubscription = async (id: string) => {
+    if (!confirm("Are you sure you want to cancel tracking for this subscription?")) {
+      return;
+    }
+
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("Authentication failed.");
+      await deleteSubscription(token, id);
+      await loadData();
+    } catch (err: any) {
+      alert(err.message || "Failed to delete subscription.");
+    }
+  };
+
+  // Handle Add Subscription Submission
   const handleAddSubscription = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubFormError(null);
@@ -144,57 +312,51 @@ export default function PersonalWorkspacePage() {
       const token = await getToken();
       if (!token) throw new Error("Authentication failed.");
 
-      if (!subName.trim()) throw new Error("Subscription Name is required.");
-      if (!subCost || isNaN(Number(subCost)) || Number(subCost) <= 0) {
-        throw new Error("Please enter a valid positive cost amount.");
+      const cost = parseFloat(subCost);
+      if (isNaN(cost) || cost < 0) {
+        throw new Error("Please enter a valid cost amount.");
       }
-      if (!subCategory) throw new Error("Please select a category.");
 
-      const postData: any = {
+      const payload: any = {
         name: subName,
-        cost_amount: Number(subCost),
-        currency_code: "USD",
         billing_cycle: subCycle,
-        category_id: subCategory,
-        payment_method_id: subPaymentMethod || null,
+        cost_amount: cost,
+        currency_code: "USD",
+        category_id: subCategory || undefined,
+        payment_method_id: subPaymentMethod || undefined,
         subscription_type: subType,
       };
 
       if (subType === "cloud") {
-        if (!cloudAccountId.trim()) throw new Error("Account Identifier is required.");
-        postData.provider = cloudProvider;
-        postData.account_identifier = cloudAccountId;
-        postData.region = cloudRegion || null;
-        postData.project_identifier = cloudProjectId || null;
+        payload.provider = cloudProvider;
+        payload.account_identifier = cloudAccountId;
+        payload.region = cloudRegion;
+        payload.project_identifier = cloudProjectId;
       } else if (subType === "ai") {
-        if (!aiModelPlan.trim()) throw new Error("Model Plan description is required.");
-        postData.provider = aiProvider;
-        postData.model_plan = aiModelPlan;
-        postData.seat_count = Number(aiSeatCount) || 1;
+        payload.provider = aiProvider;
+        payload.model_plan = aiModelPlan;
+        payload.seat_count = parseInt(aiSeatCount, 10) || 1;
       }
 
-      await addSubscription(token, postData);
-      
-      // Reset & Close
+      await addSubscription(token, payload);
+      setIsSubModalOpen(false);
+
+      // Reset form
       setSubName("");
       setSubCost("");
-      setCloudAccountId("");
-      setCloudRegion("");
-      setCloudProjectId("");
-      setAiModelPlan("");
-      setAiSeatCount("1");
-      setIsSubModalOpen(false);
-      
-      // Reload Workspace
+      setSubCycle("MONTHLY");
+      setSubType("generic");
+
+      // Reload
       await loadData();
     } catch (err: any) {
-      setSubFormError(err.message || "Failed to add subscription.");
+      setSubFormError(err.message || "Failed to create subscription.");
     } finally {
       setSubSubmitting(false);
     }
   };
 
-  // Handle Payment Method Submit
+  // Handle Add Payment Method Submission
   const handleAddPaymentMethod = async (e: React.FormEvent) => {
     e.preventDefault();
     setPmFormError(null);
@@ -204,20 +366,41 @@ export default function PersonalWorkspacePage() {
       const token = await getToken();
       if (!token) throw new Error("Authentication failed.");
 
-      if (pmType === "CREDIT_CARD" && (!pmLastFour || pmLastFour.length !== 4 || isNaN(Number(pmLastFour)))) {
-        throw new Error("Please enter the last 4 digits of the card.");
+      let payload: any = {
+        type: pmType,
+      };
+
+      if (pmType === "CREDIT_CARD") {
+        if (pmLastFour.length !== 4) {
+          throw new Error("Please provide a valid 4-digit card number.");
+        }
+        payload.card_brand = pmBrand;
+        payload.last_four = pmLastFour;
+        payload.expires_at = pmExpiration ? `${pmExpiration}-01` : undefined;
+      } else if (pmType === "BANK_ACCOUNT") {
+        if (pmLastFour.length !== 4) {
+          throw new Error("Please provide the last 4 digits of the account.");
+        }
+        payload.card_brand = pmBankName || "Bank Account";
+        payload.last_four = pmLastFour;
+      } else if (pmType === "PAYPAL") {
+        if (!pmPaypalEmail.trim()) {
+          throw new Error("Please provide a PayPal billing email address.");
+        }
+        payload.card_brand = "PayPal";
+        payload.last_four = pmPaypalEmail.includes("@") ? pmPaypalEmail.split("@")[0].slice(-4) : "PAYP";
       }
 
-      await addPaymentMethod(token, {
-        type: pmType,
-        card_brand: pmType === "CREDIT_CARD" ? pmBrand : undefined,
-        last_four: pmType === "CREDIT_CARD" ? pmLastFour : undefined,
-        expires_at: pmType === "CREDIT_CARD" && pmExpiration ? `${pmExpiration}-01` : undefined,
-      });
+      await addPaymentMethod(token, payload);
+      setIsPmModalOpen(false);
+      setPmStep(1);
 
+      // Reset
       setPmLastFour("");
       setPmExpiration("");
-      setIsPmModalOpen(false);
+      setPmBankName("Chase Bank");
+      setPmPaypalEmail("");
+
       await loadData();
     } catch (err: any) {
       setPmFormError(err.message || "Failed to add payment method.");
@@ -226,7 +409,7 @@ export default function PersonalWorkspacePage() {
     }
   };
 
-  // Handle Usage Submit
+  // Handle Log Usage Submission
   const handleAddUsage = async (e: React.FormEvent) => {
     e.preventDefault();
     setUsageFormError(null);
@@ -236,68 +419,112 @@ export default function PersonalWorkspacePage() {
       const token = await getToken();
       if (!token) throw new Error("Authentication failed.");
 
+      const qty = parseFloat(usageQuantity);
+      const cost = parseFloat(usageCost);
+
+      if (isNaN(qty) || qty <= 0) throw new Error("Please provide a valid quantity.");
+      if (isNaN(cost) || cost < 0) throw new Error("Please provide a valid cost amount.");
       if (!usageSubId) throw new Error("Please select an active AI subscription.");
-      if (!usageQuantity || isNaN(Number(usageQuantity)) || Number(usageQuantity) <= 0) {
-        throw new Error("Quantity must be a positive number.");
-      }
-      if (!usageCost || isNaN(Number(usageCost)) || Number(usageCost) < 0) {
-        throw new Error("Cost must be a non-negative number.");
-      }
 
       await addUsage(token, {
         subscription_id: usageSubId,
-        usage_date: usageDate,
-        quantity: Number(usageQuantity),
+        quantity: qty,
         unit: usageUnit,
-        cost: Number(usageCost),
+        cost: cost,
+        usage_date: usageDate,
       });
 
+      setIsUsageModalOpen(false);
       setUsageQuantity("");
       setUsageCost("");
-      setIsUsageModalOpen(false);
+
       await loadData();
     } catch (err: any) {
-      setUsageFormError(err.message || "Failed to log usage record.");
+      setUsageFormError(err.message || "Failed to log API usage.");
     } finally {
       setUsageSubmitting(false);
     }
   };
 
-  // Handle Cancel/Delete
-  const handleDeleteSubscription = async (id: string) => {
-    if (!confirm("Are you sure you want to cancel and delete this subscription tracking?")) return;
-    try {
-      const token = await getToken();
-      if (!token) throw new Error("Authentication failed.");
-      await deleteSubscription(token, id);
-      await loadData();
-    } catch (err: any) {
-      alert(err.message || "Failed to cancel subscription.");
-    }
-  };
+  // Calculated Yearly Spending
+  const estimatedYearlySpend = useMemo(() => {
+    let yearly = 0;
+    subscriptions.forEach((sub) => {
+      if (sub.status === "ACTIVE") {
+        if (sub.billingCycle === "ANNUAL") {
+          yearly += sub.costAmount;
+        } else {
+          yearly += sub.costAmount * 12;
+        }
+      }
+    });
+    return yearly;
+  }, [subscriptions]);
 
-  // Render Category Badge
-  const getSubBadge = (type: string) => {
-    switch (type) {
-      case "ai":
-        return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-2 py-0.5 rounded-full border border-cyan-500/20"><Cpu className="w-3 h-3" /> AI Tool</span>;
-      case "cloud":
-        return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20"><Cloud className="w-3 h-3" /> Cloud</span>;
-      default:
-        return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full border border-border"><Layers className="w-3 h-3" /> Generic</span>;
-    }
-  };
+  // Orbit Category Data mapping
+  const uiCategoryMetrics = useMemo(() => {
+    const map: Record<string, { count: number; cost: number }> = {
+      "AI & Productivity": { count: 0, cost: 0 },
+      Entertainment: { count: 0, cost: 0 },
+      Music: { count: 0, cost: 0 },
+      "Cloud & Software": { count: 0, cost: 0 },
+      Other: { count: 0, cost: 0 },
+    };
+
+    subscriptions.forEach((sub) => {
+      if (sub.status !== "ACTIVE") return;
+      const nameLower = sub.name.toLowerCase();
+      let group = "Other";
+      if (nameLower.includes("spotify") || nameLower.includes("music")) {
+        group = "Music";
+      } else if (
+        sub.subscriptionType === "ai" ||
+        sub.category?.name === "AI_TOOL" ||
+        sub.category?.name === "PRODUCTIVITY"
+      ) {
+        group = "AI & Productivity";
+      } else if (sub.subscriptionType === "cloud" || sub.category?.name === "CLOUD_SERVICE") {
+        group = "Cloud & Software";
+      } else if (sub.category?.name === "ENTERTAINMENT") {
+        group = "Entertainment";
+      }
+
+      const amt = sub.costAmount;
+      const monthlyAmt = sub.billingCycle === "ANNUAL" ? amt / 12 : amt;
+
+      if (map[group]) {
+        map[group].count += 1;
+        map[group].cost += monthlyAmt;
+      } else {
+        map[group] = { count: 1, cost: monthlyAmt };
+      }
+    });
+
+    return Object.keys(map).map((key) => ({
+      name: key,
+      count: map[key].count,
+      monthlyCost: map[key].cost,
+      colorClass: "",
+      icon: Cpu,
+    }));
+  }, [subscriptions]);
+
+  const activeBankConnection = bankConnections.find((c) => c.status !== "REVOKED") || null;
 
   if (!userLoaded) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+      <div className="min-h-screen bg-[#0B0D11] text-[#F4F1EA] flex flex-col font-sans">
         <AppHeader badge="Personal Workspace" />
-        <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-12 flex flex-col gap-8">
-          <div className="h-10 w-48 bg-muted rounded-lg animate-pulse" />
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-12 flex flex-col gap-8">
+          <div className="h-10 w-48 bg-[#171C24] rounded-lg animate-pulse" />
           <SkeletonMetricsRow />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2"><SkeletonCard /></div>
-            <div><SkeletonCard /></div>
+            <div className="lg:col-span-2">
+              <SkeletonCard />
+            </div>
+            <div>
+              <SkeletonCard />
+            </div>
           </div>
         </main>
       </div>
@@ -306,13 +533,13 @@ export default function PersonalWorkspacePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+      <div className="min-h-screen bg-[#0B0D11] text-[#F4F1EA] flex flex-col font-sans">
         <AppHeader badge="Personal Workspace" />
         <main className="flex-1 max-w-md w-full mx-auto px-6 py-24 flex flex-col items-center text-center gap-4">
           <AlertTriangle className="w-12 h-12 text-rose-500 animate-bounce" />
-          <h2 className="text-xl font-bold tracking-tight text-foreground">Workspace Offline</h2>
-          <p className="text-sm text-muted-foreground">{error}</p>
-          <Button onClick={loadData} variant="primary" className="mt-4">
+          <h2 className="text-xl font-bold tracking-tight text-[#F4F1EA]">Workspace Offline</h2>
+          <p className="text-sm text-[#8F98A8]">{error}</p>
+          <Button onClick={loadData} variant="primary" className="mt-4 bg-[#C9A86A] text-[#0B0D11]">
             Retry Connection
           </Button>
         </main>
@@ -321,7 +548,16 @@ export default function PersonalWorkspacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors animate-page-entrance">
+    <div className="min-h-screen bg-[#0B0D11] text-[#F4F1EA] flex flex-col font-sans relative overflow-hidden transition-colors selection:bg-[#7DA7D9]/30">
+      {/* 2px Hairline Scroll Progress Bar */}
+      <ScrollProgressBar />
+
+      {/* Living 60fps Telemetry Particle Canvas */}
+      <TelemetryGridCanvas particleCount={30} connectionDistance={110} speed={0.25} />
+
+      {/* Subtle Dot Matrix Layer */}
+      <div className="absolute inset-0 bg-dot-pattern opacity-30 pointer-events-none z-0" />
+
       <AppHeader
         showLink={true}
         badge="Personal Workspace"
@@ -329,638 +565,489 @@ export default function PersonalWorkspacePage() {
         showUserButton={true}
       />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex flex-col gap-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 flex flex-col gap-8 relative z-10">
         {/* Header Block */}
-        <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-[#202630]">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md border border-[#202630] bg-[#11151C]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#7DA7D9] animate-pulse" />
+              <span className="font-mono text-[10px] text-[#7DA7D9] uppercase tracking-wider font-semibold">
+                PERSONAL FINANCIAL INTELLIGENCE
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F4F1EA]">
               Personal Workspace
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Welcome back, <span className="font-semibold text-foreground">{user?.fullName || user?.primaryEmailAddress?.emailAddress}</span>. Manage your personal subscriptions, AI tool usage, and cloud sandbox accounts.
+            <p className="text-xs text-[#8F98A8]">
+              Welcome back,{" "}
+              <span className="font-semibold text-[#F4F1EA]">
+                {user?.fullName || user?.primaryEmailAddress?.emailAddress}
+              </span>
+              . Manage your personal subscriptions, recurring commitments, and simulated statement feeds.
             </p>
           </div>
-          <div className="flex gap-2.5 shrink-0">
+
+          <div className="flex flex-wrap gap-2.5 shrink-0">
             <Button
               onClick={() => setIsPmModalOpen(true)}
               variant="secondary"
-              className="h-10 text-xs px-4"
+              className="h-9 text-xs px-3.5 bg-[#171C24] text-[#F4F1EA] border border-[#202630] hover:border-[#7DA7D9]/40 rounded-lg active:scale-[0.98] transition-all cursor-pointer"
             >
-              <CreditCard className="w-3.5 h-3.5 mr-1.5" /> Add Payment Method
+              <CreditCard className="w-3.5 h-3.5 mr-1.5 text-[#7DA7D9]" /> Add Card
             </Button>
             <Button
               onClick={() => setIsSubModalOpen(true)}
               variant="primary"
-              className="h-10 text-xs px-4 shadow-lg shadow-blue-500/15"
+              className="h-9 text-xs px-4 bg-[#C9A86A] text-[#0B0D11] hover:bg-[#D4B87D] font-semibold rounded-lg shadow-md active:scale-[0.98] transition-all cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 mr-1.5" /> Register Subscription
             </Button>
           </div>
         </section>
 
-        {/* Metrics Grid */}
+        {/* 4 Bento KPI Metrics Row (Real DB Data) */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-card border border-border/80 p-5 rounded-xl shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-blue-500/40 transition-all duration-200 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Monthly Spend
-              </span>
-              <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
-                <DollarSign className="w-3.5 h-3.5" />
+          <SpotlightCard
+            tiltEffect={true}
+            spotlightColor="rgba(125, 167, 217, 0.15)"
+            className="p-5 rounded-xl border-[#202630] bg-[#11151C] group"
+          >
+            <div className="flex flex-col justify-between h-full min-h-[110px]">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-bold text-[#8F98A8] uppercase tracking-wider">
+                  Monthly Spending
+                </span>
+                <div className="p-2 rounded-lg bg-[#7DA7D9]/10 border border-[#7DA7D9]/20 text-[#7DA7D9]">
+                  <DollarSign className="w-3.5 h-3.5" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-2xl font-bold tracking-tight text-[#F4F1EA] font-mono">
+                  {loading && !dashboard ? (
+                    <Skeleton className="h-6 w-20" />
+                  ) : (
+                    `$${dashboard?.monthlySpend.toFixed(2) || "0.00"}`
+                  )}
+                </div>
+                <div className="text-[10px] text-[#8F98A8]">Active recurring commitment</div>
               </div>
             </div>
-            <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
-              {loading && !dashboard ? (
-                <Skeleton className="h-6 w-20" />
-              ) : (
-                `$${dashboard?.monthlySpend.toFixed(2) || "0.00"}`
-              )}
-            </span>
-            <span className="text-[10px] text-muted-foreground">Active recurring commitments</span>
-          </div>
+          </SpotlightCard>
 
-          <div className="bg-card border border-border/80 p-5 rounded-xl shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-cyan-500/40 transition-all duration-200 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                AI Tools Spend
-              </span>
-              <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 dark:text-cyan-400">
-                <Cpu className="w-3.5 h-3.5" />
+          <SpotlightCard
+            tiltEffect={true}
+            spotlightColor="rgba(201, 168, 106, 0.15)"
+            className="p-5 rounded-xl border-[#202630] bg-[#11151C] group"
+          >
+            <div className="flex flex-col justify-between h-full min-h-[110px]">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-bold text-[#8F98A8] uppercase tracking-wider">
+                  Estimated Yearly
+                </span>
+                <div className="p-2 rounded-lg bg-[#C9A86A]/10 border border-[#C9A86A]/20 text-[#C9A86A]">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-2xl font-bold tracking-tight text-[#F4F1EA] font-mono">
+                  {loading && !dashboard ? (
+                    <Skeleton className="h-6 w-24" />
+                  ) : (
+                    `$${estimatedYearlySpend.toFixed(2)}`
+                  )}
+                </div>
+                <div className="text-[10px] text-[#8F98A8]">Annual run-rate projection</div>
               </div>
             </div>
-            <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
-              {loading && !dashboard ? (
-                <Skeleton className="h-6 w-20" />
-              ) : (
-                `$${dashboard?.aiSpend.toFixed(2) || "0.00"}`
-              )}
-            </span>
-            <span className="text-[10px] text-muted-foreground">Generative AI subscriptions</span>
-          </div>
+          </SpotlightCard>
 
-          <div className="bg-card border border-border/80 p-5 rounded-xl shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-blue-500/40 transition-all duration-200 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Subscriptions
-              </span>
-              <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
-                <Layers className="w-3.5 h-3.5" />
+          <SpotlightCard
+            tiltEffect={true}
+            spotlightColor="rgba(125, 167, 217, 0.15)"
+            className="p-5 rounded-xl border-[#202630] bg-[#11151C] group"
+          >
+            <div className="flex flex-col justify-between h-full min-h-[110px]">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-bold text-[#8F98A8] uppercase tracking-wider">
+                  Active Subscriptions
+                </span>
+                <div className="p-2 rounded-lg bg-[#7DA7D9]/10 border border-[#7DA7D9]/20 text-[#7DA7D9]">
+                  <Layers className="w-3.5 h-3.5" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-2xl font-bold tracking-tight text-[#F4F1EA] font-mono">
+                  {loading && !dashboard ? (
+                    <Skeleton className="h-6 w-8" />
+                  ) : (
+                    dashboard?.activeSubscriptionsCount ?? subscriptions.length
+                  )}
+                </div>
+                <div className="text-[10px] text-[#8F98A8]">Tracked in verified database</div>
               </div>
             </div>
-            <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
-              {loading && !dashboard ? (
-                <Skeleton className="h-6 w-8" />
-              ) : (
-                dashboard?.activeSubscriptionsCount || 0
-              )}
-            </span>
-            <span className="text-[10px] text-muted-foreground">Active tracking records</span>
-          </div>
+          </SpotlightCard>
 
-          <div className="bg-card border border-border/80 p-5 rounded-xl shadow-2xs hover:shadow-lg hover:shadow-blue-950/20 hover:border-blue-500/40 transition-all duration-200 flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Cloud Projects
-              </span>
-              <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
-                <Cloud className="w-3.5 h-3.5" />
+          <SpotlightCard
+            tiltEffect={true}
+            spotlightColor="rgba(201, 168, 106, 0.15)"
+            className="p-5 rounded-xl border-[#202630] bg-[#11151C] group"
+          >
+            <div className="flex flex-col justify-between h-full min-h-[110px]">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono font-bold text-[#8F98A8] uppercase tracking-wider">
+                  30-Day Renewals
+                </span>
+                <div className="p-2 rounded-lg bg-[#C9A86A]/10 border border-[#C9A86A]/20 text-[#C9A86A]">
+                  <Calendar className="w-3.5 h-3.5" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-2xl font-bold tracking-tight text-[#F4F1EA] font-mono">
+                  {loading && !dashboard ? (
+                    <Skeleton className="h-6 w-8" />
+                  ) : (
+                    dashboard?.upcomingRenewals.length || 0
+                  )}
+                </div>
+                <div className="text-[10px] text-[#8F98A8]">Charges in next 30 days</div>
               </div>
             </div>
-            <span className="text-2xl font-bold tracking-tight text-foreground font-mono">
-              {loading && !dashboard ? (
-                <Skeleton className="h-6 w-8" />
-              ) : (
-                dashboard?.cloudProjectsCount || 0
-              )}
-            </span>
-            <span className="text-[10px] text-muted-foreground">AWS / GCP / Azure project keys</span>
-          </div>
+          </SpotlightCard>
         </section>
 
-        {/* Dashboard Content split grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Left panel: Active Subscriptions List */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-card border border-border rounded-xl shadow-xs overflow-hidden">
-              <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-                <h3 className="text-sm font-bold text-foreground">Subscriptions Tracking Ledger</h3>
-                <span className="text-[11px] text-muted-foreground font-mono">Verified PostgreSQL persistence</span>
-              </div>
+        {/* 3D Subscription Orbit Visual Ecosystem */}
+        <SpotlightCard
+          tiltEffect={false}
+          spotlightColor="rgba(125, 167, 217, 0.1)"
+          className="rounded-xl p-6 relative overflow-hidden h-[440px] flex items-center justify-center border-[#202630] bg-[#11151C]"
+        >
+          <SubscriptionOrbit
+            totalSpend={dashboard?.monthlySpend || 0}
+            activeCount={dashboard?.activeSubscriptionsCount || subscriptions.length}
+            categoryData={uiCategoryMetrics}
+            onHoverCategory={(cat) => setHoveredCategory(cat)}
+            hoveredCategory={hoveredCategory}
+          />
+        </SpotlightCard>
 
-              {loading && subscriptions.length === 0 ? (
-                <div className="p-4 space-y-3">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="flex justify-between items-center py-2.5 border-b border-border/50 last:border-0">
-                      <Skeleton className="h-4 w-1/3" />
-                      <Skeleton className="h-4 w-1/4" />
-                      <Skeleton className="h-4 w-12" />
-                    </div>
-                  ))}
-                </div>
-              ) : subscriptions.length === 0 ? (
-                <div className="p-12 flex flex-col items-center justify-center text-center gap-3">
-                  <div className="p-3 bg-secondary rounded-full text-muted-foreground border border-border">
-                    <Layers className="w-6 h-6" />
-                  </div>
-                  <h4 className="text-sm font-bold text-foreground">No Subscriptions Tracked Yet</h4>
-                  <p className="text-xs text-muted-foreground max-w-sm">
-                    No active generic, cloud, or AI subscriptions are registered in your workspace. Click "Register Subscription" above to create your first record.
-                  </p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse text-xs">
-                    <thead>
-                      <tr className="border-b border-border bg-muted/40 font-semibold text-muted-foreground whitespace-nowrap">
-                        <th className="p-3.5 w-[28%]">Name</th>
-                        <th className="p-3.5 w-[12%]">Type</th>
-                        <th className="p-3.5 w-[14%]">Category</th>
-                        <th className="p-3.5 w-[14%]">Billing</th>
-                        <th className="p-3.5 w-[24%]">Details</th>
-                        <th className="p-3.5 w-[8%] text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                      {subscriptions.map((sub) => (
-                        <tr key={sub.id} className="hover:bg-blue-500/5 transition-colors">
-                          <td className="p-3.5 font-bold text-foreground max-w-0 truncate" title={sub.name}>{sub.name}</td>
-                          <td className="p-3.5">{getSubBadge(sub.subscriptionType)}</td>
-                          <td className="p-3.5">
-                            <span className="text-[10px] text-muted-foreground bg-secondary px-2 py-0.5 rounded border border-border whitespace-nowrap">
-                              {sub.category?.name || "Generic"}
-                            </span>
-                          </td>
-                          <td className="p-3.5 font-mono text-foreground whitespace-nowrap">
-                            ${sub.costAmount.toFixed(2)} / <span className="text-[10px] text-muted-foreground lowercase">{sub.billingCycle === "ANNUAL" ? "yr" : "mo"}</span>
-                          </td>
-                          <td className="p-3.5 max-w-0 truncate text-muted-foreground">
-                            {sub.subscriptionType === "cloud" && (
-                              <span className="text-[10px]" title={`${sub.provider} (${sub.region || "No region"}) Account: ${sub.accountIdentifier}`}>
-                                {sub.provider}: {sub.projectIdentifier || sub.accountIdentifier}
-                              </span>
-                            )}
-                            {sub.subscriptionType === "ai" && (
-                              <span className="text-[10px]" title={`${sub.provider} plan: ${sub.modelPlan} seats: ${sub.seatCount}`}>
-                                {sub.provider}: {sub.modelPlan} ({sub.seatCount} seats)
-                              </span>
-                            )}
-                            {sub.subscriptionType === "generic" && (
-                              <span className="text-[10px]">
-                                Card ending in: {sub.paymentMethod?.lastFour ? `•••• ${sub.paymentMethod.lastFour}` : "N/A"}
-                              </span>
-                            )}
-                          </td>
-                          <td className="p-3.5 text-right">
-                            <button
-                              onClick={() => handleDeleteSubscription(sub.id)}
-                              className="p-1.5 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-md transition-colors cursor-pointer"
-                              title="Delete/Cancel tracking"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
+        {/* Candidate Review Staging Panel (When Candidates Exist) */}
+        {candidates.length > 0 && (
+          <CandidateReviewPanel
+            candidates={candidates}
+            onConfirm={handleConfirmCandidate}
+            onDismiss={handleDismissCandidate}
+            isProcessing={loading}
+          />
+        )}
 
-            {/* AI Metered Usage Logging */}
-            <div className="bg-card border border-border rounded-xl shadow-xs overflow-hidden">
-              <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <h3 className="text-sm font-bold text-foreground">AI Token & API Metered Consumption</h3>
-                  <p className="text-[11px] text-muted-foreground">Track dynamic API usage costs connected to subscriptions</p>
-                </div>
-                {subscriptions.some(s => s.subscriptionType === "ai") && (
-                  <Button
-                    onClick={() => setIsUsageModalOpen(true)}
-                    variant="secondary"
-                    className="h-8 text-[10px] px-3.5"
-                  >
-                    <PlusCircle className="w-3 h-3 mr-1" /> Log API Consumption
-                  </Button>
-                )}
-              </div>
+        {/* Main 2-Column Responsive Bento Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column (8 cols on desktop): Ledger, Transaction Explorer, Spending Insights */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* 1. Subscription Intelligence Ledger */}
+            <SubscriptionLedger
+              subscriptions={subscriptions}
+              renewals={dashboard?.upcomingRenewals || []}
+              paymentMethods={paymentMethods}
+              onAddClick={() => setIsSubModalOpen(true)}
+              onDeleteClick={handleDeleteSubscription}
+              loading={loading}
+            />
 
-              <LazyViewport name="AI Token Consumption" placeholder={<div className="p-5 space-y-3"><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-5/6" /></div>} minHeight="120px" rootMargin="200px 0px">
-                {() => (
-                  loading && !dashboard ? (
-                    <div className="p-5 space-y-3">
-                      <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-4 w-5/6" />
-                    </div>
-                  ) : dashboard?.recentUsage.length === 0 ? (
-                    <div className="p-8 text-center text-xs text-muted-foreground">
-                      No metered API consumption logged yet.
-                    </div>
-                  ) : (
-                    <div className="p-5 space-y-4">
-                      {dashboard?.recentUsage.map((u) => {
-                        const sub = subscriptions.find(s => s.id === u.subscriptionId);
-                        return (
-                          <div key={u.id} className="flex items-center justify-between text-xs border-b border-border pb-3 last:border-0 last:pb-0">
-                            <div className="space-y-0.5">
-                              <span className="font-bold text-foreground">{sub?.name || "AI Subscription"}</span>
-                              <div className="flex gap-2 items-center text-[10px] text-muted-foreground">
-                                <span>{u.usageDate}</span>
-                                <span>•</span>
-                                <span>{u.quantity.toLocaleString()} {u.unit}</span>
-                              </div>
-                            </div>
-                            <span className="font-bold text-foreground font-mono">${u.cost.toFixed(2)}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )
-                )}
-              </LazyViewport>
-            </div>
+            {/* 2. Ingested Transaction Explorer */}
+            <TransactionExplorer transactions={transactions} loading={loading} />
+
+            {/* 3. Spending Insights */}
+            <SpendingInsightsCard
+              subscriptions={subscriptions}
+              renewals={dashboard?.upcomingRenewals || []}
+              candidates={candidates}
+              monthlySpend={dashboard?.monthlySpend || 0}
+            />
           </div>
 
-          {/* Right panel: Renewals and Payment Methods */}
-          <div className="space-y-6">
-            
-            {/* Upcoming Renewals Card */}
-            <div className="bg-card border border-border rounded-xl shadow-xs overflow-hidden">
-              <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-                <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-blue-500" /> Renewal Calendar (30 Days)
-                </h3>
-              </div>
+          {/* Right Column (4 cols on desktop): Connection Panel, Renewals, AI Usage, Payment Methods */}
+          <div className="lg:col-span-4 space-y-8">
+            {/* 1. Connection Panel */}
+            <ConnectAccountPanel
+              connection={activeBankConnection}
+              transactionCount={transactions.length}
+              isSyncing={isSyncing}
+              onConnect={handleConnectAccount}
+              onSync={handleSyncAccount}
+              onDisconnect={handleDisconnectAccount}
+            />
 
-              {loading && !dashboard ? (
-                <div className="p-4 space-y-3">
-                  <Skeleton className="h-4 w-1/3" />
-                  <Skeleton className="h-4 w-1/4" />
-                </div>
-              ) : dashboard?.upcomingRenewals.length === 0 ? (
-                <div className="p-6 text-center text-xs text-muted-foreground">
-                  No upcoming subscription renewals in the next 30 days.
-                </div>
-              ) : (
-                <div className="divide-y divide-border">
-                  {dashboard?.upcomingRenewals.map((item) => {
-                    const sub = subscriptions.find(s => s.id === item.subscriptionId);
-                    return (
-                      <div key={item.id} className="p-4 flex items-center justify-between text-xs hover:bg-muted/5">
-                        <div className="space-y-0.5">
-                          <span className="font-bold text-foreground">{sub?.name || "Subscription"}</span>
-                          <span className="block text-[10px] text-muted-foreground">Renews on: {item.renewalDate}</span>
-                        </div>
-                        <span className="font-mono text-foreground font-bold">${sub?.costAmount.toFixed(2)}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            {/* 2. Renewal Timeline (30 Days) */}
+            <RenewalTimelineCard
+              renewals={dashboard?.upcomingRenewals || []}
+              subscriptions={subscriptions}
+              loading={loading}
+            />
 
-            {/* Payment Instruments Vault */}
-            <div className="bg-card border border-border rounded-xl shadow-xs overflow-hidden">
-              <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-                <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
-                  <CreditCard className="w-4 h-4 text-sky-500" /> Saved Payment Methods
-                </h3>
-              </div>
+            {/* 3. AI Token & Metered Consumption */}
+            <AiUsageCard
+              usageRecords={dashboard?.recentUsage || []}
+              subscriptions={subscriptions}
+              onLogClick={() => setIsUsageModalOpen(true)}
+              loading={loading}
+            />
 
-              <LazyViewport name="Saved Payment Instruments" placeholder={<div className="p-4 space-y-2"><Skeleton className="h-4 w-1/2" /><Skeleton className="h-4 w-1/3" /></div>} minHeight="100px" rootMargin="200px 0px">
-                {() => (
-                  loading && paymentMethods.length === 0 ? (
-                    <div className="p-4 space-y-2">
-                      <Skeleton className="h-4 w-1/2" />
-                      <Skeleton className="h-4 w-1/3" />
-                    </div>
-                  ) : paymentMethods.length === 0 ? (
-                    <div className="p-6 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
-                      <span>No payment methods registered yet.</span>
-                      <button
-                        onClick={() => setIsPmModalOpen(true)}
-                        className="text-[10px] text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer"
-                      >
-                        Add credit card
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="p-5 space-y-3.5">
-                      {paymentMethods.map((pm) => (
-                        <div key={pm.id} className="flex items-center justify-between text-xs border border-border p-3.5 rounded-lg bg-muted/20">
-                          <div className="flex items-center gap-2.5">
-                            <CreditCard className="w-4 h-4 text-muted-foreground" />
-                            <div>
-                              <span className="font-bold text-foreground">{pm.cardBrand || "Credit Card"}</span>
-                              <span className="block text-[10px] font-mono text-muted-foreground">•••• •••• •••• {pm.lastFour}</span>
-                            </div>
-                          </div>
-                          <span className="text-[10px] text-muted-foreground">Expires: {pm.expiresAt?.substring(0, 7) || "N/A"}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )
-                )}
-              </LazyViewport>
-            </div>
+            {/* 4. Payment Instruments Vault */}
+            <PaymentMethodsCard
+              paymentMethods={paymentMethods}
+              onAddClick={() => setIsPmModalOpen(true)}
+              loading={loading}
+            />
           </div>
         </div>
       </main>
 
-      {/* MODAL 1: REGISTER SUBSCRIPTION */}
+      {/* MODAL 1: REGISTER SUBSCRIPTION (Single-Step Form with Cancel + Primary) */}
       {isSubModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-card border border-border w-full max-w-lg rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-              <h3 className="text-sm font-bold text-foreground">Register New Subscription</h3>
-              <button onClick={() => setIsSubModalOpen(false)} className="p-1 hover:bg-secondary rounded-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="sub-modal-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsSubModalOpen(false);
+          }}
+        >
+          <div className="bg-[#11151C] border border-[#202630] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-[#202630] flex items-center justify-between bg-[#171C24]/50">
+              <div>
+                <h3 id="sub-modal-title" className="text-sm font-bold text-[#F4F1EA]">
+                  Register New Subscription
+                </h3>
+                <p className="text-[11px] text-[#8F98A8]">
+                  Add a recurring software, AI, or cloud infrastructure commitment
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSubModalOpen(false)}
+                aria-label="Close modal"
+                className="p-1.5 hover:bg-[#202630] rounded-lg text-[#8F98A8] hover:text-[#F4F1EA] transition-colors cursor-pointer"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleAddSubscription} className="flex-1 overflow-y-auto p-5 space-y-4">
-              {subFormError && (
-                <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg text-xs font-medium flex gap-1.5 items-center">
-                  <AlertTriangle className="w-4 h-4 shrink-0" />
-                  {subFormError}
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5 col-span-2">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Subscription Name</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. OpenAI Plus, AWS Personal Sandbox"
-                    value={subName}
-                    onChange={(e) => setSubName(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Type</label>
-                  <select
-                    value={subType}
-                    onChange={(e) => setSubType(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                  >
-                    <option value="generic">Generic SaaS</option>
-                    <option value="cloud">Cloud Sandbox</option>
-                    <option value="ai">Generative AI Tool</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Category</label>
-                  <select
-                    value={subCategory}
-                    onChange={(e) => setSubCategory(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                  >
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Cost Amount (USD)</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="0.00"
-                    value={subCost}
-                    onChange={(e) => setSubCost(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Billing Cycle</label>
-                  <select
-                    value={subCycle}
-                    onChange={(e) => setSubCycle(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                  >
-                    <option value="MONTHLY">Monthly</option>
-                    <option value="ANNUAL">Annual</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1.5 col-span-2">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Payment Instrument</label>
-                  <select
-                    value={subPaymentMethod}
-                    onChange={(e) => setSubPaymentMethod(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                  >
-                    <option value="">No linked payment method</option>
-                    {paymentMethods.map((pm) => (
-                      <option key={pm.id} value={pm.id}>{pm.cardBrand} (•••• {pm.lastFour})</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Cloud Custom fields */}
-              {subType === "cloud" && (
-                <div className="p-4 bg-muted/20 border border-border rounded-lg space-y-3.5">
-                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Cloud Account Settings</h4>
-                  
-                  <div className="grid grid-cols-2 gap-3.5">
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-muted-foreground uppercase">Cloud Provider</label>
-                      <select
-                        value={cloudProvider}
-                        onChange={(e) => setCloudProvider(e.target.value)}
-                        className="w-full text-xs h-8 px-2 bg-background border border-border rounded-md text-foreground"
-                      >
-                        <option value="AWS">Amazon Web Services</option>
-                        <option value="GCP">Google Cloud Platform</option>
-                        <option value="AZURE">Microsoft Azure</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-muted-foreground uppercase">Account ID / Number</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="12-digit number or email"
-                        value={cloudAccountId}
-                        onChange={(e) => setCloudAccountId(e.target.value)}
-                        className="w-full text-xs h-8 px-2 bg-background border border-border rounded-md text-foreground font-mono"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-muted-foreground uppercase">Region</label>
-                      <input
-                        type="text"
-                        placeholder="us-east-1"
-                        value={cloudRegion}
-                        onChange={(e) => setCloudRegion(e.target.value)}
-                        className="w-full text-xs h-8 px-2 bg-background border border-border rounded-md text-foreground font-mono"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-muted-foreground uppercase">Project ID</label>
-                      <input
-                        type="text"
-                        placeholder="personal-sandbox-dev"
-                        value={cloudProjectId}
-                        onChange={(e) => setCloudProjectId(e.target.value)}
-                        className="w-full text-xs h-8 px-2 bg-background border border-border rounded-md text-foreground font-mono"
-                      />
-                    </div>
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleAddSubscription} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {subFormError && (
+                  <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg text-xs font-medium flex gap-2 items-center">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>{subFormError}</span>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* AI Custom fields */}
-              {subType === "ai" && (
-                <div className="p-4 bg-muted/20 border border-border rounded-lg space-y-3.5">
-                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Generative AI Setup</h4>
-                  
-                  <div className="grid grid-cols-2 gap-3.5">
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-muted-foreground uppercase">AI Service Provider</label>
-                      <select
-                        value={aiProvider}
-                        onChange={(e) => setAiProvider(e.target.value)}
-                        className="w-full text-xs h-8 px-2 bg-background border border-border rounded-md text-foreground"
-                      >
-                        <option value="OpenAI">OpenAI (ChatGPT)</option>
-                        <option value="Anthropic">Anthropic (Claude)</option>
-                        <option value="Midjourney">Midjourney</option>
-                        <option value="Cursor">Cursor AI</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-muted-foreground uppercase">Model / License Plan</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Claude Pro, ChatGPT Plus"
-                        value={aiModelPlan}
-                        onChange={(e) => setAiModelPlan(e.target.value)}
-                        className="w-full text-xs h-8 px-2 bg-background border border-border rounded-md text-foreground"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-muted-foreground uppercase">Allocated Seats</label>
-                      <input
-                        type="number"
-                        min="1"
-                        required
-                        value={aiSeatCount}
-                        onChange={(e) => setAiSeatCount(e.target.value)}
-                        className="w-full text-xs h-8 px-2 bg-background border border-border rounded-md text-foreground font-mono"
-                      />
-                    </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5 col-span-2">
+                    <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                      Subscription Name <span className="text-rose-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. OpenAI Plus, AWS Personal Sandbox"
+                      value={subName}
+                      onChange={(e) => setSubName(e.target.value)}
+                      className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] focus:outline-none focus:border-[#7DA7D9]"
+                    />
                   </div>
-                </div>
-              )}
 
-              <div className="border-t border-border pt-4 flex justify-end gap-2.5">
-                <Button type="button" variant="secondary" onClick={() => setIsSubModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" variant="primary" loading={subSubmitting} loadingText="Saving...">
-                  Create Subscription Record
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 2: ADD PAYMENT METHOD */}
-      {isPmModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-card border border-border w-full max-w-sm rounded-xl shadow-2xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-              <h3 className="text-sm font-bold text-foreground">Add Payment Instrument</h3>
-              <button onClick={() => setIsPmModalOpen(false)} className="p-1 hover:bg-secondary rounded-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleAddPaymentMethod} className="p-5 space-y-4">
-              {pmFormError && (
-                <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg text-xs font-medium">
-                  {pmFormError}
-                </div>
-              )}
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Type</label>
-                <select
-                  value={pmType}
-                  onChange={(e) => setPmType(e.target.value)}
-                  className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none"
-                >
-                  <option value="CREDIT_CARD">Credit Card</option>
-                  <option value="BANK_ACCOUNT">Bank Account</option>
-                  <option value="PAYPAL">PayPal</option>
-                </select>
-              </div>
-
-              {pmType === "CREDIT_CARD" && (
-                <>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Brand</label>
+                    <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">Type</label>
                     <select
-                      value={pmBrand}
-                      onChange={(e) => setPmBrand(e.target.value)}
-                      className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none"
+                      value={subType}
+                      onChange={(e) => setSubType(e.target.value)}
+                      className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] focus:outline-none focus:border-[#7DA7D9]"
                     >
-                      <option value="Visa">Visa</option>
-                      <option value="Mastercard">Mastercard</option>
-                      <option value="American Express">American Express</option>
+                      <option value="generic">Generic SaaS</option>
+                      <option value="cloud">Cloud Sandbox</option>
+                      <option value="ai">Generative AI Tool</option>
                     </select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Last 4 Digits</label>
-                      <input
-                        type="text"
-                        maxLength={4}
-                        required
-                        placeholder="4242"
-                        value={pmLastFour}
-                        onChange={(e) => setPmLastFour(e.target.value.replace(/\D/g, ""))}
-                        className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground font-mono focus:outline-none"
-                      />
-                    </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">Category</label>
+                    <select
+                      value={subCategory}
+                      onChange={(e) => setSubCategory(e.target.value)}
+                      className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] focus:outline-none focus:border-[#7DA7D9]"
+                    >
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Expiration (YYYY-MM)</label>
-                      <input
-                        type="text"
-                        placeholder="2030-12"
-                        value={pmExpiration}
-                        onChange={(e) => setPmExpiration(e.target.value)}
-                        className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground font-mono focus:outline-none"
-                      />
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                      Cost Amount (USD) <span className="text-rose-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="0.00"
+                      value={subCost}
+                      onChange={(e) => setSubCost(e.target.value)}
+                      className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] font-mono focus:outline-none focus:border-[#7DA7D9]"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                      Billing Cycle
+                    </label>
+                    <select
+                      value={subCycle}
+                      onChange={(e) => setSubCycle(e.target.value)}
+                      className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] focus:outline-none focus:border-[#7DA7D9]"
+                    >
+                      <option value="MONTHLY">Monthly</option>
+                      <option value="ANNUAL">Annual</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5 col-span-2">
+                    <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                      Payment Instrument (Optional)
+                    </label>
+                    <select
+                      value={subPaymentMethod}
+                      onChange={(e) => setSubPaymentMethod(e.target.value)}
+                      className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] focus:outline-none focus:border-[#7DA7D9]"
+                    >
+                      <option value="">None / Manual Invoice</option>
+                      {paymentMethods.map((pm) => (
+                        <option key={pm.id} value={pm.id}>
+                          {pm.cardBrand} ending in {pm.lastFour}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Conditional Form Fields based on Type */}
+                {subType === "cloud" && (
+                  <div className="pt-4 border-t border-[#202630] space-y-3">
+                    <span className="text-[10px] font-mono font-bold text-[#7DA7D9] uppercase tracking-wider block">
+                      Cloud Configuration
+                    </span>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-[#8F98A8]">Provider</label>
+                        <select
+                          value={cloudProvider}
+                          onChange={(e) => setCloudProvider(e.target.value)}
+                          className="w-full text-xs h-9 px-2.5 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA]"
+                        >
+                          <option value="AWS">Amazon Web Services (AWS)</option>
+                          <option value="GCP">Google Cloud Platform (GCP)</option>
+                          <option value="AZURE">Microsoft Azure</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-[#8F98A8]">Account ID / Tenant</label>
+                        <input
+                          type="text"
+                          placeholder="1234-5678-9012"
+                          value={cloudAccountId}
+                          onChange={(e) => setCloudAccountId(e.target.value)}
+                          className="w-full text-xs h-9 px-2.5 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] font-mono"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-[#8F98A8]">Region (Optional)</label>
+                        <input
+                          type="text"
+                          placeholder="us-east-1"
+                          value={cloudRegion}
+                          onChange={(e) => setCloudRegion(e.target.value)}
+                          className="w-full text-xs h-9 px-2.5 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA]"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-[#8F98A8]">Project Identifier</label>
+                        <input
+                          type="text"
+                          placeholder="my-sandbox-project"
+                          value={cloudProjectId}
+                          onChange={(e) => setCloudProjectId(e.target.value)}
+                          className="w-full text-xs h-9 px-2.5 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA]"
+                        />
+                      </div>
                     </div>
                   </div>
-                </>
-              )}
+                )}
 
-              <div className="border-t border-border pt-4 flex justify-end gap-2.5">
-                <Button type="button" variant="secondary" onClick={() => setIsPmModalOpen(false)}>
+                {subType === "ai" && (
+                  <div className="pt-4 border-t border-[#202630] space-y-3">
+                    <span className="text-[10px] font-mono font-bold text-[#C9A86A] uppercase tracking-wider block">
+                      AI Tool Details
+                    </span>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-[#8F98A8]">Provider / Engine</label>
+                        <input
+                          type="text"
+                          placeholder="OpenAI, Anthropic, Midjourney"
+                          value={aiProvider}
+                          onChange={(e) => setAiProvider(e.target.value)}
+                          className="w-full text-xs h-9 px-2.5 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA]"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-[#8F98A8]">Plan Tier</label>
+                        <input
+                          type="text"
+                          placeholder="ChatGPT Plus, Claude Pro"
+                          value={aiModelPlan}
+                          onChange={(e) => setAiModelPlan(e.target.value)}
+                          className="w-full text-xs h-9 px-2.5 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA]"
+                        />
+                      </div>
+
+                      <div className="space-y-1 col-span-2">
+                        <label className="text-[10px] text-[#8F98A8]">Seat Count</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={aiSeatCount}
+                          onChange={(e) => setAiSeatCount(e.target.value)}
+                          className="w-full text-xs h-9 px-2.5 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] font-mono"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Fixed Footer */}
+              <div className="border-t border-[#202630] px-6 py-4 bg-[#11151C] flex items-center justify-between gap-3 shrink-0">
+                <Button type="button" variant="secondary" onClick={() => setIsSubModalOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary" loading={pmSubmitting} loadingText="Adding...">
-                  Save Instrument
+                <Button
+                  type="submit"
+                  variant="primary"
+                  loading={subSubmitting}
+                  loadingText="Registering..."
+                  className="bg-[#C9A86A] text-[#0B0D11] hover:bg-[#D4B87D] font-semibold px-5"
+                >
+                  Confirm Registration
                 </Button>
               </div>
             </form>
@@ -968,94 +1055,471 @@ export default function PersonalWorkspacePage() {
         </div>
       )}
 
-      {/* MODAL 3: LOG USAGE */}
-      {isUsageModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-card border border-border w-full max-w-sm rounded-xl shadow-2xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-              <h3 className="text-sm font-bold text-foreground">Log API Consumption</h3>
-              <button onClick={() => setIsUsageModalOpen(false)} className="p-1 hover:bg-secondary rounded-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+      {/* MODAL 2: ADD PAYMENT METHOD (2-Step Nested Wizard with Back Navigation) */}
+      {isPmModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pm-modal-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsPmModalOpen(false);
+              setPmStep(1);
+            }
+          }}
+        >
+          <div className="bg-[#11151C] border border-[#202630] w-full max-w-md rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+            {/* Header with Step Indicator and Back Button */}
+            <div className="px-6 py-4 border-b border-[#202630] flex items-center justify-between bg-[#171C24]/50">
+              <div className="flex items-center gap-3">
+                {pmStep === 2 && (
+                  <button
+                    type="button"
+                    onClick={() => setPmStep(1)}
+                    className="p-1.5 hover:bg-[#202630] rounded-lg text-[#8F98A8] hover:text-[#F4F1EA] transition-colors cursor-pointer flex items-center gap-1 text-xs"
+                    title="Back to Instrument Selection"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
+                )}
+                <div>
+                  <h3 id="pm-modal-title" className="text-sm font-bold text-[#F4F1EA]">
+                    {pmStep === 1
+                      ? "Add Payment Instrument"
+                      : pmType === "CREDIT_CARD"
+                      ? "Card Details"
+                      : pmType === "BANK_ACCOUNT"
+                      ? "Bank Account Details"
+                      : "PayPal Account Details"}
+                  </h3>
+                  <p className="text-[11px] text-[#8F98A8]">
+                    {pmStep === 1 ? "Step 1 of 2 — Select type" : "Step 2 of 2 — Enter instrument details"}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsPmModalOpen(false);
+                  setPmStep(1);
+                }}
+                aria-label="Close modal"
+                className="p-1.5 hover:bg-[#202630] rounded-lg text-[#8F98A8] hover:text-[#F4F1EA] transition-colors cursor-pointer"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleAddUsage} className="p-5 space-y-4">
-              {usageFormError && (
-                <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg text-xs font-medium">
-                  {usageFormError}
+            {/* Modal Body */}
+            {pmStep === 1 ? (
+              /* STEP 1: Instrument Type Selector */
+              <div className="p-6 space-y-4">
+                <p className="text-xs text-[#8F98A8]">
+                  Select the financial instrument you want to tokenize for recurring subscriptions and AI usage:
+                </p>
+
+                <div className="space-y-3">
+                  {/* Card Option 1: Credit / Debit Card */}
+                  <div
+                    onClick={() => {
+                      setPmType("CREDIT_CARD");
+                      setPmStep(2);
+                    }}
+                    className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between group ${
+                      pmType === "CREDIT_CARD"
+                        ? "bg-[#7DA7D9]/10 border-[#7DA7D9]/50 shadow-xs"
+                        : "bg-[#0B0D11] border-[#202630] hover:border-[#7DA7D9]/30 hover:bg-[#171C24]/60"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <div className="p-2.5 rounded-lg bg-[#7DA7D9]/15 text-[#7DA7D9] border border-[#7DA7D9]/25">
+                        <CreditCard className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-[#F4F1EA] block group-hover:text-[#7DA7D9] transition-colors">
+                          Credit or Debit Card
+                        </span>
+                        <span className="text-[11px] text-[#8F98A8]">Visa, Mastercard, American Express</span>
+                      </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-[#8F98A8] group-hover:text-[#7DA7D9] transition-transform group-hover:translate-x-0.5" />
+                  </div>
+
+                  {/* Card Option 2: Direct Bank Account */}
+                  <div
+                    onClick={() => {
+                      setPmType("BANK_ACCOUNT");
+                      setPmStep(2);
+                    }}
+                    className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between group ${
+                      pmType === "BANK_ACCOUNT"
+                        ? "bg-[#C9A86A]/10 border-[#C9A86A]/50 shadow-xs"
+                        : "bg-[#0B0D11] border-[#202630] hover:border-[#C9A86A]/30 hover:bg-[#171C24]/60"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <div className="p-2.5 rounded-lg bg-[#C9A86A]/15 text-[#C9A86A] border border-[#C9A86A]/25">
+                        <Building2 className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-[#F4F1EA] block group-hover:text-[#C9A86A] transition-colors">
+                          Direct Bank Account
+                        </span>
+                        <span className="text-[11px] text-[#8F98A8]">Checking or Savings account via ACH</span>
+                      </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-[#8F98A8] group-hover:text-[#C9A86A] transition-transform group-hover:translate-x-0.5" />
+                  </div>
+
+                  {/* Card Option 3: PayPal / Digital Wallet */}
+                  <div
+                    onClick={() => {
+                      setPmType("PAYPAL");
+                      setPmStep(2);
+                    }}
+                    className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between group ${
+                      pmType === "PAYPAL"
+                        ? "bg-emerald-500/10 border-emerald-500/50 shadow-xs"
+                        : "bg-[#0B0D11] border-[#202630] hover:border-emerald-500/30 hover:bg-[#171C24]/60"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <div className="p-2.5 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
+                        <Wallet className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-[#F4F1EA] block group-hover:text-emerald-400 transition-colors">
+                          PayPal / Digital Wallet
+                        </span>
+                        <span className="text-[11px] text-[#8F98A8]">Instant billing account authorization</span>
+                      </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-[#8F98A8] group-hover:text-emerald-400 transition-transform group-hover:translate-x-0.5" />
+                  </div>
                 </div>
-              )}
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Select AI Tool</label>
-                <select
-                  value={usageSubId}
-                  onChange={(e) => setUsageSubId(e.target.value)}
-                  className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none"
-                >
-                  {subscriptions
-                    .filter((s) => s.subscriptionType === "ai")
-                    .map((s) => (
-                      <option key={s.id} value={s.id}>{s.name} ({s.provider})</option>
-                    ))}
-                </select>
+                {/* Footer for Step 1 */}
+                <div className="border-t border-[#202630] pt-4 flex items-center justify-between">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      setIsPmModalOpen(false);
+                      setPmStep(1);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    onClick={() => setPmStep(2)}
+                    className="bg-[#C9A86A] text-[#0B0D11] hover:bg-[#D4B87D] font-semibold"
+                  >
+                    Continue
+                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                  </Button>
+                </div>
               </div>
+            ) : (
+              /* STEP 2: Instrument Form Details */
+              <form onSubmit={handleAddPaymentMethod} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                  {pmFormError && (
+                    <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg text-xs font-medium flex gap-2 items-center">
+                      <AlertTriangle className="w-4 h-4 shrink-0" />
+                      <span>{pmFormError}</span>
+                    </div>
+                  )}
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Usage Date</label>
-                <input
-                  type="date"
-                  required
-                  value={usageDate}
-                  onChange={(e) => setUsageDate(e.target.value)}
-                  className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground font-mono focus:outline-none"
-                />
+                  {/* Credit Card Fields */}
+                  {pmType === "CREDIT_CARD" && (
+                    <>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                          Card Network / Brand
+                        </label>
+                        <select
+                          value={pmBrand}
+                          onChange={(e) => setPmBrand(e.target.value)}
+                          className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] focus:outline-none focus:border-[#7DA7D9]"
+                        >
+                          <option value="Visa">Visa</option>
+                          <option value="Mastercard">Mastercard</option>
+                          <option value="American Express">American Express</option>
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                            Last 4 Digits <span className="text-rose-400">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            maxLength={4}
+                            required
+                            placeholder="4242"
+                            value={pmLastFour}
+                            onChange={(e) => setPmLastFour(e.target.value.replace(/\D/g, ""))}
+                            className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] font-mono focus:outline-none focus:border-[#7DA7D9]"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                            Expiry (YYYY-MM)
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="2030-12"
+                            value={pmExpiration}
+                            onChange={(e) => setPmExpiration(e.target.value)}
+                            className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] font-mono focus:outline-none focus:border-[#7DA7D9]"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Bank Account Fields */}
+                  {pmType === "BANK_ACCOUNT" && (
+                    <>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                          Financial Institution
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Chase, Wells Fargo, SVB"
+                          value={pmBankName}
+                          onChange={(e) => setPmBankName(e.target.value)}
+                          className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] focus:outline-none focus:border-[#C9A86A]"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                            Account Type
+                          </label>
+                          <select
+                            value={pmAccountType}
+                            onChange={(e) => setPmAccountType(e.target.value)}
+                            className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] focus:outline-none focus:border-[#C9A86A]"
+                          >
+                            <option value="CHECKING">Checking</option>
+                            <option value="SAVINGS">Savings</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                            Last 4 Digits <span className="text-rose-400">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            maxLength={4}
+                            required
+                            placeholder="9821"
+                            value={pmLastFour}
+                            onChange={(e) => setPmLastFour(e.target.value.replace(/\D/g, ""))}
+                            className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] font-mono focus:outline-none focus:border-[#C9A86A]"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* PayPal Fields */}
+                  {pmType === "PAYPAL" && (
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                        PayPal Account Email <span className="text-rose-400">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="billing@company.com"
+                        value={pmPaypalEmail}
+                        onChange={(e) => setPmPaypalEmail(e.target.value)}
+                        className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Fixed Footer for Step 2 with Back + Cancel + Save */}
+                <div className="border-t border-[#202630] px-6 py-4 bg-[#11151C] flex items-center justify-between gap-3 shrink-0">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setPmStep(1)}
+                    className="text-xs"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5 mr-1" />
+                    Back
+                  </Button>
+
+                  <div className="flex items-center gap-2.5">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => {
+                        setIsPmModalOpen(false);
+                        setPmStep(1);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      loading={pmSubmitting}
+                      loadingText="Saving..."
+                      className="bg-[#C9A86A] text-[#0B0D11] hover:bg-[#D4B87D] font-semibold px-4"
+                    >
+                      Save Instrument
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: LOG API CONSUMPTION (Single-Step Form with Cancel + Primary) */}
+      {isUsageModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="usage-modal-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsUsageModalOpen(false);
+          }}
+        >
+          <div className="bg-[#11151C] border border-[#202630] w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-[#202630] flex items-center justify-between bg-[#171C24]/50">
+              <div>
+                <h3 id="usage-modal-title" className="text-sm font-bold text-[#F4F1EA]">
+                  Log API Consumption
+                </h3>
+                <p className="text-[11px] text-[#8F98A8]">Record metered token or invocation expense</p>
               </div>
+              <button
+                type="button"
+                onClick={() => setIsUsageModalOpen(false)}
+                aria-label="Close modal"
+                className="p-1.5 hover:bg-[#202630] rounded-lg text-[#8F98A8] hover:text-[#F4F1EA] transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleAddUsage} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {usageFormError && (
+                  <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg text-xs font-medium flex gap-2 items-center">
+                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <span>{usageFormError}</span>
+                  </div>
+                )}
+
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Quantity</label>
+                  <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                    Select AI Tool <span className="text-rose-400">*</span>
+                  </label>
+                  <select
+                    value={usageSubId}
+                    onChange={(e) => setUsageSubId(e.target.value)}
+                    className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] focus:outline-none focus:border-[#7DA7D9]"
+                  >
+                    {subscriptions
+                      .filter((s) => s.subscriptionType === "ai")
+                      .map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name} ({s.provider})
+                        </option>
+                      ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                    Usage Date <span className="text-rose-400">*</span>
+                  </label>
                   <input
-                    type="number"
-                    min="1"
+                    type="date"
                     required
-                    placeholder="150"
-                    value={usageQuantity}
-                    onChange={(e) => setUsageQuantity(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground font-mono focus:outline-none"
+                    value={usageDate}
+                    onChange={(e) => setUsageDate(e.target.value)}
+                    className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] font-mono focus:outline-none focus:border-[#7DA7D9]"
                   />
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                      Quantity <span className="text-rose-400">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      required
+                      placeholder="150"
+                      value={usageQuantity}
+                      onChange={(e) => setUsageQuantity(e.target.value)}
+                      className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] font-mono focus:outline-none focus:border-[#7DA7D9]"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">Unit</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="API_CALLS, Tokens"
+                      value={usageUnit}
+                      onChange={(e) => setUsageUnit(e.target.value)}
+                      className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] focus:outline-none focus:border-[#7DA7D9]"
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Unit</label>
+                  <label className="text-[10px] font-mono uppercase tracking-wider text-[#8F98A8]">
+                    Calculated Cost (USD) <span className="text-rose-400">*</span>
+                  </label>
                   <input
                     type="text"
                     required
-                    placeholder="API_CALLS, Tokens"
-                    value={usageUnit}
-                    onChange={(e) => setUsageUnit(e.target.value)}
-                    className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground focus:outline-none"
+                    placeholder="1.50"
+                    value={usageCost}
+                    onChange={(e) => setUsageCost(e.target.value)}
+                    className="w-full text-xs h-10 px-3 bg-[#0B0D11] border border-[#202630] rounded-lg text-[#F4F1EA] font-mono focus:outline-none focus:border-[#7DA7D9]"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Calculated Cost (USD)</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="1.50"
-                  value={usageCost}
-                  onChange={(e) => setUsageCost(e.target.value)}
-                  className="w-full text-xs h-10 px-3 bg-background border border-border rounded-lg text-foreground font-mono focus:outline-none"
-                />
-              </div>
-
-              <div className="border-t border-border pt-4 flex justify-end gap-2.5">
+              {/* Fixed Footer */}
+              <div className="border-t border-[#202630] px-6 py-4 bg-[#11151C] flex items-center justify-between gap-3 shrink-0">
                 <Button type="button" variant="secondary" onClick={() => setIsUsageModalOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary" loading={usageSubmitting} loadingText="Logging...">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  loading={usageSubmitting}
+                  loadingText="Logging..."
+                  className="bg-[#C9A86A] text-[#0B0D11] hover:bg-[#D4B87D] font-semibold px-5"
+                >
                   Log Usage
                 </Button>
               </div>
