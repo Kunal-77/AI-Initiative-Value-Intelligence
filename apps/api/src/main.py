@@ -1,6 +1,7 @@
 import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from src.core.config import settings
 from src.identity.routes import router as identity_router
 from src.initiatives.routes import router as initiatives_router, reviews_evidence_router
 from src.initiatives.approvals_financials_routes import router as approvals_financials_router
@@ -17,18 +18,17 @@ app = FastAPI(
 )
 
 # CORS Middleware Setup
-# In development, Next.js typically runs on port 3000.
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+# Dynamic origins from environment config with Vercel deployment regex support
+origins = settings.get_cors_origins()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 @app.get("/")

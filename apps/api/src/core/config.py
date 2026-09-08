@@ -1,6 +1,5 @@
 import os
-from pydantic_settings import BaseSettings
-from pydantic import ConfigDict
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
@@ -25,6 +24,23 @@ class Settings(BaseSettings):
     CLERK_ISSUER_URL: str = "https://clerk.example.com"
     CLERK_JWKS_URL: str = "https://clerk.example.com/.well-known/jwks.json"
 
+    # CORS configuration (comma-separated list of allowed origins)
+    CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,https://ai-initiative-value-intelligence-we.vercel.app"
+
+    def get_cors_origins(self) -> list[str]:
+        default_origins = [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "https://ai-initiative-value-intelligence-we.vercel.app",
+        ]
+        if isinstance(self.CORS_ORIGINS, str):
+            parsed = [origin.strip().rstrip("/") for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+            for d in default_origins:
+                if d not in parsed:
+                    parsed.append(d)
+            return parsed
+        return default_origins
+
     def get_active_database_url(self) -> str:
         db_env = self.DB_ENV.lower()
         if db_env == "test":
@@ -34,7 +50,7 @@ class Settings(BaseSettings):
         else:
             return self.DATABASE_URL
 
-    model_config = ConfigDict(
+    model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env"),
         env_file_encoding="utf-8",
         extra="ignore"
