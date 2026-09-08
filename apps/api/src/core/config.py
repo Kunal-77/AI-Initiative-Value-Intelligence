@@ -21,8 +21,8 @@ class Settings(BaseSettings):
     SUPABASE_MIGRATION_AUTHORIZED: bool = False
     
     # Clerk Identity settings
-    CLERK_ISSUER_URL: str = "https://clerk.example.com"
-    CLERK_JWKS_URL: str = "https://clerk.example.com/.well-known/jwks.json"
+    CLERK_ISSUER_URL: str = "https://useful-bird-65.clerk.accounts.dev"
+    CLERK_JWKS_URL: str = "https://useful-bird-65.clerk.accounts.dev/.well-known/jwks.json"
 
     # CORS configuration (comma-separated list of allowed origins)
     CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,https://ai-initiative-value-intelligence-we.vercel.app"
@@ -44,11 +44,19 @@ class Settings(BaseSettings):
     def get_active_database_url(self) -> str:
         db_env = self.DB_ENV.lower()
         if db_env == "test":
-            return self.TEST_DATABASE_URL
+            url = self.TEST_DATABASE_URL
         elif db_env == "supabase":
-            return self.SUPABASE_DATABASE_URL
+            url = self.SUPABASE_DATABASE_URL
         else:
-            return self.DATABASE_URL
+            url = self.DATABASE_URL
+
+        # Automatically normalize postgres:// and postgresql:// to postgresql+psycopg:// for psycopg v3
+        if url.startswith("postgres://"):
+            url = "postgresql+psycopg://" + url[len("postgres://"):]
+        elif url.startswith("postgresql://") and not url.startswith("postgresql+"):
+            url = "postgresql+psycopg://" + url[len("postgresql://"):]
+
+        return url
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env"),

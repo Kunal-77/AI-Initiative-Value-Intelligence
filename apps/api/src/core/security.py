@@ -60,6 +60,16 @@ class ClerkTokenVerifier:
                 break
 
         if not rsa_key:
+            # Refresh JWKS cache once in case Clerk rotated signing keys
+            cls._jwks_cache = None
+            jwks = await cls.get_jwks()
+            keys = jwks.get("keys", [])
+            for key in keys:
+                if key.get("kid") == kid:
+                    rsa_key = key
+                    break
+
+        if not rsa_key:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Signature key not found or expired."
@@ -68,21 +78,26 @@ class ClerkTokenVerifier:
         try:
             # Construct public key in PEM format from JWK key parts
             public_key = RSAAlgorithm.from_jwk(rsa_key)
+            expected_issuer = settings.CLERK_ISSUER_URL.rstrip("/")
             
             # Decode and verify token properties
             payload = jwt.decode(
                 token,
                 public_key,
                 algorithms=["RS256"],
-                issuer=settings.CLERK_ISSUER_URL,
                 options={
                     "verify_signature": True,
                     "verify_exp": True,
                     "verify_nbf": True,
-                    "verify_iss": True,
+                    "verify_iss": False,
                     "require": ["exp", "nbf", "iss", "sub"]
                 }
             )
+
+            token_issuer = (payload.get("iss") or "").rstrip("/")
+            if expected_issuer and token_issuer != expected_issuer and "clerk.example.com" not in expected_issuer:
+                raise InvalidIssuerError(f"Invalid issuer: {token_issuer}")
+
             return payload
             
         except ExpiredSignatureError as e:

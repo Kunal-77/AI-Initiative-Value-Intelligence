@@ -21,19 +21,26 @@ class IdentityService:
     ) -> User:
         """
         Retrieves existing user or auto-provisions a new user in the system database.
+        Includes rollback recovery for concurrent race conditions.
         """
         user = IdentityService.get_user_by_clerk_id(db, clerk_user_id)
         if not user:
-            user = User(
-                id=uuid.uuid4(),
-                clerk_user_id=clerk_user_id,
-                display_name=display_name,
-                email_snapshot=email,
-                status="ACTIVE"
-            )
-            db.add(user)
-            db.commit()
-            db.refresh(user)
+            try:
+                user = User(
+                    id=uuid.uuid4(),
+                    clerk_user_id=clerk_user_id,
+                    display_name=display_name,
+                    email_snapshot=email,
+                    status="ACTIVE"
+                )
+                db.add(user)
+                db.commit()
+                db.refresh(user)
+            except Exception:
+                db.rollback()
+                user = IdentityService.get_user_by_clerk_id(db, clerk_user_id)
+                if not user:
+                    raise
         else:
             # Sync metadata changes if found
             changed = False
@@ -44,8 +51,11 @@ class IdentityService:
                 user.email_snapshot = email
                 changed = True
             if changed:
-                db.commit()
-                db.refresh(user)
+                try:
+                    db.commit()
+                    db.refresh(user)
+                except Exception:
+                    db.rollback()
         return user
 
     @staticmethod
@@ -64,23 +74,33 @@ class IdentityService:
     ) -> Organization:
         """
         Retrieves existing organization or auto-provisions a new organization.
+        Includes rollback recovery for concurrent race conditions.
         """
         org = IdentityService.get_organization_by_clerk_id(db, clerk_org_id)
         if not org:
-            org = Organization(
-                id=uuid.uuid4(),
-                clerk_org_id=clerk_org_id,
-                name=name or f"Organization {clerk_org_id[:8] if len(clerk_org_id) > 8 else clerk_org_id}",
-                status="ACTIVE"
-            )
-            db.add(org)
-            db.commit()
-            db.refresh(org)
+            try:
+                org = Organization(
+                    id=uuid.uuid4(),
+                    clerk_org_id=clerk_org_id,
+                    name=name or f"Organization {clerk_org_id[:8] if len(clerk_org_id) > 8 else clerk_org_id}",
+                    status="ACTIVE"
+                )
+                db.add(org)
+                db.commit()
+                db.refresh(org)
+            except Exception:
+                db.rollback()
+                org = IdentityService.get_organization_by_clerk_id(db, clerk_org_id)
+                if not org:
+                    raise
         else:
             if name and org.name != name:
                 org.name = name
-                db.commit()
-                db.refresh(org)
+                try:
+                    db.commit()
+                    db.refresh(org)
+                except Exception:
+                    db.rollback()
         return org
 
     @staticmethod
@@ -108,23 +128,33 @@ class IdentityService:
     ) -> OrganizationMembership:
         """
         Retrieves or syncs the organization membership role/status.
+        Includes rollback recovery for concurrent race conditions.
         """
         membership = IdentityService.get_membership(db, organization_id, user_id)
         if not membership:
-            membership = OrganizationMembership(
-                id=uuid.uuid4(),
-                organization_id=organization_id,
-                user_id=user_id,
-                role=role,
-                status=status
-            )
-            db.add(membership)
-            db.commit()
-            db.refresh(membership)
+            try:
+                membership = OrganizationMembership(
+                    id=uuid.uuid4(),
+                    organization_id=organization_id,
+                    user_id=user_id,
+                    role=role,
+                    status=status
+                )
+                db.add(membership)
+                db.commit()
+                db.refresh(membership)
+            except Exception:
+                db.rollback()
+                membership = IdentityService.get_membership(db, organization_id, user_id)
+                if not membership:
+                    raise
         else:
             if membership.role != role or membership.status != status:
                 membership.role = role
                 membership.status = status
-                db.commit()
-                db.refresh(membership)
+                try:
+                    db.commit()
+                    db.refresh(membership)
+                except Exception:
+                    db.rollback()
         return membership

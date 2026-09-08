@@ -48,6 +48,41 @@ def get_health():
         "version": "1.0.0"
     }
 
+@app.get("/health/db")
+def get_db_health():
+    from sqlalchemy import text
+    from src.core.database import SessionLocal
+    db = SessionLocal()
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "degraded",
+                "database": "unreachable",
+                "detail": str(e)
+            }
+        )
+    finally:
+        db.close()
+
+import logging
+import traceback
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+logger = logging.getLogger("aivi.api")
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled exception on {request.method} {request.url.path}: {exc}\n{traceback.format_exc()}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error", "error": str(exc)},
+    )
+
 # Mount domain routing modules
 app.include_router(identity_router, prefix="/api/v1", tags=["Identity"])
 app.include_router(initiatives_router, prefix="/api/v1")
