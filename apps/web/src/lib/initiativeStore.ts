@@ -104,7 +104,8 @@ export async function getStoredInitiatives(token: string): Promise<InitiativeMod
     },
   });
   if (!res.ok) {
-    throw new Error(`Failed to fetch initiatives: ${res.statusText}`);
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch initiatives (HTTP ${res.status}): ${res.statusText || res.status}`);
   }
   const data = await res.json();
   if (!Array.isArray(data)) return [];
@@ -140,7 +141,8 @@ export async function getInitiativeById(token: string, id: string): Promise<Init
   });
   if (!res.ok) {
     if (res.status === 404) return undefined;
-    throw new Error(`Failed to fetch initiative details: ${res.statusText}`);
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch initiative details (HTTP ${res.status}): ${res.statusText || res.status}`);
   }
   const init = await res.json();
 

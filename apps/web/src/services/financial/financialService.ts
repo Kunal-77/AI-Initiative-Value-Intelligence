@@ -23,7 +23,10 @@ export async function getExecutiveFinancialMetrics(token: string): Promise<Execu
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch executive financials summary");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch executive financials summary (HTTP ${res.status})`);
+  }
   return res.json();
 }
 
@@ -34,7 +37,10 @@ export async function getBenefitsRegister(token: string): Promise<BenefitItem[]>
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch benefits register");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch benefits register (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map((item: any) => ({
     id: item.id,
@@ -58,7 +64,10 @@ export async function getCostsLedger(token: string): Promise<CostItemLedger[]> {
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch costs ledger");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch costs ledger (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map((item: any) => ({
     id: item.id,

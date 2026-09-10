@@ -126,7 +126,10 @@ export async function getPersonalDashboard(token: string): Promise<PersonalDashb
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch personal dashboard summary");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch personal dashboard summary (HTTP ${res.status})`);
+  }
   const data = await res.json();
   
   return {
@@ -153,7 +156,10 @@ export async function getSubscriptions(token: string): Promise<Subscription[]> {
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch subscriptions");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch subscriptions (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map(mapSubscription);
 }
@@ -212,7 +218,10 @@ export async function getPaymentMethods(token: string): Promise<PaymentMethod[]>
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch payment methods");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch payment methods (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map((item: any) => ({
     id: item.id,
@@ -257,7 +266,10 @@ export async function getCategories(token: string): Promise<SubscriptionCategory
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch categories");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch categories (HTTP ${res.status})`);
+  }
   return res.json();
 }
 
@@ -268,7 +280,10 @@ export async function getUsage(token: string): Promise<UsageRecord[]> {
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch usage logs");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch usage logs (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map(mapUsageRecord);
 }
@@ -310,7 +325,10 @@ export async function getBankConnections(token: string): Promise<BankConnection[
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch bank connections");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch bank connections (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map(mapBankConnection);
 }
@@ -387,7 +405,10 @@ export async function getSubscriptionCandidates(token: string): Promise<Subscrip
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch subscription candidates");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch subscription candidates (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map(mapCandidate);
 }
@@ -432,7 +453,10 @@ export async function getBankTransactions(
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch bank transactions");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch bank transactions (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map(mapBankTransaction);
 }

@@ -23,7 +23,10 @@ export async function getApprovalsQueue(token: string): Promise<ApprovalItem[]> 
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch approvals queue");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch approvals queue (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map((item: any) => ({
     id: item.id,
@@ -49,7 +52,10 @@ export async function getWorkflowTasks(token: string): Promise<WorkflowTask[]> {
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch workflow tasks");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch workflow tasks (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map((item: any) => ({
     id: item.id,
@@ -69,7 +75,10 @@ export async function getWorkflowComments(token: string, approvalId: string): Pr
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch workflow comments");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch workflow comments (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map((item: any) => ({
     id: item.id,
@@ -90,7 +99,10 @@ export async function addWorkflowComment(token: string, approvalId: string, cont
     },
     body: JSON.stringify({ content }),
   });
-  if (!res.ok) throw new Error("Failed to add comment");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to add comment (HTTP ${res.status})`);
+  }
   const item = await res.json();
   return {
     id: item.id,
@@ -109,7 +121,10 @@ export async function getWorkflowAuditLogs(token: string, approvalId: string): P
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch workflow audit logs");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch workflow audit logs (HTTP ${res.status})`);
+  }
   const data = await res.json();
   return data.map((item: any) => ({
     id: item.id,
@@ -130,7 +145,10 @@ export async function getGovernanceMetrics(token: string): Promise<GovernanceMet
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch governance metrics");
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData?.detail || `Failed to fetch governance metrics (HTTP ${res.status})`);
+  }
   return res.json();
 }
 

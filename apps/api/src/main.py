@@ -1,20 +1,43 @@
 import time
-from fastapi import FastAPI
+import logging
+import traceback
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+
 from src.core.config import settings
+from src.core.database import Base, engine
+import src.identity.models
+import src.initiatives.models
+import src.measurements.models
+import src.personal.models
+
 from src.identity.routes import router as identity_router
 from src.initiatives.routes import router as initiatives_router, reviews_evidence_router
 from src.initiatives.approvals_financials_routes import router as approvals_financials_router
 from src.measurements.routes import router as measurements_router
 from src.personal.routes import router as personal_router
 
+logger = logging.getLogger("aivi.api")
 start_time = time.time()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Ensure database schema is initialized on startup
+    try:
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database schema initialized successfully.")
+    except Exception as e:
+        logger.warning(f"Database table initialization warning: {e}")
+    yield
 
 app = FastAPI(
     title="AI Initiative Value Intelligence API",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan
 )
 
 # CORS Middleware Setup
@@ -67,14 +90,6 @@ def get_db_health():
         )
     finally:
         db.close()
-
-import logging
-import traceback
-from fastapi import Request
-from fastapi.responses import JSONResponse
-
-logger = logging.getLogger("aivi.api")
-
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Unhandled exception on {request.method} {request.url.path}: {exc}\n{traceback.format_exc()}")

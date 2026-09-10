@@ -32,6 +32,7 @@ class PersonalService:
     def get_or_create_default_categories(db: Session) -> List[SubscriptionCategory]:
         """
         Ensure default categories exist in the database and return them.
+        Includes rollback recovery for concurrent requests.
         """
         defaults = [
             ("AI_TOOL", "Generative AI subscription services"),
@@ -42,17 +43,19 @@ class PersonalService:
             ("OTHER", "Other miscellaneous subscription services"),
         ]
         
-        categories = []
         for name, desc in defaults:
             stmt = select(SubscriptionCategory).where(SubscriptionCategory.name == name)
             cat = db.scalars(stmt).first()
             if not cat:
-                cat = SubscriptionCategory(name=name, description=desc)
-                db.add(cat)
-                db.flush()
-            categories.append(cat)
-        db.commit()
-        return categories
+                try:
+                    cat = SubscriptionCategory(name=name, description=desc)
+                    db.add(cat)
+                    db.commit()
+                except Exception:
+                    db.rollback()
+        
+        stmt = select(SubscriptionCategory).order_by(SubscriptionCategory.name)
+        return list(db.scalars(stmt).all())
 
     @staticmethod
     def get_categories(db: Session) -> List[SubscriptionCategory]:
